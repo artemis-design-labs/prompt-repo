@@ -4481,6 +4481,7 @@ export default function PromptRepository() {
     const [draggingScript, setDraggingScript] = useState(null);
     const [dragOverIndex, setDragOverIndex] = useState(null);
     const [copied, setCopied] = useState(false);
+    const [scriptsDrawerCollapsed, setScriptsDrawerCollapsed] = useState(false);
 
     // Undo/Redo system
     const [undoStack, setUndoStack] = useState({});
@@ -4695,20 +4696,34 @@ export default function PromptRepository() {
     return (
       <div className="flex h-full bg-zinc-900 rounded-lg overflow-hidden">
         {/* Left panel: Script list */}
-        <div className="w-56 bg-zinc-900 border-r border-zinc-700 flex flex-col min-h-0">
-          <div className="p-3 border-b border-zinc-700 flex items-center justify-between">
-            <span className="text-sm font-medium text-zinc-300 flex items-center gap-2">
-              <Clapperboard size={14} className="text-pink-400" />
-              Scripts
-            </span>
-            <button
-              onClick={addScript}
-              className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
-              title="Add script"
-            >
-              <Plus size={14} />
-            </button>
+        <div className={`${scriptsDrawerCollapsed ? 'w-10' : 'w-56'} bg-zinc-900 border-r border-zinc-700 flex flex-col min-h-0 transition-all duration-200`}>
+          <div className={`p-3 border-b border-zinc-700 flex items-center ${scriptsDrawerCollapsed ? 'justify-center' : 'justify-between'}`}>
+            {!scriptsDrawerCollapsed && (
+              <span className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                <Clapperboard size={14} className="text-pink-400" />
+                Scripts
+              </span>
+            )}
+            <div className={`flex items-center ${scriptsDrawerCollapsed ? '' : 'gap-1'}`}>
+              {!scriptsDrawerCollapsed && (
+                <button
+                  onClick={addScript}
+                  className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                  title="Add script"
+                >
+                  <Plus size={14} />
+                </button>
+              )}
+              <button
+                onClick={() => setScriptsDrawerCollapsed(!scriptsDrawerCollapsed)}
+                className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                title={scriptsDrawerCollapsed ? 'Expand scripts' : 'Collapse scripts'}
+              >
+                {scriptsDrawerCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+              </button>
+            </div>
           </div>
+          {!scriptsDrawerCollapsed && (
           <div className="flex-1 overflow-y-auto py-2">
             {scriptsData.scripts.map((script, index) => (
               <div
@@ -4778,6 +4793,7 @@ export default function PromptRepository() {
               />
             )}
           </div>
+          )}
         </div>
 
         {/* Right panel: Script editor */}
