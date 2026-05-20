@@ -7,6 +7,11 @@ import { defaultData as initialDefaultData } from '../data/defaultFolders';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
+// Icon mapping for notebook custom icons
+const notebookIconMap = {
+  Notebook, BookOpen, FileText, Database, Table, Folder, Briefcase, Heart, Target, Tag, Calendar, Clock, MapPin
+};
+
 const emptyData = {
   folders: [],
   prompts: [],
@@ -97,11 +102,11 @@ const api = {
     if (!res.ok) throw new Error('Failed to create notebook');
     return res.json();
   },
-  async updateNotebook(id, name) {
+  async updateNotebook(id, { name, description, icon }) {
     const res = await fetch(`/api/notebooks/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name })
+      body: JSON.stringify({ name, description, icon })
     });
     if (!res.ok) throw new Error('Failed to update notebook');
     return res.json();
@@ -234,6 +239,10 @@ export default function PromptRepository() {
   const [copiedNoteId, setCopiedNoteId] = useState(null);
   const [showMoveNote, setShowMoveNote] = useState(false);
   const [movingNoteId, setMovingNoteId] = useState(null);
+  const [moveNoteSearch, setMoveNoteSearch] = useState('');
+  const [showEditNotebook, setShowEditNotebook] = useState(false);
+  const [editingNotebook, setEditingNotebook] = useState(null);
+  const [editNotebookForm, setEditNotebookForm] = useState({ name: '', description: '', icon: '' });
   const [draggingNote, setDraggingNote] = useState(null);
   const [dragOverNotebook, setDragOverNotebook] = useState(null);
   const [dragOverNoteIndex, setDragOverNoteIndex] = useState(null);
@@ -517,7 +526,7 @@ export default function PromptRepository() {
   const renameNotebook = async (notebookId, newName) => {
     if (!newName.trim()) return;
     try {
-      await api.updateNotebook(notebookId, newName.trim());
+      await api.updateNotebook(notebookId, { name: newName.trim() });
       setNotebooks(prev => prev.map(n =>
         n.id === notebookId ? { ...n, name: newName.trim() } : n
       ));
@@ -525,6 +534,39 @@ export default function PromptRepository() {
       console.error('Error renaming notebook:', e);
       showNotif('Failed to rename notebook');
     }
+  };
+
+  const updateNotebookDetails = async () => {
+    if (!editingNotebook || !editNotebookForm.name.trim()) {
+      showNotif('Name is required');
+      return;
+    }
+    try {
+      const updated = await api.updateNotebook(editingNotebook.id, {
+        name: editNotebookForm.name.trim(),
+        description: editNotebookForm.description.trim() || null,
+        icon: editNotebookForm.icon || null
+      });
+      setNotebooks(prev => prev.map(n =>
+        n.id === editingNotebook.id ? { ...n, ...updated } : n
+      ));
+      setShowEditNotebook(false);
+      setEditingNotebook(null);
+      showNotif('Notebook updated');
+    } catch (e) {
+      console.error('Error updating notebook:', e);
+      showNotif('Failed to update notebook');
+    }
+  };
+
+  const openEditNotebook = (notebook) => {
+    setEditingNotebook(notebook);
+    setEditNotebookForm({
+      name: notebook.name || '',
+      description: notebook.description || '',
+      icon: notebook.icon || ''
+    });
+    setShowEditNotebook(true);
   };
 
   // Notes management functions
@@ -6012,15 +6054,24 @@ Include everything:
               }`}
               title={notebook.name}
             >
-              {notebook.type === 'book' ? (
-                <BookOpen size={18} className={activeNotebook === notebook.id ? 'text-amber-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-amber-500/70'} />
-              ) : notebook.type === 'repository' ? (
-                <Database size={18} className={activeNotebook === notebook.id ? 'text-purple-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-purple-500/70'} />
-              ) : notebook.type === 'spreadsheet' ? (
-                <Table size={18} className={activeNotebook === notebook.id ? 'text-green-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-green-500/70'} />
-              ) : (
-                <Notebook size={18} className={activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : ''} />
-              )}
+              {(() => {
+                // Use custom icon if set, otherwise fall back to type-based icon
+                const CustomIcon = notebook.icon && notebookIconMap[notebook.icon];
+                if (CustomIcon) {
+                  return <CustomIcon size={18} className={activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-zinc-400'} />;
+                }
+                // Default type-based icons
+                if (notebook.type === 'book') {
+                  return <BookOpen size={18} className={activeNotebook === notebook.id ? 'text-amber-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-amber-500/70'} />;
+                }
+                if (notebook.type === 'repository') {
+                  return <Database size={18} className={activeNotebook === notebook.id ? 'text-purple-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-purple-500/70'} />;
+                }
+                if (notebook.type === 'spreadsheet') {
+                  return <Table size={18} className={activeNotebook === notebook.id ? 'text-green-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-green-500/70'} />;
+                }
+                return <Notebook size={18} className={activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : ''} />;
+              })()}
               {drawerOpen && <span className="truncate">{notebook.name}</span>}
             </button>
           ))}
@@ -6102,13 +6153,22 @@ Include everything:
                   <button onClick={openMergeDuplicates} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 rounded" title="Merge duplicate folders"><GitMerge size={14} /> Merge Duplicates</button>
                 </>
               ) : (
-                <button
-                  onClick={() => deleteNotebook(activeNotebook)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded"
-                  title="Delete this notebook"
-                >
-                  <Trash2 size={14} /> Delete Notebook
-                </button>
+                <>
+                  <button
+                    onClick={() => openEditNotebook(notebooks.find(n => n.id === activeNotebook))}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 rounded"
+                    title="Edit notebook details"
+                  >
+                    <Edit2 size={14} /> Edit
+                  </button>
+                  <button
+                    onClick={() => deleteNotebook(activeNotebook)}
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded"
+                    title="Delete this notebook"
+                  >
+                    <Trash2 size={14} /> Delete Notebook
+                  </button>
+                </>
               )}
             </div>
           </div>
@@ -6350,45 +6410,170 @@ Include everything:
                 <Move size={20} className="text-blue-500" />
                 Move Note to Notebook
               </h2>
-              <button onClick={() => { setShowMoveNote(false); setMovingNoteId(null); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowMoveNote(false); setMovingNoteId(null); setMoveNoteSearch(''); }} className="p-1 hover:bg-zinc-700 rounded">
                 <X size={18} />
               </button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
-              <p className="text-sm text-zinc-400 mb-4">
+            <div className="p-4 flex-1 min-h-0 flex flex-col">
+              <p className="text-sm text-zinc-400 mb-3">
                 Select a notebook to move "{notes.find(n => n.id === movingNoteId)?.title}" to:
               </p>
-              <div className="space-y-2">
-                {notebooks.filter(n => n.type !== 'prompts' && n.id !== notes.find(note => note.id === movingNoteId)?.notebookId).map(notebook => (
+              {/* Search bar */}
+              <div className="relative mb-4">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input
+                  type="text"
+                  value={moveNoteSearch}
+                  onChange={(e) => setMoveNoteSearch(e.target.value)}
+                  placeholder="Search notebooks..."
+                  className="w-full bg-zinc-900 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  autoFocus
+                />
+                {moveNoteSearch && (
                   <button
-                    key={notebook.id}
-                    onClick={async () => {
-                      const noteIdToSelect = movingNoteId;
-                      await moveNoteToNotebook(movingNoteId, notebook.id);
-                      setShowMoveNote(false);
-                      setMovingNoteId(null);
-                      setActiveNotebook(notebook.id);
-                      setActiveNote(noteIdToSelect);
-                    }}
-                    className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-700 text-left transition-colors"
+                    onClick={() => setMoveNoteSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
                   >
-                    <Notebook size={18} className="text-purple-500" />
-                    <span>{notebook.name}</span>
+                    <X size={14} />
                   </button>
-                ))}
-                {notebooks.filter(n => n.type !== 'prompts' && n.id !== notes.find(note => note.id === movingNoteId)?.notebookId).length === 0 && (
-                  <p className="text-zinc-500 text-sm text-center py-4">
-                    No other notebooks available. Create a new notebook first.
-                  </p>
                 )}
+              </div>
+              <div className="space-y-2 flex-1 overflow-auto modal-scroll">
+                {(() => {
+                  const currentNoteNotebookId = notes.find(note => note.id === movingNoteId)?.notebookId;
+                  const filteredNotebooks = notebooks.filter(n =>
+                    n.type !== 'prompts' &&
+                    n.id !== currentNoteNotebookId &&
+                    n.name.toLowerCase().includes(moveNoteSearch.toLowerCase())
+                  );
+
+                  if (filteredNotebooks.length === 0) {
+                    return (
+                      <p className="text-zinc-500 text-sm text-center py-4">
+                        {moveNoteSearch ? 'No notebooks match your search.' : 'No other notebooks available. Create a new notebook first.'}
+                      </p>
+                    );
+                  }
+
+                  return filteredNotebooks.map(notebook => (
+                    <button
+                      key={notebook.id}
+                      onClick={async () => {
+                        const noteIdToSelect = movingNoteId;
+                        await moveNoteToNotebook(movingNoteId, notebook.id);
+                        setShowMoveNote(false);
+                        setMovingNoteId(null);
+                        setMoveNoteSearch('');
+                        setActiveNotebook(notebook.id);
+                        setActiveNote(noteIdToSelect);
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-700 text-left transition-colors"
+                    >
+                      {notebook.type === 'book' ? (
+                        <BookOpen size={18} className="text-amber-400" />
+                      ) : notebook.type === 'repository' ? (
+                        <Database size={18} className="text-purple-400" />
+                      ) : notebook.type === 'spreadsheet' ? (
+                        <Table size={18} className="text-green-400" />
+                      ) : (
+                        <Notebook size={18} className="text-blue-400" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <span className="block truncate">{notebook.name}</span>
+                        {notebook.description && (
+                          <span className="text-xs text-zinc-500 truncate block">{notebook.description}</span>
+                        )}
+                      </div>
+                    </button>
+                  ));
+                })()}
               </div>
             </div>
             <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
               <button
-                onClick={() => { setShowMoveNote(false); setMovingNoteId(null); }}
+                onClick={() => { setShowMoveNote(false); setMovingNoteId(null); setMoveNoteSearch(''); }}
                 className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
               >
                 Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Notebook Modal */}
+      {showEditNotebook && editingNotebook && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-zinc-800 rounded-lg w-[500px] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+              <h2 className="font-semibold flex items-center gap-2">
+                <Edit2 size={20} className="text-blue-500" />
+                Edit Notebook
+              </h2>
+              <button onClick={() => { setShowEditNotebook(false); setEditingNotebook(null); }} className="p-1 hover:bg-zinc-700 rounded">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm text-zinc-400 mb-2">Title</label>
+                <input
+                  type="text"
+                  value={editNotebookForm.name}
+                  onChange={(e) => setEditNotebookForm(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500"
+                  placeholder="Notebook title"
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-zinc-400 mb-2">Description (optional)</label>
+                <textarea
+                  value={editNotebookForm.description}
+                  onChange={(e) => setEditNotebookForm(prev => ({ ...prev, description: e.target.value }))}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-none"
+                  placeholder="A brief description of this notebook..."
+                  rows={3}
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-zinc-400 mb-2">Icon</label>
+                <div className="grid grid-cols-8 gap-2">
+                  {['', 'Notebook', 'BookOpen', 'FileText', 'Database', 'Table', 'Folder', 'Archive', 'Briefcase', 'Heart', 'Star', 'Target', 'Bookmark', 'Calendar', 'Clock', 'Globe'].map((iconName) => {
+                    const IconComponent = iconName ? {
+                      Notebook, BookOpen, FileText, Database, Table, Folder: Folder, Archive: Briefcase, Briefcase, Heart, Star: Target, Target, Bookmark: Tag, Calendar, Clock, Globe: MapPin
+                    }[iconName] || Notebook : null;
+                    return (
+                      <button
+                        key={iconName || 'none'}
+                        onClick={() => setEditNotebookForm(prev => ({ ...prev, icon: iconName }))}
+                        className={`p-2 rounded-lg flex items-center justify-center transition-colors ${
+                          editNotebookForm.icon === iconName
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-zinc-900 hover:bg-zinc-700 text-zinc-400'
+                        }`}
+                        title={iconName || 'No icon'}
+                      >
+                        {IconComponent ? <IconComponent size={18} /> : <X size={18} className="opacity-50" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+              <button
+                onClick={() => { setShowEditNotebook(false); setEditingNotebook(null); }}
+                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={updateNotebookDetails}
+                disabled={!editNotebookForm.name.trim()}
+                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save Changes
               </button>
             </div>
           </div>

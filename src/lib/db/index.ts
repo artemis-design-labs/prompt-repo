@@ -303,29 +303,32 @@ export async function seedDefaultFolders(folders: Array<{ id: string; name: stri
 
 export async function getNotebooks(): Promise<Notebook[]> {
   const rows = await getSQL()`
-    SELECT id, name, description, type, created_at as "createdAt", updated_at as "updatedAt"
+    SELECT id, name, description, icon, type, created_at as "createdAt", updated_at as "updatedAt"
     FROM notebooks
     ORDER BY created_at
   `
   return rows as Notebook[]
 }
 
-export async function createNotebook(name: string, description: string | null = null): Promise<Notebook> {
+export async function createNotebook(name: string, description: string | null = null, icon: string | null = null): Promise<Notebook> {
   const id = generateId()
   const rows = await getSQL()`
-    INSERT INTO notebooks (id, name, description, type)
-    VALUES (${id}, ${name}, ${description}, 'notebook')
-    RETURNING id, name, description, type, created_at as "createdAt", updated_at as "updatedAt"
+    INSERT INTO notebooks (id, name, description, icon, type)
+    VALUES (${id}, ${name}, ${description}, ${icon}, 'notebook')
+    RETURNING id, name, description, icon, type, created_at as "createdAt", updated_at as "updatedAt"
   `
   return rows[0] as Notebook
 }
 
-export async function updateNotebook(id: string, name: string): Promise<Notebook> {
+export async function updateNotebook(id: string, name: string, description?: string | null, icon?: string | null): Promise<Notebook> {
   const rows = await getSQL()`
     UPDATE notebooks
-    SET name = ${name}, updated_at = NOW()
+    SET name = ${name},
+        description = COALESCE(${description}, description),
+        icon = COALESCE(${icon}, icon),
+        updated_at = NOW()
     WHERE id = ${id}
-    RETURNING id, name, description, type, created_at as "createdAt", updated_at as "updatedAt"
+    RETURNING id, name, description, icon, type, created_at as "createdAt", updated_at as "updatedAt"
   `
   return rows[0] as Notebook
 }

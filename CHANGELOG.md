@@ -9,6 +9,12 @@ All notable changes to the Prompt Repository project are documented here.
 ### Added
 - **Delete and move actions in notes sidebar** - Notes can now be deleted or moved to another notebook directly from the sidebar list on hover, without needing to open the note first
 - **Travel note icon in sidebar** - Travel itinerary notes now show a plane icon and "Travel Itinerary" label in the notes list
+- **Edit Notebook modal** - New modal to edit notebook details including title, description, and custom icon. Access via the "Edit" button in the notebook header
+- **Custom notebook icons** - Notebooks can now have custom icons (Notebook, BookOpen, FileText, Database, Table, Folder, Briefcase, Heart, Target, Tag, Calendar, Clock, MapPin)
+- **Search bar in Move Note modal** - Filter notebooks by name when moving notes between notebooks
+
+### Changed
+- **Move Note modal improvements** - Now shows notebook type icons and descriptions, with better visual hierarchy
 
 ### Verified
 - **Delete and move buttons available for all note types** - Confirmed that spreadsheet, repository, book, travel, tiktok, and prompt notes all have access to delete and move functionality in both the sidebar (on hover) and the note detail header

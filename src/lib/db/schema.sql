@@ -58,6 +58,7 @@ CREATE TABLE notebooks (
   id TEXT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   description TEXT,
+  icon VARCHAR(50) DEFAULT NULL,
   type VARCHAR(50) DEFAULT 'notebook',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
