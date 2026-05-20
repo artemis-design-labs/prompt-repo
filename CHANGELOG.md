@@ -7,6 +7,7 @@ All notable changes to the Prompt Repository project are documented here.
 ## 2026-05-20
 
 ### Added
+- **Prompt migration API** - New `/api/migrate-prompts` endpoint to migrate all prompts from the prompts table into notes under the "Prompts" notebook with type='prompt'. GET to preview, POST to execute migration.
 - **Delete and move actions in notes sidebar** - Notes can now be deleted or moved to another notebook directly from the sidebar list on hover, without needing to open the note first
 - **Travel note icon in sidebar** - Travel itinerary notes now show a plane icon and "Travel Itinerary" label in the notes list
 - **Edit Notebook modal** - New modal to edit notebook details including title, description, and custom icon. Access via the "Edit" button in the notebook header
