@@ -7,7 +7,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const { name, description, icon } = await request.json()
+    const { name, description, icon, iconColor } = await request.json()
 
     if (!name) {
       return NextResponse.json(
@@ -16,7 +16,7 @@ export async function PUT(
       )
     }
 
-    const notebook = await updateNotebook(id, name, description, icon)
+    const notebook = await updateNotebook(id, name, description, icon, iconColor)
     return NextResponse.json(notebook)
   } catch (error) {
     console.error('Error updating notebook:', error)

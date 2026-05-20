@@ -12,6 +12,27 @@ const notebookIconMap = {
   Notebook, BookOpen, FileText, Database, Table, Folder, Briefcase, Heart, Target, Tag, Calendar, Clock, MapPin
 };
 
+// Color options for notebook icons (10 distinct colors)
+const notebookIconColors = [
+  { id: '', name: 'Default', class: 'text-zinc-400' },
+  { id: 'blue', name: 'Blue', class: 'text-blue-500' },
+  { id: 'purple', name: 'Purple', class: 'text-purple-500' },
+  { id: 'pink', name: 'Pink', class: 'text-pink-500' },
+  { id: 'red', name: 'Red', class: 'text-red-500' },
+  { id: 'orange', name: 'Orange', class: 'text-orange-500' },
+  { id: 'amber', name: 'Amber', class: 'text-amber-500' },
+  { id: 'green', name: 'Green', class: 'text-green-500' },
+  { id: 'teal', name: 'Teal', class: 'text-teal-500' },
+  { id: 'cyan', name: 'Cyan', class: 'text-cyan-500' },
+  { id: 'indigo', name: 'Indigo', class: 'text-indigo-500' }
+];
+
+// Helper to get icon color class
+const getIconColorClass = (colorId) => {
+  const color = notebookIconColors.find(c => c.id === colorId);
+  return color ? color.class : 'text-zinc-400';
+};
+
 const emptyData = {
   folders: [],
   prompts: [],
@@ -102,11 +123,11 @@ const api = {
     if (!res.ok) throw new Error('Failed to create notebook');
     return res.json();
   },
-  async updateNotebook(id, { name, description, icon }) {
+  async updateNotebook(id, { name, description, icon, iconColor }) {
     const res = await fetch(`/api/notebooks/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description, icon })
+      body: JSON.stringify({ name, description, icon, iconColor })
     });
     if (!res.ok) throw new Error('Failed to update notebook');
     return res.json();
@@ -242,7 +263,7 @@ export default function PromptRepository() {
   const [moveNoteSearch, setMoveNoteSearch] = useState('');
   const [showEditNotebook, setShowEditNotebook] = useState(false);
   const [editingNotebook, setEditingNotebook] = useState(null);
-  const [editNotebookForm, setEditNotebookForm] = useState({ name: '', description: '', icon: '' });
+  const [editNotebookForm, setEditNotebookForm] = useState({ name: '', description: '', icon: '', iconColor: '' });
   const [draggingNote, setDraggingNote] = useState(null);
   const [dragOverNotebook, setDragOverNotebook] = useState(null);
   const [dragOverNoteIndex, setDragOverNoteIndex] = useState(null);
@@ -545,7 +566,8 @@ export default function PromptRepository() {
       const updated = await api.updateNotebook(editingNotebook.id, {
         name: editNotebookForm.name.trim(),
         description: editNotebookForm.description.trim() || null,
-        icon: editNotebookForm.icon || null
+        icon: editNotebookForm.icon || null,
+        iconColor: editNotebookForm.iconColor || null
       });
       setNotebooks(prev => prev.map(n =>
         n.id === editingNotebook.id ? { ...n, ...updated } : n
@@ -564,7 +586,8 @@ export default function PromptRepository() {
     setEditNotebookForm({
       name: notebook.name || '',
       description: notebook.description || '',
-      icon: notebook.icon || ''
+      icon: notebook.icon || '',
+      iconColor: notebook.iconColor || ''
     });
     setShowEditNotebook(true);
   };
@@ -6057,20 +6080,27 @@ Include everything:
               {(() => {
                 // Use custom icon if set, otherwise fall back to type-based icon
                 const CustomIcon = notebook.icon && notebookIconMap[notebook.icon];
+                const customColorClass = notebook.iconColor ? getIconColorClass(notebook.iconColor) : null;
+
                 if (CustomIcon) {
-                  return <CustomIcon size={18} className={activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-zinc-400'} />;
+                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-zinc-400');
+                  return <CustomIcon size={18} className={colorClass} />;
                 }
-                // Default type-based icons
+                // Default type-based icons (custom color overrides default if set)
                 if (notebook.type === 'book') {
-                  return <BookOpen size={18} className={activeNotebook === notebook.id ? 'text-amber-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-amber-500/70'} />;
+                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-amber-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-amber-500/70');
+                  return <BookOpen size={18} className={colorClass} />;
                 }
                 if (notebook.type === 'repository') {
-                  return <Database size={18} className={activeNotebook === notebook.id ? 'text-purple-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-purple-500/70'} />;
+                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-purple-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-purple-500/70');
+                  return <Database size={18} className={colorClass} />;
                 }
                 if (notebook.type === 'spreadsheet') {
-                  return <Table size={18} className={activeNotebook === notebook.id ? 'text-green-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-green-500/70'} />;
+                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-green-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-green-500/70');
+                  return <Table size={18} className={colorClass} />;
                 }
-                return <Notebook size={18} className={activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : ''} />;
+                const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : '');
+                return <Notebook size={18} className={colorClass} />;
               })()}
               {drawerOpen && <span className="truncate">{notebook.name}</span>}
             </button>
@@ -6559,6 +6589,40 @@ Include everything:
                     );
                   })}
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm text-zinc-400 mb-2">Icon Color</label>
+                <div className="flex flex-wrap gap-2">
+                  {notebookIconColors.map((color) => (
+                    <button
+                      key={color.id || 'default'}
+                      onClick={() => setEditNotebookForm(prev => ({ ...prev, iconColor: color.id }))}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                        editNotebookForm.iconColor === color.id
+                          ? 'ring-2 ring-white ring-offset-2 ring-offset-zinc-800'
+                          : 'hover:scale-110'
+                      }`}
+                      style={{
+                        backgroundColor: color.id ? `var(--color-${color.id})` : '#71717a'
+                      }}
+                      title={color.name}
+                    >
+                      {color.id === '' && <X size={14} className="text-zinc-300" />}
+                    </button>
+                  ))}
+                </div>
+                <style jsx>{`
+                  button[style*="--color-blue"] { background-color: #3b82f6 !important; }
+                  button[style*="--color-purple"] { background-color: #a855f7 !important; }
+                  button[style*="--color-pink"] { background-color: #ec4899 !important; }
+                  button[style*="--color-red"] { background-color: #ef4444 !important; }
+                  button[style*="--color-orange"] { background-color: #f97316 !important; }
+                  button[style*="--color-amber"] { background-color: #f59e0b !important; }
+                  button[style*="--color-green"] { background-color: #22c55e !important; }
+                  button[style*="--color-teal"] { background-color: #14b8a6 !important; }
+                  button[style*="--color-cyan"] { background-color: #06b6d4 !important; }
+                  button[style*="--color-indigo"] { background-color: #6366f1 !important; }
+                `}</style>
               </div>
             </div>
             <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">

@@ -11,6 +11,7 @@ All notable changes to the Prompt Repository project are documented here.
 - **Travel note icon in sidebar** - Travel itinerary notes now show a plane icon and "Travel Itinerary" label in the notes list
 - **Edit Notebook modal** - New modal to edit notebook details including title, description, and custom icon. Access via the "Edit" button in the notebook header
 - **Custom notebook icons** - Notebooks can now have custom icons (Notebook, BookOpen, FileText, Database, Table, Folder, Briefcase, Heart, Target, Tag, Calendar, Clock, MapPin)
+- **Icon color customization** - Choose from 10 distinct colors for notebook icons: Blue, Purple, Pink, Red, Orange, Amber, Green, Teal, Cyan, Indigo
 - **Search bar in Move Note modal** - Filter notebooks by name when moving notes between notebooks
 
 ### Changed

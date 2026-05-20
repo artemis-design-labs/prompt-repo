@@ -32,6 +32,7 @@ export interface Notebook {
   name: string
   description?: string | null
   icon?: string | null
+  iconColor?: string | null
   type: 'notebook' | 'book' | 'repository' | 'spreadsheet' | 'prompts'
   createdAt?: Date
   updatedAt?: Date
