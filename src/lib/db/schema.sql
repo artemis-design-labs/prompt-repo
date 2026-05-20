@@ -57,6 +57,7 @@ CREATE TABLE category_tags (
 CREATE TABLE notebooks (
   id TEXT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
+  description TEXT,
   type VARCHAR(50) DEFAULT 'notebook',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()

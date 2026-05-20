@@ -88,11 +88,11 @@ const api = {
     if (!res.ok) throw new Error('Failed to delete tag category');
   },
   // Notebook APIs
-  async createNotebook(name, type = 'notebook') {
+  async createNotebook(name, description = null) {
     const res = await fetch('/api/notebooks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, type })
+      body: JSON.stringify({ name, description })
     });
     if (!res.ok) throw new Error('Failed to create notebook');
     return res.json();
@@ -223,7 +223,7 @@ export default function PromptRepository() {
   const [activeNotebook, setActiveNotebook] = useState(null);
   const [showNewNotebook, setShowNewNotebook] = useState(false);
   const [newNotebookName, setNewNotebookName] = useState('');
-  const [newNotebookType, setNewNotebookType] = useState('notebook');
+  const [newNotebookDescription, setNewNotebookDescription] = useState('');
 
   // Notes state (for generic notebooks)
   const [notes, setNotes] = useState([]);
@@ -479,10 +479,10 @@ export default function PromptRepository() {
   const createNotebook = async () => {
     if (!newNotebookName.trim()) return;
     try {
-      const newNotebook = await api.createNotebook(newNotebookName.trim(), newNotebookType);
+      const newNotebook = await api.createNotebook(newNotebookName.trim(), newNotebookDescription.trim() || null);
       setNotebooks(prev => [...prev, newNotebook]);
       setNewNotebookName('');
-      setNewNotebookType('notebook');
+      setNewNotebookDescription('');
       setShowNewNotebook(false);
       setActiveNotebook(newNotebook.id);
       showNotif(`Created notebook "${newNotebook.name}"`);
@@ -6377,95 +6377,43 @@ Include everything:
       {/* New Notebook Modal */}
       {showNewNotebook && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+          <div className="bg-zinc-800 rounded-lg w-[500px] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
               <h2 className="font-semibold flex items-center gap-2">
                 <Notebook size={20} className="text-purple-500" />
                 Create New Notebook
               </h2>
-              <button onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookType('notebook'); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookDescription(''); }} className="p-1 hover:bg-zinc-700 rounded">
                 <X size={18} />
               </button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
-              <label className="block text-sm text-zinc-400 mb-2">Type</label>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <button
-                  onClick={() => setNewNotebookType('notebook')}
-                  className={`p-4 rounded-lg border text-left transition-colors ${
-                    newNotebookType === 'notebook'
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-zinc-700 hover:border-zinc-600'
-                  }`}
-                >
-                  <Notebook size={24} className={newNotebookType === 'notebook' ? 'text-blue-400 mb-2' : 'text-zinc-500 mb-2'} />
-                  <div className="font-medium text-sm">Notebook</div>
-                  <div className="text-xs text-zinc-500 mt-1">General-purpose notes collection</div>
-                </button>
-                <button
-                  onClick={() => setNewNotebookType('book')}
-                  className={`p-4 rounded-lg border text-left transition-colors ${
-                    newNotebookType === 'book'
-                      ? 'border-amber-500 bg-amber-500/10'
-                      : 'border-zinc-700 hover:border-zinc-600'
-                  }`}
-                >
-                  <BookOpen size={24} className={newNotebookType === 'book' ? 'text-amber-400 mb-2' : 'text-zinc-500 mb-2'} />
-                  <div className="font-medium text-sm">Book</div>
-                  <div className="text-xs text-zinc-500 mt-1">Ordered chapters you can drag to rearrange</div>
-                </button>
-                <button
-                  onClick={() => setNewNotebookType('repository')}
-                  className={`p-4 rounded-lg border text-left transition-colors ${
-                    newNotebookType === 'repository'
-                      ? 'border-purple-500 bg-purple-500/10'
-                      : 'border-zinc-700 hover:border-zinc-600'
-                  }`}
-                >
-                  <Database size={24} className={newNotebookType === 'repository' ? 'text-purple-400 mb-2' : 'text-zinc-500 mb-2'} />
-                  <div className="font-medium text-sm">Repository</div>
-                  <div className="text-xs text-zinc-500 mt-1">Structured data storage for prompts and filepaths</div>
-                </button>
-                <button
-                  onClick={() => setNewNotebookType('spreadsheet')}
-                  className={`p-4 rounded-lg border text-left transition-colors ${
-                    newNotebookType === 'spreadsheet'
-                      ? 'border-green-500 bg-green-500/10'
-                      : 'border-zinc-700 hover:border-zinc-600'
-                  }`}
-                >
-                  <Table size={24} className={newNotebookType === 'spreadsheet' ? 'text-green-400 mb-2' : 'text-zinc-500 mb-2'} />
-                  <div className="font-medium text-sm">Spreadsheet</div>
-                  <div className="text-xs text-zinc-500 mt-1">Table with rows and columns</div>
-                </button>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block text-sm text-zinc-400 mb-2">Title</label>
+                <input
+                  type="text"
+                  value={newNotebookName}
+                  onChange={(e) => setNewNotebookName(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
+                  placeholder="My Notebook"
+                  autoFocus
+                  onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) createNotebook(); }}
+                />
               </div>
-              <label className="block text-sm text-zinc-400 mb-2">
-                {newNotebookType === 'book' ? 'Book Title' : newNotebookType === 'repository' ? 'Repository Name' : newNotebookType === 'spreadsheet' ? 'Spreadsheet Name' : 'Notebook Name'}
-              </label>
-              <input
-                type="text"
-                value={newNotebookName}
-                onChange={(e) => setNewNotebookName(e.target.value)}
-                className={`w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none ${
-                  newNotebookType === 'book' ? 'focus:border-amber-500' : newNotebookType === 'repository' ? 'focus:border-purple-500' : newNotebookType === 'spreadsheet' ? 'focus:border-green-500' : 'focus:border-blue-500'
-                }`}
-                placeholder={newNotebookType === 'book' ? 'My Book' : newNotebookType === 'repository' ? 'My Repository' : newNotebookType === 'spreadsheet' ? 'My Spreadsheet' : 'My Notebook'}
-                autoFocus
-                onKeyDown={(e) => { if (e.key === 'Enter') createNotebook(); }}
-              />
-              <p className="text-xs text-zinc-500 mt-2">
-                {newNotebookType === 'book'
-                  ? 'Create a book with chapters. Drag chapters to reorder them.'
-                  : newNotebookType === 'repository'
-                  ? 'Create a repository for structured data storage with prompts and filepaths.'
-                  : newNotebookType === 'spreadsheet'
-                  ? 'Create a spreadsheet with tables, rows, and columns.'
-                  : 'Create a notebook to organize your notes. You can add, edit, and delete notes within each notebook.'}
-              </p>
+              <div>
+                <label className="block text-sm text-zinc-400 mb-2">Description <span className="text-zinc-600">(optional)</span></label>
+                <textarea
+                  value={newNotebookDescription}
+                  onChange={(e) => setNewNotebookDescription(e.target.value)}
+                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 resize-none"
+                  placeholder="A brief description of this notebook..."
+                  rows={3}
+                />
+              </div>
             </div>
             <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
               <button
-                onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookType('notebook'); }}
+                onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookDescription(''); }}
                 className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
               >
                 Cancel
@@ -6473,17 +6421,9 @@ Include everything:
               <button
                 onClick={createNotebook}
                 disabled={!newNotebookName.trim()}
-                className={`px-4 py-2 text-sm disabled:bg-zinc-600 disabled:cursor-not-allowed rounded flex items-center gap-2 ${
-                  newNotebookType === 'book'
-                    ? 'bg-amber-600 hover:bg-amber-700'
-                    : newNotebookType === 'repository'
-                    ? 'bg-purple-600 hover:bg-purple-700'
-                    : newNotebookType === 'spreadsheet'
-                    ? 'bg-green-600 hover:bg-green-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
-                }`}
+                className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-700 disabled:bg-zinc-600 disabled:cursor-not-allowed rounded flex items-center gap-2"
               >
-                <Plus size={14} /> {newNotebookType === 'book' ? 'Create Book' : newNotebookType === 'repository' ? 'Create Repository' : newNotebookType === 'spreadsheet' ? 'Create Spreadsheet' : 'Create Notebook'}
+                <Plus size={14} /> Create Notebook
               </button>
             </div>
           </div>

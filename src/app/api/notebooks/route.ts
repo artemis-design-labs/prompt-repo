@@ -16,7 +16,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, type } = await request.json()
+    const { name, description } = await request.json()
 
     if (!name) {
       return NextResponse.json(
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const notebook = await createNotebook(name, type || 'notebook')
+    const notebook = await createNotebook(name, description || null)
     return NextResponse.json(notebook, { status: 201 })
   } catch (error) {
     console.error('Error creating notebook:', error)
