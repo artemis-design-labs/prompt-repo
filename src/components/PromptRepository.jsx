@@ -264,6 +264,9 @@ export default function PromptRepository() {
   const [showEditNotebook, setShowEditNotebook] = useState(false);
   const [editingNotebook, setEditingNotebook] = useState(null);
   const [editNotebookForm, setEditNotebookForm] = useState({ name: '', description: '', icon: '', iconColor: '' });
+  const [selectedNotes, setSelectedNotes] = useState(new Set());
+  const [showBulkMoveNotes, setShowBulkMoveNotes] = useState(false);
+  const [bulkMoveNotesSearch, setBulkMoveNotesSearch] = useState('');
   const [draggingNote, setDraggingNote] = useState(null);
   const [dragOverNotebook, setDragOverNotebook] = useState(null);
   const [dragOverNoteIndex, setDragOverNoteIndex] = useState(null);
@@ -785,6 +788,71 @@ export default function PromptRepository() {
     } catch (e) {
       console.error('Error duplicating note:', e);
       showNotif('Failed to duplicate note');
+    }
+  };
+
+  // Bulk note operations
+  const toggleNoteSelection = (noteId) => {
+    setSelectedNotes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(noteId)) {
+        newSet.delete(noteId);
+      } else {
+        newSet.add(noteId);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllNotesInNotebook = () => {
+    const notebookNotes = notes.filter(n => n.notebookId === activeNotebook);
+    setSelectedNotes(new Set(notebookNotes.map(n => n.id)));
+  };
+
+  const clearNoteSelection = () => {
+    setSelectedNotes(new Set());
+  };
+
+  const bulkDeleteNotes = async () => {
+    if (selectedNotes.size === 0) return;
+
+    const count = selectedNotes.size;
+    if (!confirm(`Delete ${count} note${count > 1 ? 's' : ''}? This cannot be undone.`)) return;
+
+    try {
+      for (const noteId of selectedNotes) {
+        await api.deleteNote(noteId);
+      }
+      setNotes(prev => prev.filter(n => !selectedNotes.has(n.id)));
+      if (selectedNotes.has(activeNote)) {
+        setActiveNote(null);
+      }
+      clearNoteSelection();
+      showNotif(`Deleted ${count} note${count > 1 ? 's' : ''}`);
+    } catch (e) {
+      console.error('Error bulk deleting notes:', e);
+      showNotif('Failed to delete some notes');
+    }
+  };
+
+  const bulkMoveNotes = async (targetNotebookId) => {
+    if (selectedNotes.size === 0) return;
+
+    const count = selectedNotes.size;
+    try {
+      for (const noteId of selectedNotes) {
+        await api.moveNote(noteId, targetNotebookId);
+      }
+      setNotes(prev => prev.map(n =>
+        selectedNotes.has(n.id) ? { ...n, notebookId: targetNotebookId } : n
+      ));
+      clearNoteSelection();
+      setShowBulkMoveNotes(false);
+      setBulkMoveNotesSearch('');
+      showNotif(`Moved ${count} note${count > 1 ? 's' : ''}`);
+    } catch (e) {
+      console.error('Error bulk moving notes:', e);
+      showNotif('Failed to move some notes');
     }
   };
 
@@ -5641,9 +5709,26 @@ Include everything:
           <div className="p-2 border-b border-zinc-800 flex items-center justify-between">
             {notesPanelOpen ? (
               <>
-                <span className="text-sm font-medium text-zinc-400 px-2">
-                  {isBookNotebook ? `Chapters (${notebookNotes.length})` : `Notes (${notebookNotes.length})`}
-                </span>
+                <div className="flex items-center gap-2 px-2">
+                  {notebookNotes.length > 0 && (
+                    <input
+                      type="checkbox"
+                      checked={notebookNotes.length > 0 && notebookNotes.every(n => selectedNotes.has(n.id))}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          selectAllNotesInNotebook();
+                        } else {
+                          clearNoteSelection();
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                      title="Select all notes"
+                    />
+                  )}
+                  <span className="text-sm font-medium text-zinc-400">
+                    {isBookNotebook ? `Chapters (${notebookNotes.length})` : `Notes (${notebookNotes.length})`}
+                  </span>
+                </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => { setShowNewNote(true); setNoteForm({ title: '', content: '', type: 'text', tags: [] }); }}
@@ -5713,6 +5798,13 @@ Include everything:
                     }`}
                   >
                     <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedNotes.has(note.id)}
+                        onChange={(e) => { e.stopPropagation(); toggleNoteSelection(note.id); }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer flex-shrink-0"
+                      />
                       <GripVertical size={12} className="text-zinc-600 flex-shrink-0 cursor-grab" />
                       {isBookNotebook ? (
                         <span className="flex-shrink-0 w-6 h-6 rounded bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">
@@ -6118,7 +6210,7 @@ Include everything:
           </div>
         )}
 
-        {/* Bulk Action Bar */}
+        {/* Bulk Action Bar for Prompts */}
         {selectedPrompts.size > 0 && (
           <div className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-800 border-t border-zinc-700 px-6 py-3 shadow-lg">
             <div className="max-w-5xl mx-auto flex items-center justify-between">
@@ -6142,6 +6234,39 @@ Include everything:
                 </button>
                 <button
                   onClick={bulkDeletePrompts}
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-lg"
+                >
+                  <Trash2 size={14} /> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Bulk Action Bar for Notes */}
+        {selectedNotes.size > 0 && (
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-800 border-t border-zinc-700 px-6 py-3 shadow-lg">
+            <div className="max-w-5xl mx-auto flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium">
+                  {selectedNotes.size} note{selectedNotes.size > 1 ? 's' : ''} selected
+                </span>
+                <button
+                  onClick={clearNoteSelection}
+                  className="text-sm text-zinc-400 hover:text-white"
+                >
+                  Clear selection
+                </button>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowBulkMoveNotes(true)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded-lg"
+                >
+                  <Move size={14} /> Move to notebook
+                </button>
+                <button
+                  onClick={bulkDeleteNotes}
                   className="flex items-center gap-2 px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-lg"
                 >
                   <Trash2 size={14} /> Delete
@@ -6522,6 +6647,96 @@ Include everything:
             <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
               <button
                 onClick={() => { setShowMoveNote(false); setMovingNoteId(null); setMoveNoteSearch(''); }}
+                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Move Notes Modal */}
+      {showBulkMoveNotes && selectedNotes.size > 0 && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-zinc-800 rounded-lg w-[500px] max-h-[80vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+              <h2 className="font-semibold flex items-center gap-2">
+                <Move size={20} className="text-blue-500" />
+                Move {selectedNotes.size} Note{selectedNotes.size > 1 ? 's' : ''}
+              </h2>
+              <button onClick={() => { setShowBulkMoveNotes(false); setBulkMoveNotesSearch(''); }} className="p-1 hover:bg-zinc-700 rounded">
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-4 flex-1 min-h-0 flex flex-col">
+              <p className="text-sm text-zinc-400 mb-3">
+                Select a notebook to move the selected notes to:
+              </p>
+              {/* Search bar */}
+              <div className="relative mb-4">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <input
+                  type="text"
+                  value={bulkMoveNotesSearch}
+                  onChange={(e) => setBulkMoveNotesSearch(e.target.value)}
+                  placeholder="Search notebooks..."
+                  className="w-full bg-zinc-900 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  autoFocus
+                />
+                {bulkMoveNotesSearch && (
+                  <button
+                    onClick={() => setBulkMoveNotesSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2 flex-1 overflow-auto">
+                {(() => {
+                  const filteredNotebooks = notebooks.filter(n =>
+                    n.type !== 'prompts' &&
+                    n.name.toLowerCase().includes(bulkMoveNotesSearch.toLowerCase())
+                  );
+
+                  if (filteredNotebooks.length === 0) {
+                    return (
+                      <p className="text-zinc-500 text-sm text-center py-4">
+                        {bulkMoveNotesSearch ? 'No notebooks match your search.' : 'No notebooks available.'}
+                      </p>
+                    );
+                  }
+
+                  return filteredNotebooks.map(notebook => (
+                    <button
+                      key={notebook.id}
+                      onClick={() => bulkMoveNotes(notebook.id)}
+                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-700 text-left transition-colors"
+                    >
+                      {notebook.type === 'book' ? (
+                        <BookOpen size={18} className="text-amber-400" />
+                      ) : notebook.type === 'repository' ? (
+                        <Database size={18} className="text-purple-400" />
+                      ) : notebook.type === 'spreadsheet' ? (
+                        <Table size={18} className="text-green-400" />
+                      ) : (
+                        <Notebook size={18} className="text-blue-400" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <span className="block truncate">{notebook.name}</span>
+                        {notebook.description && (
+                          <span className="text-xs text-zinc-500 truncate block">{notebook.description}</span>
+                        )}
+                      </div>
+                    </button>
+                  ));
+                })()}
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+              <button
+                onClick={() => { setShowBulkMoveNotes(false); setBulkMoveNotesSearch(''); }}
                 className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
               >
                 Cancel

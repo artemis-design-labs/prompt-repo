@@ -13,6 +13,10 @@ All notable changes to the Prompt Repository project are documented here.
 - **Custom notebook icons** - Notebooks can now have custom icons (Notebook, BookOpen, FileText, Database, Table, Folder, Briefcase, Heart, Target, Tag, Calendar, Clock, MapPin)
 - **Icon color customization** - Choose from 10 distinct colors for notebook icons: Blue, Purple, Pink, Red, Orange, Amber, Green, Teal, Cyan, Indigo
 - **Search bar in Move Note modal** - Filter notebooks by name when moving notes between notebooks
+- **Bulk note selection** - Select multiple notes using checkboxes in the notes sidebar
+- **Bulk delete notes** - Delete multiple selected notes at once
+- **Bulk move notes** - Move multiple selected notes to a different notebook at once
+- **Select all notes** - Checkbox in notes header to select/deselect all notes in current notebook
 
 ### Changed
 - **Move Note modal improvements** - Now shows notebook type icons and descriptions, with better visual hierarchy
