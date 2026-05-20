@@ -17,8 +17,18 @@ All notable changes to the Prompt Repository project are documented here.
 ### Changed
 - **Move Note modal improvements** - Now shows notebook type icons and descriptions, with better visual hierarchy
 
+### Fixed
+- **Notebook update logic** - Fixed database function to properly handle setting, changing, and clearing icon/description fields
+
 ### Verified
 - **Delete and move buttons available for all note types** - Confirmed that spreadsheet, repository, book, travel, tiktok, and prompt notes all have access to delete and move functionality in both the sidebar (on hover) and the note detail header
+
+### Database Migration Required
+To support notebook icons and colors, run these migrations:
+```sql
+ALTER TABLE notebooks ADD COLUMN IF NOT EXISTS icon VARCHAR(50) DEFAULT NULL;
+ALTER TABLE notebooks ADD COLUMN IF NOT EXISTS icon_color VARCHAR(20) DEFAULT NULL;
+```
 
 ---
 
