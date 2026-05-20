@@ -320,13 +320,25 @@ export async function createNotebook(name: string, description: string | null = 
   return rows[0] as Notebook
 }
 
-export async function updateNotebook(id: string, name: string, description?: string | null, icon?: string | null, iconColor?: string | null): Promise<Notebook> {
-  const rows = await getSQL()`
+export async function updateNotebook(
+  id: string,
+  name: string,
+  description: string | null | undefined = undefined,
+  icon: string | null | undefined = undefined,
+  iconColor: string | null | undefined = undefined
+): Promise<Notebook> {
+  // Build update dynamically - only update fields that are explicitly passed (not undefined)
+  // null means "clear the field", undefined means "don't change"
+  const sql = getSQL()
+
+  // Always update name and updated_at
+  // For optional fields: if undefined, keep existing; if null or value, set it
+  const rows = await sql`
     UPDATE notebooks
     SET name = ${name},
-        description = COALESCE(${description}, description),
-        icon = COALESCE(${icon}, icon),
-        icon_color = COALESCE(${iconColor}, icon_color),
+        description = CASE WHEN ${description === undefined} THEN description ELSE ${description} END,
+        icon = CASE WHEN ${icon === undefined} THEN icon ELSE ${icon} END,
+        icon_color = CASE WHEN ${iconColor === undefined} THEN icon_color ELSE ${iconColor} END,
         updated_at = NOW()
     WHERE id = ${id}
     RETURNING id, name, description, icon, icon_color as "iconColor", type, created_at as "createdAt", updated_at as "updatedAt"
