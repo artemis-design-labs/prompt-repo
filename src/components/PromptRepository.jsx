@@ -5659,6 +5659,8 @@ Include everything:
                         <BookOpen size={14} className="text-amber-400 flex-shrink-0" />
                       ) : note.type === 'tiktok' ? (
                         <Clapperboard size={14} className="text-pink-400 flex-shrink-0" />
+                      ) : note.type === 'travel' ? (
+                        <Plane size={14} className="text-cyan-400 flex-shrink-0" />
                       ) : note.type === 'prompt' || note.template === 'prompt' ? (
                         <MessageSquare size={14} className="text-purple-500 flex-shrink-0" />
                       ) : (
@@ -5688,6 +5690,8 @@ Include everything:
                         <span className="text-green-500/70">Spreadsheet</span>
                       ) : note.type === 'tiktok' ? (
                         <span className="text-pink-400/70">TikTok Scripts</span>
+                      ) : note.type === 'travel' ? (
+                        <span className="text-cyan-400/70">Travel Itinerary</span>
                       ) : isBookNotebook ? (
                         <span className="text-amber-500/50">Chapter {index + 1}</span>
                       ) : (

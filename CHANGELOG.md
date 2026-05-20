@@ -8,6 +8,10 @@ All notable changes to the Prompt Repository project are documented here.
 
 ### Added
 - **Delete and move actions in notes sidebar** - Notes can now be deleted or moved to another notebook directly from the sidebar list on hover, without needing to open the note first
+- **Travel note icon in sidebar** - Travel itinerary notes now show a plane icon and "Travel Itinerary" label in the notes list
+
+### Verified
+- **Delete and move buttons available for all note types** - Confirmed that spreadsheet, repository, book, travel, tiktok, and prompt notes all have access to delete and move functionality in both the sidebar (on hover) and the note detail header
 
 ---
 
