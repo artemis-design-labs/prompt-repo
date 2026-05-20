@@ -327,22 +327,29 @@ export async function updateNotebook(
   icon: string | null | undefined = undefined,
   iconColor: string | null | undefined = undefined
 ): Promise<Notebook> {
-  // Build update dynamically - only update fields that are explicitly passed (not undefined)
-  // null means "clear the field", undefined means "don't change"
   const sql = getSQL()
 
-  // Always update name and updated_at
-  // For optional fields: if undefined, keep existing; if null or value, set it
+  // Convert undefined to null for SQL, but track if we should update
+  const descValue = description === undefined ? null : description
+  const iconValue = icon === undefined ? null : icon
+  const iconColorValue = iconColor === undefined ? null : iconColor
+
+  // Log for debugging
+  console.log('updateNotebook called:', { id, name, description, icon, iconColor })
+  console.log('Values to save:', { descValue, iconValue, iconColorValue })
+
   const rows = await sql`
     UPDATE notebooks
     SET name = ${name},
-        description = CASE WHEN ${description === undefined} THEN description ELSE ${description} END,
-        icon = CASE WHEN ${icon === undefined} THEN icon ELSE ${icon} END,
-        icon_color = CASE WHEN ${iconColor === undefined} THEN icon_color ELSE ${iconColor} END,
+        description = ${descValue},
+        icon = ${iconValue},
+        icon_color = ${iconColorValue},
         updated_at = NOW()
     WHERE id = ${id}
     RETURNING id, name, description, icon, icon_color as "iconColor", type, created_at as "createdAt", updated_at as "updatedAt"
   `
+
+  console.log('Updated notebook:', rows[0])
   return rows[0] as Notebook
 }
 

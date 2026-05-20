@@ -7,7 +7,10 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const { name, description, icon, iconColor } = await request.json()
+    const body = await request.json()
+    const { name, description, icon, iconColor } = body
+
+    console.log('API PUT /notebooks/[id] received:', { id, body })
 
     if (!name) {
       return NextResponse.json(
@@ -17,6 +20,7 @@ export async function PUT(
     }
 
     const notebook = await updateNotebook(id, name, description, icon, iconColor)
+    console.log('API returning notebook:', notebook)
     return NextResponse.json(notebook)
   } catch (error) {
     console.error('Error updating notebook:', error)
