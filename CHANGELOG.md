@@ -7,6 +7,7 @@ All notable changes to the Prompt Repository project are documented here.
 ## 2026-05-20
 
 ### Added
+- **ARCHITECTURE.md** - Comprehensive software architecture documentation covering system overview, database schema, API patterns, frontend architecture, AI integration, deployment, and extension patterns. Useful as a template for Enterprise AI projects.
 - **AI Chat feature** - Chat with Claude AI about any note! Click the sparkles icon in the note header to open a side drawer where you can ask questions about the note content. Supports streaming responses and works with all note types (text, spreadsheet, prompt). Requires `ANTHROPIC_API_KEY` environment variable.
 - **Prompt migration API** - New `/api/migrate-prompts` endpoint to migrate all prompts from the prompts table into notes under the "Prompts" notebook with type='prompt'. GET to preview, POST to execute migration.
 - **Delete and move actions in notes sidebar** - Notes can now be deleted or moved to another notebook directly from the sidebar list on hover, without needing to open the note first
