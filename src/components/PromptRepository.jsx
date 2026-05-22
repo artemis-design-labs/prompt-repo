@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard } from 'lucide-react';
+import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { defaultData as initialDefaultData } from '../data/defaultFolders';
 
@@ -271,6 +271,13 @@ export default function PromptRepository() {
   const [dragOverNotebook, setDragOverNotebook] = useState(null);
   const [dragOverNoteIndex, setDragOverNoteIndex] = useState(null);
   const [notesPanelOpen, setNotesPanelOpen] = useState(true);
+
+  // AI Chat state
+  const [showChatDrawer, setShowChatDrawer] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatNoteId, setChatNoteId] = useState(null);
 
   // Note template types
   const noteTemplates = [
@@ -788,6 +795,79 @@ export default function PromptRepository() {
     } catch (e) {
       console.error('Error duplicating note:', e);
       showNotif('Failed to duplicate note');
+    }
+  };
+
+  // AI Chat functions
+  const openChatWithNote = (noteId) => {
+    setChatNoteId(noteId);
+    setChatMessages([]);
+    setChatInput('');
+    setShowChatDrawer(true);
+  };
+
+  const closeChatDrawer = () => {
+    setShowChatDrawer(false);
+    setChatNoteId(null);
+    setChatMessages([]);
+    setChatInput('');
+  };
+
+  const sendChatMessage = async () => {
+    if (!chatInput.trim() || chatLoading || !chatNoteId) return;
+
+    const note = notes.find(n => n.id === chatNoteId);
+    if (!note) return;
+
+    const userMessage = { role: 'user', content: chatInput.trim() };
+    const newMessages = [...chatMessages, userMessage];
+    setChatMessages(newMessages);
+    setChatInput('');
+    setChatLoading(true);
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages,
+          noteContent: note.content,
+          noteTitle: note.title,
+          noteType: note.type
+        })
+      });
+
+      if (!response.ok) throw new Error('Chat request failed');
+
+      // Handle streaming response
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantMessage = '';
+
+      // Add placeholder assistant message
+      setChatMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        assistantMessage += decoder.decode(value, { stream: true });
+
+        // Update the last message with streamed content
+        setChatMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: assistantMessage };
+          return updated;
+        });
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please try again.'
+      }]);
+    } finally {
+      setChatLoading(false);
     }
   };
 
@@ -5921,6 +6001,13 @@ Include everything:
                       {copiedNoteId === currentNote.id ? <Check size={16} /> : <Copy size={16} />}
                     </button>
                   )}
+                  <button
+                    onClick={() => openChatWithNote(currentNote.id)}
+                    className="p-2 hover:bg-zinc-700 rounded text-zinc-400 hover:text-purple-400 flex items-center gap-1"
+                    title="Chat with AI about this note"
+                  >
+                    <Sparkles size={16} />
+                  </button>
                   {editingNoteId === currentNote.id ? (
                     <>
                       <button
@@ -8179,6 +8266,101 @@ Include everything:
         </div>
       )}
       </div>{/* End Main Content Area */}
+
+      {/* AI Chat Drawer */}
+      {showChatDrawer && chatNoteId && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 z-40"
+            onClick={closeChatDrawer}
+          />
+
+          {/* Drawer */}
+          <div className="fixed right-0 top-0 bottom-0 w-[400px] bg-zinc-900 border-l border-zinc-800 z-50 flex flex-col shadow-2xl">
+            {/* Header */}
+            <div className="p-4 border-b border-zinc-800 flex items-center justify-between flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <Bot size={20} className="text-purple-500" />
+                <div>
+                  <h3 className="font-semibold">Chat with AI</h3>
+                  <p className="text-xs text-zinc-500 truncate max-w-[280px]">
+                    About: {notes.find(n => n.id === chatNoteId)?.title}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={closeChatDrawer}
+                className="p-1.5 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Messages Area */}
+            <div className="flex-1 overflow-auto p-4 space-y-4">
+              {chatMessages.length === 0 ? (
+                <div className="text-center text-zinc-500 py-8">
+                  <Sparkles size={32} className="mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">Ask me anything about this note!</p>
+                  <p className="text-xs mt-1">I can help analyze, summarize, or answer questions.</p>
+                </div>
+              ) : (
+                chatMessages.map((msg, idx) => (
+                  <div
+                    key={idx}
+                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                        msg.role === 'user'
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-zinc-800 text-zinc-200'
+                      }`}
+                    >
+                      <pre className="whitespace-pre-wrap font-sans">{msg.content || '...'}</pre>
+                    </div>
+                  </div>
+                ))
+              )}
+              {chatLoading && chatMessages[chatMessages.length - 1]?.role !== 'assistant' && (
+                <div className="flex justify-start">
+                  <div className="bg-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-400">
+                    <span className="animate-pulse">Thinking...</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input Area */}
+            <div className="p-4 border-t border-zinc-800 flex-shrink-0">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      sendChatMessage();
+                    }
+                  }}
+                  placeholder="Ask about this note..."
+                  className="flex-1 bg-zinc-800 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  disabled={chatLoading}
+                />
+                <button
+                  onClick={sendChatMessage}
+                  disabled={!chatInput.trim() || chatLoading}
+                  className="p-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
