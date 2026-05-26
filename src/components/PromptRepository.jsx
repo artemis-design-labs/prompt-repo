@@ -227,7 +227,7 @@ export default function PromptRepository() {
   const [renameFolder, setRenameFolder] = useState(null);
   const [renameFolderValue, setRenameFolderValue] = useState('');
   const [createdFolderIdForPrompt, setCreatedFolderIdForPrompt] = useState(null);
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+  const [viewMode, setViewMode] = useState('grid'); // 'list' or 'grid'
   const [gridEditMode, setGridEditMode] = useState(false);
   const [folderSort, setFolderSort] = useState('name'); // 'name', 'prompts', 'subfolders'
   const [selectedPrompts, setSelectedPrompts] = useState(new Set());
@@ -1054,9 +1054,7 @@ export default function PromptRepository() {
         setLoading(true);
         const result = await api.getData();
         setData({ ...emptyData, ...result, tagCategories: result.tagCategories || [] });
-        // Expand root folders by default
-        const rootFolderIds = result.folders?.filter(f => !f.parentId).map(f => f.id) || [];
-        setExpandedFolders(new Set(rootFolderIds));
+        // Folders start fully collapsed by default
         // Load notebooks and notes
         if (result.notebooks && result.notebooks.length > 0) {
           setNotebooks(result.notebooks);
