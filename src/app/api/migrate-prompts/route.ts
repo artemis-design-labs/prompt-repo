@@ -40,10 +40,10 @@ export async function GET() {
           SELECT t.name FROM tags t
           JOIN prompt_tags pt ON t.id = pt.tag_id
           WHERE pt.prompt_id = ${prompt.id}
-        `
+        ` as { name: string }[]
         return {
           ...prompt,
-          tags: tags.map((t: { name: string }) => t.name)
+          tags: tags.map(t => t.name)
         }
       })
     )
