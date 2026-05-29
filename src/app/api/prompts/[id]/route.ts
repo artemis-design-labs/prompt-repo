@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { updatePrompt, deletePrompt } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
     const { title, content, folderId, tags } = await request.json()
 
@@ -16,7 +20,7 @@ export async function PUT(
       )
     }
 
-    const prompt = await updatePrompt(id, title, content, folderId, tags || [])
+    const prompt = await updatePrompt(auth.id, id, title, content, folderId, tags || [])
     return NextResponse.json(prompt)
   } catch (error) {
     console.error('Error updating prompt:', error)
@@ -32,8 +36,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
-    await deletePrompt(id)
+    await deletePrompt(auth.id, id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting prompt:', error)

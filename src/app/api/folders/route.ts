@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getFolders, createFolder } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function GET() {
   try {
-    const folders = await getFolders()
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
+    const folders = await getFolders(auth.id)
     return NextResponse.json(folders)
   } catch (error) {
     console.error('Error fetching folders:', error)
@@ -16,6 +20,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { name, parentId } = await request.json()
 
     if (!name) {
@@ -25,7 +32,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const folder = await createFolder(name, parentId || null)
+    const folder = await createFolder(auth.id, name, parentId || null)
     return NextResponse.json(folder, { status: 201 })
   } catch (error) {
     console.error('Error creating folder:', error)

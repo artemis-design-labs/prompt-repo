@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { updateTagCategory, deleteTagCategory } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
     const { name, tags } = await request.json()
 
@@ -16,7 +20,7 @@ export async function PUT(
       )
     }
 
-    const category = await updateTagCategory(id, name, tags || [])
+    const category = await updateTagCategory(auth.id, id, name, tags || [])
     return NextResponse.json(category)
   } catch (error) {
     console.error('Error updating tag category:', error)
@@ -32,8 +36,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
-    await deleteTagCategory(id)
+    await deleteTagCategory(auth.id, id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting tag category:', error)

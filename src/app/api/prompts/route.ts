@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getPrompts, createPrompt } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function GET() {
   try {
-    const prompts = await getPrompts()
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
+    const prompts = await getPrompts(auth.id)
     return NextResponse.json(prompts)
   } catch (error) {
     console.error('Error fetching prompts:', error)
@@ -16,6 +20,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { title, content, folderId, tags } = await request.json()
 
     if (!title || !content || !folderId) {
@@ -25,7 +32,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const prompt = await createPrompt(title, content, folderId, tags || [])
+    const prompt = await createPrompt(auth.id, title, content, folderId, tags || [])
     return NextResponse.json(prompt, { status: 201 })
   } catch (error) {
     console.error('Error creating prompt:', error)

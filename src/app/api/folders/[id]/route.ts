@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { updateFolder, deleteFolder } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
     const { name, parentId } = await request.json()
 
@@ -16,7 +20,7 @@ export async function PUT(
       )
     }
 
-    const folder = await updateFolder(id, name, parentId || null)
+    const folder = await updateFolder(auth.id, id, name, parentId || null)
     return NextResponse.json(folder)
   } catch (error) {
     console.error('Error updating folder:', error)
@@ -32,8 +36,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
-    await deleteFolder(id)
+    await deleteFolder(auth.id, id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting folder:', error)

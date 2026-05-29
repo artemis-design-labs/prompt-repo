@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getTags, createTag, deleteTag } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function GET() {
   try {
-    const tags = await getTags()
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
+    const tags = await getTags(auth.id)
     return NextResponse.json(tags)
   } catch (error) {
     console.error('Error fetching tags:', error)
@@ -16,6 +20,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { name } = await request.json()
 
     if (!name) {
@@ -25,7 +32,7 @@ export async function POST(request: Request) {
       )
     }
 
-    const tag = await createTag(name)
+    const tag = await createTag(auth.id, name)
     return NextResponse.json({ name: tag }, { status: 201 })
   } catch (error) {
     console.error('Error creating tag:', error)
@@ -38,6 +45,9 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { name } = await request.json()
 
     if (!name) {
@@ -47,7 +57,7 @@ export async function DELETE(request: Request) {
       )
     }
 
-    await deleteTag(name)
+    await deleteTag(auth.id, name)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting tag:', error)

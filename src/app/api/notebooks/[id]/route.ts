@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server'
 import { updateNotebook, deleteNotebook } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
     const body = await request.json()
     const { name, description, icon, iconColor } = body
-
-    console.log('API PUT /notebooks/[id] received:', { id, body })
 
     if (!name) {
       return NextResponse.json(
@@ -19,8 +21,7 @@ export async function PUT(
       )
     }
 
-    const notebook = await updateNotebook(id, name, description, icon, iconColor)
-    console.log('API returning notebook:', notebook)
+    const notebook = await updateNotebook(auth.id, id, name, description, icon, iconColor)
     return NextResponse.json(notebook)
   } catch (error) {
     console.error('Error updating notebook:', error)
@@ -36,8 +37,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
-    await deleteNotebook(id)
+    await deleteNotebook(auth.id, id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting notebook:', error)

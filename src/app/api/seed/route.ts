@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { neon } from '@neondatabase/serverless'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 // Default folders to seed
 const defaultFolders = [
@@ -36,6 +37,9 @@ const defaultFolders = [
 
 export async function POST() {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const databaseUrl = process.env.DATABASE_URL
     if (!databaseUrl) {
       return NextResponse.json({ error: 'DATABASE_URL not set' }, { status: 500 })
@@ -43,22 +47,25 @@ export async function POST() {
 
     const sql = neon(databaseUrl)
 
-    // Insert folders in order (parents first, then children)
-    // First pass: insert root folders (parentId = null)
-    for (const folder of defaultFolders.filter(f => f.parentId === null)) {
-      await sql`
-        INSERT INTO folders (id, name, parent_id)
-        VALUES (${folder.id}, ${folder.name}, ${folder.parentId})
-        ON CONFLICT (id) DO UPDATE SET name = ${folder.name}
-      `
+    // Seed default folders for the current user with fresh IDs (per-user).
+    // Map the static template IDs to generated, user-scoped IDs.
+    const idMap = new Map<string, string>()
+    const genId = () => Math.random().toString(36).substr(2, 9)
+    for (const folder of defaultFolders) {
+      idMap.set(folder.id, genId())
     }
 
-    // Second pass: insert child folders
+    // Parents first, then children, so parent_id references resolve.
+    for (const folder of defaultFolders.filter(f => f.parentId === null)) {
+      await sql`
+        INSERT INTO folders (id, name, parent_id, user_id)
+        VALUES (${idMap.get(folder.id)}, ${folder.name}, ${null}, ${auth.id})
+      `
+    }
     for (const folder of defaultFolders.filter(f => f.parentId !== null)) {
       await sql`
-        INSERT INTO folders (id, name, parent_id)
-        VALUES (${folder.id}, ${folder.name}, ${folder.parentId})
-        ON CONFLICT (id) DO UPDATE SET name = ${folder.name}, parent_id = ${folder.parentId}
+        INSERT INTO folders (id, name, parent_id, user_id)
+        VALUES (${idMap.get(folder.id)}, ${folder.name}, ${idMap.get(folder.parentId as string)}, ${auth.id})
       `
     }
 

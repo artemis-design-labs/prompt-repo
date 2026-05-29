@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { updateNote, deleteNote } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
     const { title, content, tags } = await request.json()
 
@@ -16,7 +20,7 @@ export async function PUT(
       )
     }
 
-    const note = await updateNote(id, title, content || '', tags)
+    const note = await updateNote(auth.id, id, title, content || '', tags)
     return NextResponse.json(note)
   } catch (error) {
     console.error('Error updating note:', error)
@@ -32,8 +36,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
-    await deleteNote(id)
+    await deleteNote(auth.id, id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting note:', error)

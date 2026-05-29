@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { neon } from '@neondatabase/serverless'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 // Information Architecture from Whimsical
 // Maps existing notebook names to target IA notebooks
@@ -126,6 +127,9 @@ function getTargetNotebook(
 
 export async function GET() {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const databaseUrl = process.env.DATABASE_URL
     if (!databaseUrl) {
       return NextResponse.json({ error: 'DATABASE_URL not set' }, { status: 500 })
@@ -198,6 +202,9 @@ export async function GET() {
 
 export async function POST() {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const databaseUrl = process.env.DATABASE_URL
     if (!databaseUrl) {
       return NextResponse.json({ error: 'DATABASE_URL not set' }, { status: 500 })

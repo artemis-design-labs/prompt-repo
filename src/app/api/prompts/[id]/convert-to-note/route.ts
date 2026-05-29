@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server'
 import { convertPromptToNote } from '@/lib/db'
+import { requireUser, isAuthResponse } from '@/lib/auth'
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireUser()
+    if (isAuthResponse(auth)) return auth
+
     const { id } = await params
     const { notebookId } = await request.json()
 
@@ -16,7 +20,7 @@ export async function POST(
       )
     }
 
-    const note = await convertPromptToNote(id, notebookId)
+    const note = await convertPromptToNote(auth.id, id, notebookId)
     return NextResponse.json(note, { status: 201 })
   } catch (error) {
     console.error('Error converting prompt to note:', error)
