@@ -14,8 +14,8 @@ const notebookIconMap = {
 
 // Color options for notebook icons (10 distinct colors)
 const notebookIconColors = [
-  { id: '', name: 'Default', class: 'text-zinc-400' },
-  { id: 'blue', name: 'Blue', class: 'text-blue-500' },
+  { id: '', name: 'Default', class: 'text-r-muted' },
+  { id: 'blue', name: 'Blue', class: 'text-r-primary' },
   { id: 'purple', name: 'Purple', class: 'text-purple-500' },
   { id: 'pink', name: 'Pink', class: 'text-pink-500' },
   { id: 'red', name: 'Red', class: 'text-red-500' },
@@ -30,7 +30,7 @@ const notebookIconColors = [
 // Helper to get icon color class
 const getIconColorClass = (colorId) => {
   const color = notebookIconColors.find(c => c.id === colorId);
-  return color ? color.class : 'text-zinc-400';
+  return color ? color.class : 'text-r-muted';
 };
 
 const emptyData = {
@@ -1510,34 +1510,34 @@ export default function PromptRepository() {
     return (
       <div className="space-y-2">
         <div className="relative">
-          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
+          <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-r-muted pointer-events-none" />
           <input
             type="search"
             value={folderSearchQuery}
             onChange={(e) => setFolderSearchQuery(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded pl-8 pr-3 py-2 text-sm placeholder:text-zinc-500"
+            className="w-full bg-r-bg border border-r-border rounded pl-8 pr-3 py-2 text-sm placeholder:text-r-muted"
             aria-label="Search folders"
           />
           {query ? (
             <ul
-              className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded border border-zinc-600 bg-zinc-900 py-1 shadow-lg"
+              className="absolute z-20 mt-1 max-h-48 w-full overflow-auto rounded border border-r-border bg-r-bg py-1 shadow-lg"
               role="listbox"
             >
               {filteredSearchResults.length === 0 ? (
-                <li className="px-3 py-2 text-xs text-zinc-500">No matching folders</li>
+                <li className="px-3 py-2 text-xs text-r-muted">No matching folders</li>
               ) : (
                 filteredSearchResults.map((row) => (
                   <li key={row.id === null ? '__root__' : row.id} role="option">
                     <button
                       type="button"
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 rounded-sm"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover rounded-sm"
                       onClick={() => {
                         onSelect(row.id);
                         setFolderSearchQuery('');
                       }}
                     >
-                      {row.id === null ? <span className="text-zinc-300">{row.label}</span> : row.label}
+                      {row.id === null ? <span className="text-r-text">{row.label}</span> : row.label}
                     </button>
                   </li>
                 ))
@@ -1553,11 +1553,11 @@ export default function PromptRepository() {
 
           return (
             <div key={index} className="flex items-center gap-2">
-              {index > 0 && <ChevronRight size={14} className="text-zinc-500 flex-shrink-0" />}
+              {index > 0 && <ChevronRight size={14} className="text-r-muted flex-shrink-0" />}
               <select
                 value={selectedAtThisLevel || ''}
                 onChange={(e) => handleSelectAtLevel(index, e.target.value || null)}
-                className="flex-1 bg-zinc-900 rounded px-3 py-2 text-sm"
+                className="flex-1 bg-r-bg rounded px-3 py-2 text-sm"
               >
                 <option value="">{index === 0 ? firstOptionLabel : subfolderOptionLabel}</option>
                 {level.folders.map(f => (
@@ -1568,10 +1568,10 @@ export default function PromptRepository() {
           );
         })}
         {selectedFolderId && (
-          <div className="text-xs text-zinc-400 mt-2 flex items-center gap-1">
+          <div className="text-xs text-r-muted mt-2 flex items-center gap-1">
             <Folder size={12} className="text-yellow-500" />
             {summaryPrefix}{' '}
-            <span className="text-zinc-200">{getAncestorPath(selectedFolderId).map(f => f.name).join(' / ')}</span>
+            <span className="text-r-text">{getAncestorPath(selectedFolderId).map(f => f.name).join(' / ')}</span>
           </div>
         )}
       </div>
@@ -2393,56 +2393,56 @@ export default function PromptRepository() {
     const isExpanded = expandedPrompts.has(prompt.id);
     const isSelected = selectedPrompts.has(prompt.id);
     return (
-      <div className={`border rounded-lg overflow-hidden bg-zinc-800/50 ${isSelected ? 'border-blue-500 bg-blue-500/10' : 'border-zinc-700'}`}>
+      <div className={`border rounded-lg overflow-hidden bg-r-surface/80 ${isSelected ? 'border-r-primary bg-r-primary/10' : 'border-r-border'}`}>
         <div
           onClick={() => togglePrompt(prompt.id)}
-          className="flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-zinc-700/50 transition-colors"
+          className="flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-r-hover/50 transition-colors"
         >
           <input
             type="checkbox"
             checked={isSelected}
             onChange={(e) => { e.stopPropagation(); togglePromptSelection(prompt.id); }}
             onClick={(e) => e.stopPropagation()}
-            className="w-4 h-4 rounded border-zinc-600 bg-zinc-700 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 rounded border-r-border bg-r-hover text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer"
           />
-          {isExpanded ? <ChevronDown size={16} className="text-zinc-400" /> : <ChevronRight size={16} className="text-zinc-400" />}
-          <FileText size={14} className="text-blue-400" />
+          {isExpanded ? <ChevronDown size={16} className="text-r-muted" /> : <ChevronRight size={16} className="text-r-muted" />}
+          <FileText size={14} className="text-r-primary" />
           <span className="flex-1 text-sm font-medium truncate">{prompt.title}</span>
           <button
             onClick={(e) => { e.stopPropagation(); copyPrompt(prompt.content, prompt.id); }}
-            className={`p-1.5 rounded transition-colors ${copiedId === prompt.id ? 'bg-green-600 text-white' : 'hover:bg-zinc-600 text-zinc-400 hover:text-white'}`}
+            className={`p-1.5 rounded transition-colors ${copiedId === prompt.id ? 'bg-green-600 text-white' : 'hover:bg-r-hover2 text-r-muted hover:text-r-text'}`}
             title={copiedId === prompt.id ? 'Copied!' : 'Copy prompt'}
           >
             {copiedId === prompt.id ? <Check size={14} /> : <Copy size={14} />}
           </button>
           <div className="flex items-center gap-1">
             {prompt.tags.slice(0, 2).map(tag => (
-              <span key={tag} className="text-xs px-1.5 py-0.5 bg-zinc-700 rounded">{tag}</span>
+              <span key={tag} className="text-xs px-1.5 py-0.5 bg-r-hover rounded">{tag}</span>
             ))}
-            {prompt.tags.length > 2 && <span className="text-xs text-zinc-500">+{prompt.tags.length - 2}</span>}
+            {prompt.tags.length > 2 && <span className="text-xs text-r-muted">+{prompt.tags.length - 2}</span>}
           </div>
         </div>
         {isExpanded && (
-          <div className="px-3 pb-3 pt-1 border-t border-zinc-700 bg-zinc-900/50">
-            <pre className="text-xs text-zinc-300 bg-zinc-900 rounded p-3 whitespace-pre-wrap font-mono mb-3 max-h-64 overflow-auto">{getPromptDisplayContent(prompt.content)}</pre>
+          <div className="px-3 pb-3 pt-1 border-t border-r-border bg-r-bg/70">
+            <pre className="text-xs text-r-text bg-r-bg rounded p-3 whitespace-pre-wrap font-mono mb-3 max-h-64 overflow-auto">{getPromptDisplayContent(prompt.content)}</pre>
             {isStructuredPrompt(prompt.content) && (
               <div className="text-xs text-purple-400 mb-2 flex items-center gap-1">
                 <span className="px-1.5 py-0.5 bg-purple-500/20 rounded">Structured Prompt</span>
               </div>
             )}
             <div className="flex flex-wrap gap-1 mb-3">
-              {prompt.tags.map(tag => <span key={tag} className="text-xs px-2 py-0.5 bg-zinc-700 rounded">{tag}</span>)}
+              {prompt.tags.map(tag => <span key={tag} className="text-xs px-2 py-0.5 bg-r-hover rounded">{tag}</span>)}
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={(e) => { e.stopPropagation(); copyPrompt(prompt.content, prompt.id); }}
-                className={`flex-1 py-2 rounded text-sm flex items-center justify-center gap-2 transition-colors ${copiedId === prompt.id ? 'bg-green-600' : 'bg-zinc-700 hover:bg-zinc-600'}`}
+                className={`flex-1 py-2 rounded text-sm flex items-center justify-center gap-2 transition-colors ${copiedId === prompt.id ? 'bg-green-600' : 'bg-r-hover hover:bg-r-hover2'}`}
               >
                 {copiedId === prompt.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Prompt</>}
               </button>
-              <button onClick={(e) => { e.stopPropagation(); setMovingPrompt(prompt); }} className="p-2 hover:bg-zinc-700 rounded" title="Move to folder"><Move size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); setEditingPrompt(prompt); }} className="p-2 hover:bg-zinc-700 rounded" title="Edit"><Edit2 size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); deletePrompt(prompt.id); }} className="p-2 hover:bg-zinc-700 rounded text-red-400" title="Delete"><Trash2 size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); setMovingPrompt(prompt); }} className="p-2 hover:bg-r-hover rounded" title="Move to folder"><Move size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); setEditingPrompt(prompt); }} className="p-2 hover:bg-r-hover rounded" title="Edit"><Edit2 size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); deletePrompt(prompt.id); }} className="p-2 hover:bg-r-hover rounded text-red-400" title="Delete"><Trash2 size={14} /></button>
             </div>
           </div>
         )}
@@ -2467,7 +2467,7 @@ export default function PromptRepository() {
               e.preventDefault();
               setContextMenu({ x: e.clientX, y: e.clientY, folderId: folder.id, folderName: folder.name });
             }}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-zinc-800 transition-colors group cursor-pointer"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-r-hover transition-colors group cursor-pointer"
             onClick={() => toggleFolder(folder.id)}
           >
             <button className="p-0.5">
@@ -2478,7 +2478,7 @@ export default function PromptRepository() {
               <input
                 autoFocus
                 defaultValue={folder.name}
-                className="bg-zinc-800 border border-zinc-600 px-2 py-0.5 rounded text-sm flex-1"
+                className="bg-r-surface border border-r-border px-2 py-0.5 rounded text-sm flex-1"
                 onClick={(e) => e.stopPropagation()}
                 onBlur={(e) => updateFolder(folder.id, e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') updateFolder(folder.id, e.target.value); }}
@@ -2486,14 +2486,14 @@ export default function PromptRepository() {
             ) : (
               <span className="flex-1 font-medium text-sm">{folder.name}</span>
             )}
-            <span className="text-xs text-zinc-500" title={`${totalPrompts} total prompts${totalSubfolders > 0 ? `, ${totalSubfolders} subfolders` : ''}`}>
-              {totalPrompts}{totalSubfolders > 0 && <span className="text-zinc-600 ml-1">({totalSubfolders})</span>}
+            <span className="text-xs text-r-muted" title={`${totalPrompts} total prompts${totalSubfolders > 0 ? `, ${totalSubfolders} subfolders` : ''}`}>
+              {totalPrompts}{totalSubfolders > 0 && <span className="text-r-muted ml-1">({totalSubfolders})</span>}
             </span>
             <div className="hidden group-hover:flex items-center gap-1">
-              <button onClick={(e) => { e.stopPropagation(); setNewPromptFolder(folder.id); setShowNewPrompt(true); }} className="p-1 hover:bg-zinc-600 rounded" title="Add prompt"><Plus size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); setNewFolderParent(folder.id); setShowNewFolder(true); }} className="p-1 hover:bg-zinc-600 rounded" title="Add subfolder"><FolderPlus size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); setEditingFolder(folder.id); }} className="p-1 hover:bg-zinc-600 rounded"><Edit2 size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }} className="p-1 hover:bg-zinc-600 rounded text-red-400"><Trash2 size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); setNewPromptFolder(folder.id); setShowNewPrompt(true); }} className="p-1 hover:bg-r-hover2 rounded" title="Add prompt"><Plus size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); setNewFolderParent(folder.id); setShowNewFolder(true); }} className="p-1 hover:bg-r-hover2 rounded" title="Add subfolder"><FolderPlus size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); setEditingFolder(folder.id); }} className="p-1 hover:bg-r-hover2 rounded"><Edit2 size={14} /></button>
+              <button onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }} className="p-1 hover:bg-r-hover2 rounded text-red-400"><Trash2 size={14} /></button>
             </div>
           </div>
 
@@ -2503,7 +2503,7 @@ export default function PromptRepository() {
                 {hasDuplicateSubfolders(folder.id) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); openMergeDuplicates(folder.id); }}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-orange-400 hover:text-orange-300 hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-orange-400 hover:text-orange-300 hover:bg-r-hover rounded transition-colors"
                     title="Merge duplicate subfolders"
                   >
                     <GitMerge size={14} /> Merge duplicates
@@ -2512,7 +2512,7 @@ export default function PromptRepository() {
                 {hasDuplicatePrompts(folder.id) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); openDuplicatePrompts(folder.id); }}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-r-hover rounded transition-colors"
                     title="Remove duplicate prompts"
                   >
                     <Copy size={14} /> Remove duplicates
@@ -2521,7 +2521,7 @@ export default function PromptRepository() {
                 {prompts.length > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleAllPromptsInFolder(folder.id); }}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-r-muted hover:text-r-text hover:bg-r-hover rounded transition-colors"
                     title={areAllPromptsExpanded(folder.id) ? 'Collapse all prompts' : 'Expand all prompts'}
                   >
                     {areAllPromptsExpanded(folder.id) ? (
@@ -2534,7 +2534,7 @@ export default function PromptRepository() {
                 {prompts.length > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPromptSortAlphabetical(!promptSortAlphabetical); }}
-                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${promptSortAlphabetical ? 'text-blue-400 hover:text-blue-300 bg-zinc-700' : 'text-zinc-400 hover:text-white hover:bg-zinc-700'}`}
+                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${promptSortAlphabetical ? 'text-r-primary hover:text-r-primary bg-r-hover' : 'text-r-muted hover:text-r-text hover:bg-r-hover'}`}
                     title={promptSortAlphabetical ? 'Sort by default order' : 'Sort alphabetically'}
                   >
                     <ArrowUpDown size={14} /> {promptSortAlphabetical ? 'A-Z' : 'Sort'}
@@ -2565,7 +2565,7 @@ export default function PromptRepository() {
 
       return (
         <div
-          className={`bg-zinc-800 border border-zinc-700 rounded-lg overflow-hidden hover:border-zinc-600 transition-colors ${depth === 0 ? '' : 'mt-2'}`}
+          className={`bg-r-surface border border-r-border rounded-lg overflow-hidden hover:border-r-border transition-colors ${depth === 0 ? '' : 'mt-2'}`}
         >
           <div
             onClick={() => toggleFolder(folder.id)}
@@ -2582,7 +2582,7 @@ export default function PromptRepository() {
                   <input
                     autoFocus
                     defaultValue={folder.name}
-                    className="bg-zinc-900 border border-zinc-600 px-2 py-0.5 rounded text-sm"
+                    className="bg-r-bg border border-r-border px-2 py-0.5 rounded text-sm"
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => updateFolder(folder.id, e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') updateFolder(folder.id, e.target.value); }}
@@ -2594,33 +2594,33 @@ export default function PromptRepository() {
               <div className="flex items-center gap-1">
                 {gridEditMode && (
                   <>
-                    <button onClick={(e) => { e.stopPropagation(); setNewPromptFolder(folder.id); setShowNewPrompt(true); }} className="p-1.5 hover:bg-zinc-600 rounded text-zinc-400 hover:text-white" title="Add prompt"><Plus size={14} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setNewFolderParent(folder.id); setShowNewFolder(true); }} className="p-1.5 hover:bg-zinc-600 rounded text-zinc-400 hover:text-white" title="Add subfolder"><FolderPlus size={14} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); setEditingFolder(folder.id); }} className="p-1.5 hover:bg-zinc-600 rounded text-zinc-400 hover:text-white" title="Rename"><Edit2 size={14} /></button>
-                    <button onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }} className="p-1.5 hover:bg-zinc-600 rounded text-red-400" title="Delete"><Trash2 size={14} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setNewPromptFolder(folder.id); setShowNewPrompt(true); }} className="p-1.5 hover:bg-r-hover2 rounded text-r-muted hover:text-r-text" title="Add prompt"><Plus size={14} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setNewFolderParent(folder.id); setShowNewFolder(true); }} className="p-1.5 hover:bg-r-hover2 rounded text-r-muted hover:text-r-text" title="Add subfolder"><FolderPlus size={14} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setEditingFolder(folder.id); }} className="p-1.5 hover:bg-r-hover2 rounded text-r-muted hover:text-r-text" title="Rename"><Edit2 size={14} /></button>
+                    <button onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }} className="p-1.5 hover:bg-r-hover2 rounded text-red-400" title="Delete"><Trash2 size={14} /></button>
                   </>
                 )}
-                {isExpanded ? <ChevronDown size={16} className="text-zinc-400" /> : <ChevronRight size={16} className="text-zinc-400" />}
+                {isExpanded ? <ChevronDown size={16} className="text-r-muted" /> : <ChevronRight size={16} className="text-r-muted" />}
               </div>
             </div>
-            <div className="flex items-center gap-3 text-xs text-zinc-500">
+            <div className="flex items-center gap-3 text-xs text-r-muted">
               <span title={`${totalPrompts} total prompts (${prompts.length} direct)`}>
-                {totalPrompts} prompt{totalPrompts !== 1 ? 's' : ''}{totalPrompts !== prompts.length && <span className="text-zinc-600"> ({prompts.length})</span>}
+                {totalPrompts} prompt{totalPrompts !== 1 ? 's' : ''}{totalPrompts !== prompts.length && <span className="text-r-muted"> ({prompts.length})</span>}
               </span>
               {totalSubfolders > 0 && <span title={`${totalSubfolders} total subfolders (${childFolders.length} direct)`}>
-                {totalSubfolders} subfolder{totalSubfolders !== 1 ? 's' : ''}{totalSubfolders !== childFolders.length && <span className="text-zinc-600"> ({childFolders.length})</span>}
+                {totalSubfolders} subfolder{totalSubfolders !== 1 ? 's' : ''}{totalSubfolders !== childFolders.length && <span className="text-r-muted"> ({childFolders.length})</span>}
               </span>}
             </div>
           </div>
 
           {isExpanded && (
-            <div className="border-t border-zinc-700 p-3 bg-zinc-900/50">
+            <div className="border-t border-r-border p-3 bg-r-bg/70">
               {/* Action buttons */}
               <div className="flex items-center justify-end gap-2 mb-2">
                 {hasDuplicateSubfolders(folder.id) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); openMergeDuplicates(folder.id); }}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-orange-400 hover:text-orange-300 hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-orange-400 hover:text-orange-300 hover:bg-r-hover rounded transition-colors"
                     title="Merge duplicate subfolders"
                   >
                     <GitMerge size={14} /> Merge duplicates
@@ -2629,7 +2629,7 @@ export default function PromptRepository() {
                 {hasDuplicatePrompts(folder.id) && (
                   <button
                     onClick={(e) => { e.stopPropagation(); openDuplicatePrompts(folder.id); }}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-r-hover rounded transition-colors"
                     title="Remove duplicate prompts"
                   >
                     <Copy size={14} /> Remove duplicates
@@ -2638,7 +2638,7 @@ export default function PromptRepository() {
                 {prompts.length > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); toggleAllPromptsInFolder(folder.id); }}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-r-muted hover:text-r-text hover:bg-r-hover rounded transition-colors"
                     title={areAllPromptsExpanded(folder.id) ? 'Collapse all prompts' : 'Expand all prompts'}
                   >
                     {areAllPromptsExpanded(folder.id) ? (
@@ -2651,7 +2651,7 @@ export default function PromptRepository() {
                 {prompts.length > 0 && (
                   <button
                     onClick={(e) => { e.stopPropagation(); setPromptSortAlphabetical(!promptSortAlphabetical); }}
-                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${promptSortAlphabetical ? 'text-blue-400 hover:text-blue-300 bg-zinc-700' : 'text-zinc-400 hover:text-white hover:bg-zinc-700'}`}
+                    className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${promptSortAlphabetical ? 'text-r-primary hover:text-r-primary bg-r-hover' : 'text-r-muted hover:text-r-text hover:bg-r-hover'}`}
                     title={promptSortAlphabetical ? 'Sort by default order' : 'Sort alphabetically'}
                   >
                     <ArrowUpDown size={14} /> {promptSortAlphabetical ? 'A-Z' : 'Sort'}
@@ -2677,11 +2677,11 @@ export default function PromptRepository() {
                 </div>
               )}
               {prompts.length === 0 && childFolders.length === 0 && (
-                <div className="text-center text-zinc-500 text-sm py-4">
+                <div className="text-center text-r-muted text-sm py-4">
                   <p>Empty folder</p>
                   <button
                     onClick={(e) => { e.stopPropagation(); setNewPromptFolder(folder.id); setShowNewPrompt(true); }}
-                    className="mt-2 text-xs text-blue-400 hover:text-blue-300"
+                    className="mt-2 text-xs text-r-primary hover:text-r-primary"
                   >
                     Add a prompt
                   </button>
@@ -2853,22 +2853,22 @@ export default function PromptRepository() {
 
     return (
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+        <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
             <h2 className="font-semibold">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
-            <button onClick={onClose} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+            <button onClick={onClose} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
           </div>
           <div className="p-4 space-y-4 flex-1 min-h-0 modal-scroll">
             {/* Prompt Mode Toggle */}
             <div>
-              <label className="text-sm text-zinc-400 mb-2 block">Prompt Type</label>
+              <label className="text-sm text-r-muted mb-2 block">Prompt Type</label>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPromptMode('freeform')}
                   className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                     promptMode === 'freeform'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
+                      ? 'bg-r-primary text-white'
+                      : 'bg-r-hover text-r-text hover:bg-r-hover2'
                   }`}
                 >
                   Freeform
@@ -2877,14 +2877,14 @@ export default function PromptRepository() {
                   onClick={() => setPromptMode('structured')}
                   className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                     promptMode === 'structured'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-zinc-700 text-zinc-300 hover:bg-zinc-600'
+                      ? 'bg-r-primary text-white'
+                      : 'bg-r-hover text-r-text hover:bg-r-hover2'
                   }`}
                 >
                   Structured
                 </button>
               </div>
-              <p className="text-xs text-zinc-500 mt-1">
+              <p className="text-xs text-r-muted mt-1">
                 {promptMode === 'freeform'
                   ? 'Write your prompt freely in any format'
                   : 'Fill out structured fields to generate a well-organized prompt'}
@@ -2892,11 +2892,11 @@ export default function PromptRepository() {
             </div>
 
             <div>
-              <label className="text-sm text-zinc-400 mb-1 block">Title</label>
-              <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-zinc-900 rounded px-3 py-2 text-sm" placeholder="Prompt title..." />
+              <label className="text-sm text-r-muted mb-1 block">Title</label>
+              <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="w-full bg-r-bg rounded px-3 py-2 text-sm" placeholder="Prompt title..." />
             </div>
             <div>
-              <label className="text-sm text-zinc-400 mb-1 block">Folder</label>
+              <label className="text-sm text-r-muted mb-1 block">Folder</label>
               <FolderPathSelector
                 selectedFolderId={form.folderId}
                 onSelect={(id) => handleFolderChange(id)}
@@ -2909,7 +2909,7 @@ export default function PromptRepository() {
                 <button
                   type="button"
                   onClick={() => onOpenNewRootFolder?.()}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-zinc-700 hover:bg-zinc-600 rounded"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-r-hover hover:bg-r-hover2 rounded"
                 >
                   <FolderPlus size={14} /> New folder
                 </button>
@@ -2918,7 +2918,7 @@ export default function PromptRepository() {
                   disabled={!form.folderId}
                   title={!form.folderId ? 'Select a folder first' : 'Create a subfolder inside the selected folder'}
                   onClick={() => form.folderId && onOpenNewSubfolder?.(form.folderId)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-zinc-700 hover:bg-zinc-600 rounded disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-700"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs bg-r-hover hover:bg-r-hover2 rounded disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-r-hover"
                 >
                   <FolderPlus size={14} /> New subfolder
                 </button>
@@ -2928,8 +2928,8 @@ export default function PromptRepository() {
             {/* Freeform Mode - Single Content Field */}
             {promptMode === 'freeform' && (
               <div>
-                <label className="text-sm text-zinc-400 mb-1 block">Prompt Content</label>
-                <textarea value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} rows={8} className="w-full bg-zinc-900 rounded px-3 py-2 text-sm font-mono" placeholder="Enter your prompt..." />
+                <label className="text-sm text-r-muted mb-1 block">Prompt Content</label>
+                <textarea value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} rows={8} className="w-full bg-r-bg rounded px-3 py-2 text-sm font-mono" placeholder="Enter your prompt..." />
               </div>
             )}
 
@@ -2937,62 +2937,62 @@ export default function PromptRepository() {
             {promptMode === 'structured' && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm text-zinc-400 mb-1 block">Role Details</label>
+                  <label className="text-sm text-r-muted mb-1 block">Role Details</label>
                   <textarea
                     value={structuredFields.roleDetails}
                     onChange={(e) => setStructuredFields({ ...structuredFields, roleDetails: e.target.value })}
                     rows={3}
-                    className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     placeholder="Define the role or persona the AI should adopt (e.g., 'You are an expert software architect with 20 years of experience...')"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-zinc-400 mb-1 block">Objective</label>
+                  <label className="text-sm text-r-muted mb-1 block">Objective</label>
                   <textarea
                     value={structuredFields.objective}
                     onChange={(e) => setStructuredFields({ ...structuredFields, objective: e.target.value })}
                     rows={2}
-                    className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     placeholder="What is the main goal or purpose of this prompt?"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-zinc-400 mb-1 block">Tasks</label>
+                  <label className="text-sm text-r-muted mb-1 block">Tasks</label>
                   <textarea
                     value={structuredFields.tasks}
                     onChange={(e) => setStructuredFields({ ...structuredFields, tasks: e.target.value })}
                     rows={4}
-                    className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     placeholder="List the specific tasks or steps to complete (one per line):&#10;1. Analyze the requirements&#10;2. Propose solutions&#10;3. Review and refine"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-zinc-400 mb-1 block">Success Criteria</label>
+                  <label className="text-sm text-r-muted mb-1 block">Success Criteria</label>
                   <textarea
                     value={structuredFields.successCriteria}
                     onChange={(e) => setStructuredFields({ ...structuredFields, successCriteria: e.target.value })}
                     rows={2}
-                    className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     placeholder="How will success be measured? What defines a good output?"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-zinc-400 mb-1 block">Constraints</label>
+                  <label className="text-sm text-r-muted mb-1 block">Constraints</label>
                   <textarea
                     value={structuredFields.constraints}
                     onChange={(e) => setStructuredFields({ ...structuredFields, constraints: e.target.value })}
                     rows={2}
-                    className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     placeholder="Any limitations, restrictions, or things to avoid?"
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-zinc-400 mb-1 block">Output Requirements</label>
+                  <label className="text-sm text-r-muted mb-1 block">Output Requirements</label>
                   <textarea
                     value={structuredFields.outputRequirements}
                     onChange={(e) => setStructuredFields({ ...structuredFields, outputRequirements: e.target.value })}
                     rows={2}
-                    className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     placeholder="Specify the desired format, length, or structure of the output"
                   />
                 </div>
@@ -3000,20 +3000,20 @@ export default function PromptRepository() {
                 {/* Preview of combined prompt */}
                 {(structuredFields.roleDetails || structuredFields.objective || structuredFields.tasks ||
                   structuredFields.successCriteria || structuredFields.constraints || structuredFields.outputRequirements) && (
-                  <div className="border border-zinc-700 rounded-lg p-3 bg-zinc-900/50">
+                  <div className="border border-r-border rounded-lg p-3 bg-r-bg/70">
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm text-zinc-400">Preview (Combined Prompt)</label>
+                      <label className="text-sm text-r-muted">Preview (Combined Prompt)</label>
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(generateCombinedPrompt());
                           showNotif('Prompt copied to clipboard');
                         }}
-                        className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded flex items-center gap-1"
+                        className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded flex items-center gap-1"
                       >
                         <Copy size={12} /> Copy
                       </button>
                     </div>
-                    <pre className="text-xs text-zinc-300 whitespace-pre-wrap font-mono max-h-48 overflow-auto">
+                    <pre className="text-xs text-r-text whitespace-pre-wrap font-mono max-h-48 overflow-auto">
                       {generateCombinedPrompt()}
                     </pre>
                   </div>
@@ -3022,10 +3022,10 @@ export default function PromptRepository() {
             )}
 
             <div>
-              <label className="text-sm text-zinc-400 mb-1 block">Tags</label>
+              <label className="text-sm text-r-muted mb-1 block">Tags</label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {form.tags.map(tag => (
-                  <span key={tag} className="bg-zinc-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                  <span key={tag} className="bg-r-hover px-2 py-1 rounded text-xs flex items-center gap-1">
                     {tag}
                     <button onClick={() => setForm({ ...form, tags: form.tags.filter(t => t !== tag) })} className="hover:text-red-400"><X size={12} /></button>
                   </span>
@@ -3037,7 +3037,7 @@ export default function PromptRepository() {
                     setForm({ ...form, tags: [...new Set([...form.tags, tagInput.trim().toLowerCase()])] });
                     setTagInput('');
                   }
-                }} className="flex-1 bg-zinc-900 rounded px-3 py-2 text-sm" placeholder="Add tag and press Enter..." />
+                }} className="flex-1 bg-r-bg rounded px-3 py-2 text-sm" placeholder="Add tag and press Enter..." />
               </div>
               <div className="flex flex-wrap gap-1 mt-2">
                 {(data.tagCategories || []).map(category => {
@@ -3045,10 +3045,10 @@ export default function PromptRepository() {
                   if (availableTags.length === 0) return null;
                   return (
                     <div key={category.id} className="w-full mb-2">
-                      <span className="text-xs text-zinc-500 uppercase tracking-wide">{category.name}:</span>
+                      <span className="text-xs text-r-muted uppercase tracking-wide">{category.name}:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
                         {availableTags.map(tag => (
-                          <button key={tag} onClick={() => setForm({ ...form, tags: [...form.tags, tag] })} className="text-xs px-2 py-1 bg-zinc-900 hover:bg-zinc-700 rounded">{tag}</button>
+                          <button key={tag} onClick={() => setForm({ ...form, tags: [...form.tags, tag] })} className="text-xs px-2 py-1 bg-r-bg hover:bg-r-hover rounded">{tag}</button>
                         ))}
                       </div>
                     </div>
@@ -3056,10 +3056,10 @@ export default function PromptRepository() {
                 })}
                 {getUncategorizedTags().filter(t => !form.tags.includes(t)).length > 0 && (
                   <div className="w-full">
-                    <span className="text-xs text-zinc-500 uppercase tracking-wide">Other:</span>
+                    <span className="text-xs text-r-muted uppercase tracking-wide">Other:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {getUncategorizedTags().filter(t => !form.tags.includes(t)).slice(0, 10).map(tag => (
-                        <button key={tag} onClick={() => setForm({ ...form, tags: [...form.tags, tag] })} className="text-xs px-2 py-1 bg-zinc-900 hover:bg-zinc-700 rounded">{tag}</button>
+                        <button key={tag} onClick={() => setForm({ ...form, tags: [...form.tags, tag] })} className="text-xs px-2 py-1 bg-r-bg hover:bg-r-hover rounded">{tag}</button>
                       ))}
                     </div>
                   </div>
@@ -3067,9 +3067,9 @@ export default function PromptRepository() {
               </div>
             </div>
           </div>
-          <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-            <button onClick={onClose} className="px-4 py-2 text-sm hover:bg-zinc-700 rounded">Cancel</button>
-            <button onClick={handleSave} className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded flex items-center gap-2"><Save size={14} /> Save</button>
+          <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+            <button onClick={onClose} className="px-4 py-2 text-sm hover:bg-r-hover rounded">Cancel</button>
+            <button onClick={handleSave} className="px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 rounded flex items-center gap-2"><Save size={14} /> Save</button>
           </div>
         </div>
       </div>
@@ -3618,13 +3618,13 @@ export default function PromptRepository() {
     return (
       <div className="flex h-full gap-0 min-h-0">
         {/* Left sidebar: sections & chapters */}
-        <div className="w-56 flex-shrink-0 border-r border-zinc-800 flex flex-col min-h-0 overflow-y-auto">
-          <div className="p-2 border-b border-zinc-800 flex items-center justify-between">
-            <span className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Contents</span>
+        <div className="w-56 flex-shrink-0 border-r border-r-border flex flex-col min-h-0 overflow-y-auto">
+          <div className="p-2 border-b border-r-border flex items-center justify-between">
+            <span className="text-xs font-medium text-r-muted uppercase tracking-wide">Contents</span>
             <div className="flex items-center gap-0.5">
               <button
                 onClick={toggleAutoNumbering}
-                className={`p-1 rounded ${bookData.autoNumberChapters ? 'bg-amber-500/20 text-amber-400' : 'text-zinc-500 hover:bg-zinc-700 hover:text-zinc-300'}`}
+                className={`p-1 rounded ${bookData.autoNumberChapters ? 'bg-amber-500/20 text-amber-400' : 'text-r-muted hover:bg-r-hover hover:text-r-text'}`}
                 title={bookData.autoNumberChapters ? 'Auto-numbering ON — click to turn off' : 'Auto-numbering OFF — click to turn on'}
               >
                 <Hash size={13} />
@@ -3636,7 +3636,7 @@ export default function PromptRepository() {
                     const currentIndex = modes.indexOf(chapterSortMode);
                     setChapterSortMode(modes[(currentIndex + 1) % modes.length]);
                   }}
-                  className={`p-1 rounded ${chapterSortMode !== 'manual' ? 'bg-amber-500/20 text-amber-400' : 'text-zinc-500 hover:bg-zinc-700 hover:text-zinc-300'}`}
+                  className={`p-1 rounded ${chapterSortMode !== 'manual' ? 'bg-amber-500/20 text-amber-400' : 'text-r-muted hover:bg-r-hover hover:text-r-text'}`}
                   title={`Sort: ${chapterSortMode === 'manual' ? 'Manual order' : chapterSortMode === 'chronological' ? 'By creation date' : 'By last version saved'}`}
                 >
                   <ArrowUpDown size={13} />
@@ -3644,7 +3644,7 @@ export default function PromptRepository() {
               </div>
               <button
                 onClick={addSection}
-                className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                 title="Add section"
               >
                 <Plus size={14} />
@@ -3655,7 +3655,7 @@ export default function PromptRepository() {
             {bookData.sections.map(section => (
               <div key={section.id}>
                 {/* Section header */}
-                <div className={`group flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-zinc-800 ${bookData.activeSectionId === section.id ? 'text-white' : 'text-zinc-400'}`}>
+                <div className={`group flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-r-hover ${bookData.activeSectionId === section.id ? 'text-r-text font-semibold' : 'text-r-muted'}`}>
                   <button
                     onClick={() => setExpandedSections(prev => { const n = new Set(prev); n.has(section.id) ? n.delete(section.id) : n.add(section.id); return n; })}
                     className="flex-shrink-0"
@@ -3669,15 +3669,15 @@ export default function PromptRepository() {
                       onChange={e => setRenamingSection(prev => ({ ...prev, title: e.target.value }))}
                       onBlur={commitSectionRename}
                       onKeyDown={e => { if (e.key === 'Enter') commitSectionRename(); if (e.key === 'Escape') setRenamingSection(null); }}
-                      className="flex-1 bg-zinc-700 rounded px-1 text-xs text-white focus:outline-none"
+                      className="flex-1 bg-r-hover rounded px-1 text-xs text-r-text focus:outline-none"
                       onClick={e => e.stopPropagation()}
                     />
                   ) : (
                     <span className="flex-1 text-xs font-semibold truncate">{section.title}</span>
                   )}
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 flex-shrink-0">
-                    <button onClick={e => { e.stopPropagation(); setRenamingSection({ id: section.id, title: section.title }); }} className="p-0.5 hover:text-white" title="Rename section"><Edit2 size={10} /></button>
-                    <button onClick={() => addChapter(section.id)} className="p-0.5 hover:text-white" title="Add chapter"><Plus size={11} /></button>
+                    <button onClick={e => { e.stopPropagation(); setRenamingSection({ id: section.id, title: section.title }); }} className="p-0.5 hover:text-r-text" title="Rename section"><Edit2 size={10} /></button>
+                    <button onClick={() => addChapter(section.id)} className="p-0.5 hover:text-r-text" title="Add chapter"><Plus size={11} /></button>
                     {bookData.sections.length > 1 && (
                       <button onClick={() => deleteSection(section.id)} className="p-0.5 hover:text-red-400" title="Delete section"><Trash2 size={11} /></button>
                     )}
@@ -3694,18 +3694,18 @@ export default function PromptRepository() {
                         onDragEnd={handleChapterDragEnd}
                         onDragOver={(e) => chapterSortMode === 'manual' && handleChapterDragOver(e, section.id, chapterIndex)}
                         onDrop={(e) => chapterSortMode === 'manual' && handleChapterDrop(e, section.id, chapterIndex)}
-                        className={`group flex items-center gap-1 pl-4 pr-2 py-1 ${chapterSortMode === 'manual' ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:bg-zinc-800 ${
+                        className={`group flex items-center gap-1 pl-4 pr-2 py-1 ${chapterSortMode === 'manual' ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} hover:bg-r-hover ${
                           draggingChapter?.chapterId === chapter.id
-                            ? 'opacity-40 bg-zinc-700'
+                            ? 'opacity-40 bg-r-hover'
                             : dragOverTarget?.sectionId === section.id && dragOverTarget?.index === chapterIndex && draggingChapter && draggingChapter.chapterId !== chapter.id
                               ? 'bg-amber-500/20 ring-1 ring-amber-500'
                               : bookData.activeChapterId === chapter.id && bookData.activeSectionId === section.id
-                                ? 'bg-zinc-800 text-white'
-                                : 'text-zinc-500'
+                                ? 'bg-r-primary/10 text-r-primary font-medium'
+                                : 'text-r-muted'
                         }`}
                         onClick={() => selectChapter(section.id, chapter.id)}
                       >
-                        {chapterSortMode === 'manual' && <GripVertical size={10} className="text-zinc-600 flex-shrink-0 mr-0.5" />}
+                        {chapterSortMode === 'manual' && <GripVertical size={10} className="text-r-muted flex-shrink-0 mr-0.5" />}
                         {renamingChapter?.id === chapter.id ? (
                           <>
                             {bookData.autoNumberChapters && (
@@ -3716,11 +3716,11 @@ export default function PromptRepository() {
                               value={renamingChapter.title}
                               onChange={e => setRenamingChapter(prev => ({ ...prev, title: e.target.value }))}
                               onKeyDown={e => { e.stopPropagation(); if (e.key === 'Enter') commitChapterRename(); if (e.key === 'Escape') setRenamingChapter(null); }}
-                              className="flex-1 bg-zinc-700 rounded px-1 text-xs text-white focus:outline-none"
+                              className="flex-1 bg-r-hover rounded px-1 text-xs text-r-text focus:outline-none"
                               onClick={e => e.stopPropagation()}
                             />
                             <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); commitChapterRename(); }} className="p-0.5 text-green-400 hover:text-green-300 flex-shrink-0" title="Save"><Check size={10} /></button>
-                            <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); setRenamingChapter(null); }} className="p-0.5 text-zinc-500 hover:text-white flex-shrink-0" title="Cancel"><X size={10} /></button>
+                            <button onMouseDown={e => { e.preventDefault(); e.stopPropagation(); setRenamingChapter(null); }} className="p-0.5 text-r-muted hover:text-r-text flex-shrink-0" title="Cancel"><X size={10} /></button>
                           </>
                         ) : (
                           <span className="flex-1 text-xs truncate">{formatChapterTitle(bookData.sections, section.id, chapter.id, chapter.title, bookData.autoNumberChapters)}</span>
@@ -3729,7 +3729,7 @@ export default function PromptRepository() {
                         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 flex-shrink-0">
                           <button
                             onClick={e => { e.stopPropagation(); setRenamingChapter({ sectionId: section.id, id: chapter.id, title: chapter.title }); }}
-                            className="p-0.5 hover:text-white"
+                            className="p-0.5 hover:text-r-text"
                             title="Rename chapter"
                           >
                             <Edit2 size={10} />
@@ -3762,7 +3762,7 @@ export default function PromptRepository() {
                     {/* Always-visible Add Chapter button */}
                     <button
                       onClick={() => addChapter(section.id)}
-                      className="flex items-center gap-1 pl-7 pr-2 py-1 w-full text-left text-xs text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/50"
+                      className="flex items-center gap-1 pl-7 pr-2 py-1 w-full text-left text-xs text-r-muted hover:text-r-muted hover:bg-r-hover/80"
                     >
                       <Plus size={10} /> Add chapter
                     </button>
@@ -3777,10 +3777,10 @@ export default function PromptRepository() {
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
           {activeChapter ? (
             <>
-              <div className="px-4 py-2 border-b border-zinc-800 flex items-center gap-2">
+              <div className="px-4 py-2 border-b border-r-border flex items-center gap-2">
                 <BookOpen size={14} className="text-amber-400 flex-shrink-0" />
-                <span className="text-xs text-zinc-500 flex-shrink-0">{activeSection?.title}</span>
-                <ChevronRight size={12} className="text-zinc-600 flex-shrink-0" />
+                <span className="text-xs text-r-muted flex-shrink-0">{activeSection?.title}</span>
+                <ChevronRight size={12} className="text-r-muted flex-shrink-0" />
                 {bookData.autoNumberChapters && (
                   <span className="text-sm font-medium text-amber-400/70 flex-shrink-0 select-none">
                     Chapter {getGlobalChapterNumber(bookData.sections, activeSection?.id, activeChapter.id)} :&nbsp;
@@ -3801,7 +3801,7 @@ export default function PromptRepository() {
                     if (e.key === 'Enter') { e.target.blur(); }
                     if (e.key === 'Escape') { e.target.value = activeChapter.title; e.target.blur(); }
                   }}
-                  className="flex-1 min-w-0 bg-transparent text-sm font-medium text-zinc-200 focus:outline-none focus:bg-zinc-800 focus:rounded focus:px-2 focus:ring-1 focus:ring-amber-400 transition-all"
+                  className="flex-1 min-w-0 bg-transparent text-sm font-medium text-r-text focus:outline-none focus:bg-r-surface focus:rounded focus:px-2 focus:ring-1 focus:ring-amber-400 transition-all"
                   title="Click to rename chapter"
                 />
                 {/* Version controls */}
@@ -3809,7 +3809,7 @@ export default function PromptRepository() {
                   {/* Save Version button */}
                   <button
                     onClick={() => setShowVersionModal(true)}
-                    className="flex items-center gap-1 px-2 py-1 text-xs text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                    className="flex items-center gap-1 px-2 py-1 text-xs text-r-muted hover:text-r-text hover:bg-r-hover rounded transition-colors"
                     title="Save current version"
                   >
                     <Save size={12} />
@@ -3821,8 +3821,8 @@ export default function PromptRepository() {
                       onClick={() => setShowVersionHistory(!showVersionHistory)}
                       className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                         activeChapterVersions.length > 0
-                          ? 'text-amber-400 hover:text-amber-300 hover:bg-zinc-700'
-                          : 'text-zinc-500 hover:text-zinc-400 hover:bg-zinc-700'
+                          ? 'text-amber-400 hover:text-amber-300 hover:bg-r-hover'
+                          : 'text-r-muted hover:text-r-muted hover:bg-r-hover'
                       }`}
                       title={activeChapterVersions.length > 0 ? `${activeChapterVersions.length} saved version(s)` : 'No saved versions'}
                     >
@@ -3835,19 +3835,19 @@ export default function PromptRepository() {
                     </button>
                     {/* Version history dropdown menu */}
                     {showVersionHistory && (
-                      <div className="absolute right-0 top-full mt-1 w-72 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl z-50 overflow-hidden">
-                        <div className="px-3 py-2 border-b border-zinc-700 flex items-center justify-between">
-                          <span className="text-xs font-medium text-zinc-300">Saved Versions</span>
+                      <div className="absolute right-0 top-full mt-1 w-72 bg-r-surface border border-r-border rounded-lg shadow-xl z-50 overflow-hidden">
+                        <div className="px-3 py-2 border-b border-r-border flex items-center justify-between">
+                          <span className="text-xs font-medium text-r-text">Saved Versions</span>
                           <button
                             onClick={() => setShowVersionHistory(false)}
-                            className="p-0.5 text-zinc-500 hover:text-white"
+                            className="p-0.5 text-r-muted hover:text-r-text"
                           >
                             <X size={12} />
                           </button>
                         </div>
                         <div className="max-h-64 overflow-y-auto">
                           {activeChapterVersions.length === 0 ? (
-                            <div className="px-3 py-4 text-center text-xs text-zinc-500">
+                            <div className="px-3 py-4 text-center text-xs text-r-muted">
                               No saved versions yet.<br />
                               Click "Save Version" to save the current state.
                             </div>
@@ -3860,7 +3860,7 @@ export default function PromptRepository() {
                                     loadVersion(version.id);
                                   }
                                 }}
-                                className="group px-3 py-2 hover:bg-zinc-700/50 border-b border-zinc-700/50 last:border-b-0 cursor-pointer"
+                                className="group px-3 py-2 hover:bg-r-hover/50 border-b border-r-border/50 last:border-b-0 cursor-pointer"
                               >
                                 <div className="flex items-center justify-between gap-2">
                                   <div className="flex-1 min-w-0">
@@ -3884,7 +3884,7 @@ export default function PromptRepository() {
                                             }
                                           }}
                                           onClick={(e) => e.stopPropagation()}
-                                          className={`w-full bg-zinc-900 border rounded px-1.5 py-0.5 text-xs text-zinc-200 focus:outline-none ${
+                                          className={`w-full bg-r-bg border rounded px-1.5 py-0.5 text-xs text-r-text focus:outline-none ${
                                             renamingVersion.error ? 'border-red-500' : 'border-amber-500'
                                           }`}
                                         />
@@ -3893,9 +3893,9 @@ export default function PromptRepository() {
                                         )}
                                       </>
                                     ) : (
-                                      <div className="text-xs font-medium text-zinc-200 truncate">{version.name}</div>
+                                      <div className="text-xs font-medium text-r-text truncate">{version.name}</div>
                                     )}
-                                    <div className="text-[10px] text-zinc-500 flex items-center gap-1 mt-0.5">
+                                    <div className="text-[10px] text-r-muted flex items-center gap-1 mt-0.5">
                                       <Clock size={9} />
                                       {new Date(version.savedAt).toLocaleString()}
                                     </div>
@@ -3903,14 +3903,14 @@ export default function PromptRepository() {
                                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button
                                       onClick={(e) => { e.stopPropagation(); setRenamingVersion({ id: version.id, name: version.name }); }}
-                                      className="p-1 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-600 rounded"
+                                      className="p-1 text-r-muted hover:text-r-text hover:bg-r-hover2 rounded"
                                       title="Rename version"
                                     >
                                       <Edit2 size={11} />
                                     </button>
                                     <button
                                       onClick={(e) => { e.stopPropagation(); deleteVersion(version.id); }}
-                                      className="p-1 text-red-400 hover:text-red-300 hover:bg-zinc-600 rounded"
+                                      className="p-1 text-red-400 hover:text-red-300 hover:bg-r-hover2 rounded"
                                       title="Delete this version"
                                     >
                                       <Trash2 size={11} />
@@ -3928,14 +3928,14 @@ export default function PromptRepository() {
               </div>
               <textarea
                 ref={textareaRef}
-                className="flex-1 bg-transparent p-4 text-sm text-zinc-200 resize-none focus:outline-none leading-relaxed placeholder-zinc-600"
+                className="flex-1 bg-transparent p-4 text-sm text-r-text resize-none focus:outline-none leading-relaxed placeholder-zinc-600"
                 placeholder="Start writing this chapter..."
                 value={activeChapter.content}
                 onChange={e => updateChapterContent(e.target.value)}
               />
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-zinc-600">
+            <div className="flex-1 flex items-center justify-center text-r-muted">
               <p className="text-sm">Select a chapter to start writing</p>
             </div>
           )}
@@ -3944,15 +3944,15 @@ export default function PromptRepository() {
         {/* Save Version Modal */}
         {showVersionModal && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => { setShowVersionModal(false); setVersionNameError(''); }}>
-            <div className="bg-zinc-800 border border-zinc-700 rounded-lg shadow-2xl w-80" onClick={e => e.stopPropagation()}>
-              <div className="px-4 py-3 border-b border-zinc-700 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-zinc-200">Save Version</h3>
-                <button onClick={() => { setShowVersionModal(false); setVersionNameError(''); }} className="p-1 text-zinc-500 hover:text-white rounded">
+            <div className="bg-r-surface border border-r-border rounded-lg shadow-2xl w-80" onClick={e => e.stopPropagation()}>
+              <div className="px-4 py-3 border-b border-r-border flex items-center justify-between">
+                <h3 className="text-sm font-medium text-r-text">Save Version</h3>
+                <button onClick={() => { setShowVersionModal(false); setVersionNameError(''); }} className="p-1 text-r-muted hover:text-r-text rounded">
                   <X size={14} />
                 </button>
               </div>
               <div className="p-4">
-                <label className="block text-xs text-zinc-400 mb-2">Version Name</label>
+                <label className="block text-xs text-r-muted mb-2">Version Name</label>
                 <input
                   autoFocus
                   type="text"
@@ -3963,29 +3963,29 @@ export default function PromptRepository() {
                     if (e.key === 'Escape') { setShowVersionModal(false); setVersionName(''); setVersionNameError(''); }
                   }}
                   placeholder="e.g., First Draft, After Review..."
-                  className={`w-full bg-zinc-900 border rounded px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none ${
-                    versionNameError ? 'border-red-500 focus:border-red-500' : 'border-zinc-600 focus:border-amber-500'
+                  className={`w-full bg-r-bg border rounded px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none ${
+                    versionNameError ? 'border-red-500 focus:border-red-500' : 'border-r-border focus:border-amber-500'
                   }`}
                 />
                 {versionNameError ? (
                   <p className="text-[10px] text-red-400 mt-2">{versionNameError}</p>
                 ) : (
-                  <p className="text-[10px] text-zinc-500 mt-2">
+                  <p className="text-[10px] text-r-muted mt-2">
                     This will save a snapshot of the current chapter content.
                   </p>
                 )}
 
                 {/* Show existing saved versions */}
                 {activeChapterVersions.length > 0 && (
-                  <div className="mt-4 pt-3 border-t border-zinc-700">
-                    <label className="block text-xs text-zinc-400 mb-2">
+                  <div className="mt-4 pt-3 border-t border-r-border">
+                    <label className="block text-xs text-r-muted mb-2">
                       Existing Versions ({activeChapterVersions.length})
                     </label>
                     <div className="max-h-32 overflow-y-auto space-y-1">
                       {activeChapterVersions.slice().reverse().map(v => (
-                        <div key={v.id} className="flex items-center justify-between bg-zinc-900/50 rounded px-2 py-1.5">
-                          <span className="text-xs text-zinc-300 truncate">{v.name}</span>
-                          <span className="text-[10px] text-zinc-500 flex-shrink-0 ml-2">
+                        <div key={v.id} className="flex items-center justify-between bg-r-bg/70 rounded px-2 py-1.5">
+                          <span className="text-xs text-r-text truncate">{v.name}</span>
+                          <span className="text-[10px] text-r-muted flex-shrink-0 ml-2">
                             {new Date(v.savedAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -3994,10 +3994,10 @@ export default function PromptRepository() {
                   </div>
                 )}
               </div>
-              <div className="px-4 py-3 border-t border-zinc-700 flex justify-end gap-2">
+              <div className="px-4 py-3 border-t border-r-border flex justify-end gap-2">
                 <button
                   onClick={() => { setShowVersionModal(false); setVersionName(''); setVersionNameError(''); }}
-                  className="px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-700 rounded transition-colors"
+                  className="px-3 py-1.5 text-xs text-r-muted hover:text-r-text hover:bg-r-hover rounded transition-colors"
                 >
                   Cancel
                 </button>
@@ -4058,18 +4058,18 @@ export default function PromptRepository() {
     };
 
     const categories = [
-      { id: 'all', label: 'All', icon: '✨', color: 'bg-zinc-700 text-zinc-300' },
+      { id: 'all', label: 'All', icon: '✨', color: 'bg-r-hover text-r-text' },
       { id: 'dining', label: 'Dining', icon: '🍴', color: 'bg-orange-500/20 text-orange-400' },
       { id: 'nightlife', label: 'Nightlife', icon: '🍸', color: 'bg-indigo-500/20 text-indigo-400' },
       { id: 'culture', label: 'Culture', icon: '🏛️', color: 'bg-purple-500/20 text-purple-400' },
       { id: 'shopping', label: 'Shopping', icon: '🛍️', color: 'bg-pink-500/20 text-pink-400' },
       { id: 'adventure', label: 'Adventure', icon: '🏔️', color: 'bg-green-500/20 text-green-400' },
       { id: 'transport', label: 'Transport', icon: '🚗', color: 'bg-sky-500/20 text-sky-400' },
-      { id: 'other', label: 'Other', icon: '📍', color: 'bg-zinc-500/20 text-zinc-400' },
+      { id: 'other', label: 'Other', icon: '📍', color: 'bg-r-hover2/40 text-r-muted' },
       { id: 'completed', label: 'Done', icon: '✅', color: 'bg-emerald-500/20 text-emerald-400' }
     ];
 
-    const getCategoryStyle = (catId) => categories.find(c => c.id === catId)?.color || 'bg-zinc-700 text-zinc-300';
+    const getCategoryStyle = (catId) => categories.find(c => c.id === catId)?.color || 'bg-r-hover text-r-text';
 
     // Generate days from start to end date
     const getDays = () => {
@@ -4192,113 +4192,113 @@ export default function PromptRepository() {
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <Plane size={24} className="text-sky-400" />
-              <h2 className="text-xl font-semibold text-zinc-200">Travel Itinerary Setup</h2>
+              <h2 className="text-xl font-semibold text-r-text">Travel Itinerary Setup</h2>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-zinc-400 mb-1.5">Destination</label>
+                <label className="block text-sm text-r-muted mb-1.5">Destination</label>
                 <input
                   type="text"
                   value={travelData.tripData.destination}
                   onChange={(e) => updateTripData('destination', e.target.value)}
                   placeholder="e.g., Paris, France"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1.5">Start Date</label>
+                  <label className="block text-sm text-r-muted mb-1.5">Start Date</label>
                   <input
                     type="date"
                     value={travelData.tripData.startDate}
                     onChange={(e) => updateTripData('startDate', e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text focus:outline-none focus:border-sky-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1.5">End Date</label>
+                  <label className="block text-sm text-r-muted mb-1.5">End Date</label>
                   <input
                     type="date"
                     value={travelData.tripData.endDate}
                     onChange={(e) => updateTripData('endDate', e.target.value)}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text focus:outline-none focus:border-sky-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1.5">Arrival Time</label>
+                  <label className="block text-sm text-r-muted mb-1.5">Arrival Time</label>
                   <input
                     type="text"
                     value={travelData.tripData.arrivalTime}
                     onChange={(e) => updateTripData('arrivalTime', e.target.value)}
                     placeholder="e.g., 2:00 PM"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1.5">Departure Time</label>
+                  <label className="block text-sm text-r-muted mb-1.5">Departure Time</label>
                   <input
                     type="text"
                     value={travelData.tripData.departureTime}
                     onChange={(e) => updateTripData('departureTime', e.target.value)}
                     placeholder="e.g., 6:00 PM"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm text-zinc-400 mb-1.5">Accommodation</label>
+                <label className="block text-sm text-r-muted mb-1.5">Accommodation</label>
                 <input
                   type="text"
                   value={travelData.tripData.accommodation}
                   onChange={(e) => updateTripData('accommodation', e.target.value)}
                   placeholder="e.g., Hotel Marais, 15 Rue de Rivoli"
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1.5">Check-in Time</label>
+                  <label className="block text-sm text-r-muted mb-1.5">Check-in Time</label>
                   <input
                     type="text"
                     value={travelData.tripData.checkInTime}
                     onChange={(e) => updateTripData('checkInTime', e.target.value)}
                     placeholder="e.g., 3:00 PM"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-1.5">Check-out Time</label>
+                  <label className="block text-sm text-r-muted mb-1.5">Check-out Time</label>
                   <input
                     type="text"
                     value={travelData.tripData.checkOutTime}
                     onChange={(e) => updateTripData('checkOutTime', e.target.value)}
                     placeholder="e.g., 11:00 AM"
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm text-zinc-400 mb-1.5">Preferences / Notes</label>
+                <label className="block text-sm text-r-muted mb-1.5">Preferences / Notes</label>
                 <textarea
                   value={travelData.tripData.preferences}
                   onChange={(e) => updateTripData('preferences', e.target.value)}
                   placeholder="e.g., Love local cuisine, prefer morning activities..."
                   rows={3}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500 resize-none"
+                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500 resize-none"
                 />
               </div>
 
               {travelData.tripData.startDate && travelData.tripData.endDate && (
                 <div className="pt-4 text-center">
-                  <p className="text-sm text-zinc-400">
+                  <p className="text-sm text-r-muted">
                     Trip duration: <span className="text-sky-400 font-medium">{days.length} days</span>
                   </p>
                 </div>
@@ -4313,14 +4313,14 @@ export default function PromptRepository() {
     return (
       <div className="flex h-full gap-0 min-h-0">
         {/* Left sidebar: Trip info, travelers, day selector */}
-        <div className="w-64 flex-shrink-0 border-r border-zinc-800 flex flex-col min-h-0 overflow-y-auto">
+        <div className="w-64 flex-shrink-0 border-r border-r-border flex flex-col min-h-0 overflow-y-auto">
           {/* Trip Overview */}
-          <div className="p-3 border-b border-zinc-800">
+          <div className="p-3 border-b border-r-border">
             <div className="flex items-center gap-2 mb-2">
               <Plane size={14} className="text-sky-400" />
-              <span className="text-sm font-medium text-zinc-200">{travelData.tripData.destination || 'Trip'}</span>
+              <span className="text-sm font-medium text-r-text">{travelData.tripData.destination || 'Trip'}</span>
             </div>
-            <div className="text-xs text-zinc-500 space-y-0.5">
+            <div className="text-xs text-r-muted space-y-0.5">
               <div className="flex items-center gap-1">
                 <Calendar size={10} />
                 <span>{travelData.tripData.startDate} to {travelData.tripData.endDate}</span>
@@ -4335,25 +4335,25 @@ export default function PromptRepository() {
           </div>
 
           {/* Travelers */}
-          <div className="p-3 border-b border-zinc-800">
+          <div className="p-3 border-b border-r-border">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Travelers ({travelData.travelers.length})</span>
+              <span className="text-xs font-medium text-r-muted uppercase tracking-wide">Travelers ({travelData.travelers.length})</span>
               <button
                 onClick={() => setShowAddTraveler(!showAddTraveler)}
-                className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
               >
                 <Plus size={12} />
               </button>
             </div>
 
             {showAddTraveler && (
-              <div className="bg-zinc-800 rounded-lg p-2 mb-2 space-y-2">
+              <div className="bg-r-surface rounded-lg p-2 mb-2 space-y-2">
                 <input
                   type="text"
                   value={newTraveler.name}
                   onChange={(e) => setNewTraveler({ ...newTraveler, name: e.target.value })}
                   placeholder="Name"
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                 />
                 <div className="grid grid-cols-2 gap-1">
                   <input
@@ -4361,14 +4361,14 @@ export default function PromptRepository() {
                     value={newTraveler.age}
                     onChange={(e) => setNewTraveler({ ...newTraveler, age: e.target.value })}
                     placeholder="Age"
-                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                   <input
                     type="text"
                     value={newTraveler.interests}
                     onChange={(e) => setNewTraveler({ ...newTraveler, interests: e.target.value })}
                     placeholder="Interests"
-                    className="bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
                 <input
@@ -4376,7 +4376,7 @@ export default function PromptRepository() {
                   value={newTraveler.dietaryRestrictions}
                   onChange={(e) => setNewTraveler({ ...newTraveler, dietaryRestrictions: e.target.value })}
                   placeholder="Dietary restrictions (optional)"
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                 />
                 <div className="flex gap-1">
                   <button
@@ -4388,7 +4388,7 @@ export default function PromptRepository() {
                   </button>
                   <button
                     onClick={() => { setShowAddTraveler(false); setNewTraveler({ name: '', age: '', interests: '', dietaryRestrictions: '', mobilityNeeds: '' }); }}
-                    className="px-2 py-1 text-xs bg-zinc-700 text-zinc-300 rounded hover:bg-zinc-600"
+                    className="px-2 py-1 text-xs bg-r-hover text-r-text rounded hover:bg-r-hover2"
                   >
                     Cancel
                   </button>
@@ -4398,14 +4398,14 @@ export default function PromptRepository() {
 
             <div className="space-y-1">
               {travelData.travelers.map(traveler => (
-                <div key={traveler.id} className="group flex items-center justify-between bg-zinc-800/50 rounded px-2 py-1.5">
+                <div key={traveler.id} className="group flex items-center justify-between bg-r-surface/80 rounded px-2 py-1.5">
                   <div className="min-w-0">
-                    <div className="text-xs text-zinc-200 truncate">{traveler.name}</div>
-                    {traveler.age && <div className="text-[10px] text-zinc-500">{traveler.age} yrs</div>}
+                    <div className="text-xs text-r-text truncate">{traveler.name}</div>
+                    {traveler.age && <div className="text-[10px] text-r-muted">{traveler.age} yrs</div>}
                   </div>
                   <button
                     onClick={() => removeTraveler(traveler.id)}
-                    className="p-0.5 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100"
+                    className="p-0.5 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100"
                   >
                     <X size={10} />
                   </button>
@@ -4416,7 +4416,7 @@ export default function PromptRepository() {
 
           {/* Day Selector */}
           <div className="flex-1 overflow-y-auto p-2">
-            <div className="text-xs font-medium text-zinc-400 uppercase tracking-wide px-1 mb-2">Days</div>
+            <div className="text-xs font-medium text-r-muted uppercase tracking-wide px-1 mb-2">Days</div>
             <div className="space-y-1">
               {days.map(day => {
                 const dayExps = travelData.experiences[day.key] || [];
@@ -4428,14 +4428,14 @@ export default function PromptRepository() {
                     className={`w-full text-left px-2 py-2 rounded-lg transition-colors ${
                       selectedDay === day.key
                         ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
-                        : 'hover:bg-zinc-800 text-zinc-400'
+                        : 'hover:bg-r-hover text-r-muted'
                     }`}
                   >
                     <div className="text-xs font-medium">{day.label}</div>
-                    <div className="text-[10px] text-zinc-500">{day.date}</div>
+                    <div className="text-[10px] text-r-muted">{day.date}</div>
                     {dayExps.length > 0 && (
                       <div className="text-[10px] mt-1">
-                        <span className="text-zinc-500">{dayExps.length} activities</span>
+                        <span className="text-r-muted">{dayExps.length} activities</span>
                         {completedCount > 0 && <span className="text-emerald-400 ml-1">({completedCount} done)</span>}
                       </div>
                     )}
@@ -4449,13 +4449,13 @@ export default function PromptRepository() {
         {/* Right panel: Activities */}
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
           {/* Header with category filters */}
-          <div className="px-4 py-3 border-b border-zinc-800">
+          <div className="px-4 py-3 border-b border-r-border">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-zinc-200">
+                <span className="text-sm font-medium text-r-text">
                   {days.find(d => d.key === selectedDay)?.label}
                 </span>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-r-muted">
                   {days.find(d => d.key === selectedDay)?.date}
                 </span>
               </div>
@@ -4477,7 +4477,7 @@ export default function PromptRepository() {
                   className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
                     selectedCategory === cat.id
                       ? 'bg-sky-500 text-white'
-                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                      : 'bg-r-surface text-r-muted hover:bg-r-hover'
                   }`}
                 >
                   {cat.icon} {cat.label}
@@ -4488,21 +4488,21 @@ export default function PromptRepository() {
 
           {/* Add Activity Modal */}
           {showAddActivity && (
-            <div className="px-4 py-3 border-b border-zinc-700 bg-zinc-800/50">
+            <div className="px-4 py-3 border-b border-r-border bg-r-surface/80">
               <div className="space-y-3">
                 <input
                   type="text"
                   value={newActivity.name}
                   onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
                   placeholder="Activity name"
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   autoFocus
                 />
                 <div className="grid grid-cols-3 gap-2">
                   <select
                     value={newActivity.category}
                     onChange={(e) => setNewActivity({ ...newActivity, category: e.target.value })}
-                    className="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-sm text-zinc-200 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text focus:outline-none focus:border-sky-500"
                   >
                     {categories.filter(c => !['all', 'completed'].includes(c.id)).map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.icon} {cat.label}</option>
@@ -4513,14 +4513,14 @@ export default function PromptRepository() {
                     value={newActivity.time}
                     onChange={(e) => setNewActivity({ ...newActivity, time: e.target.value })}
                     placeholder="Time (e.g., 9:00 AM)"
-                    className="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                   <input
                     type="text"
                     value={newActivity.duration}
                     onChange={(e) => setNewActivity({ ...newActivity, duration: e.target.value })}
                     placeholder="Duration"
-                    className="bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
                   />
                 </div>
                 <textarea
@@ -4528,7 +4528,7 @@ export default function PromptRepository() {
                   onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
                   placeholder="Description (optional)"
                   rows={2}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500 resize-none"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500 resize-none"
                 />
                 <div className="flex gap-2">
                   <button
@@ -4540,7 +4540,7 @@ export default function PromptRepository() {
                   </button>
                   <button
                     onClick={() => { setShowAddActivity(false); setNewActivity({ name: '', category: 'other', time: '', duration: '', description: '' }); }}
-                    className="px-3 py-2 text-sm bg-zinc-700 text-zinc-300 rounded-lg hover:bg-zinc-600"
+                    className="px-3 py-2 text-sm bg-r-hover text-r-text rounded-lg hover:bg-r-hover2"
                   >
                     Cancel
                   </button>
@@ -4552,7 +4552,7 @@ export default function PromptRepository() {
           {/* Activities list */}
           <div className="flex-1 overflow-y-auto p-4">
             {filteredActivities.length === 0 ? (
-              <div className="text-center py-12 text-zinc-500">
+              <div className="text-center py-12 text-r-muted">
                 <div className="text-4xl mb-3">{selectedCategory === 'all' ? '📋' : categories.find(c => c.id === selectedCategory)?.icon}</div>
                 <p className="text-sm">No {selectedCategory === 'all' ? '' : selectedCategory} activities yet</p>
                 <button
@@ -4573,7 +4573,7 @@ export default function PromptRepository() {
                       onDragStart={(e) => handleDragStart(e, activity.id)}
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, activity.id)}
-                      className={`bg-zinc-800 rounded-lg overflow-hidden transition-all hover:bg-zinc-750 ${
+                      className={`bg-r-surface rounded-lg overflow-hidden transition-all hover:bg-r-hover ${
                         draggedId === activity.id ? 'opacity-50' : ''
                       } ${activity.completed ? 'opacity-60' : ''}`}
                     >
@@ -4581,8 +4581,8 @@ export default function PromptRepository() {
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <GripVertical size={12} className="text-zinc-600 flex-shrink-0 cursor-grab" />
-                              <h3 className={`text-sm font-medium ${activity.completed ? 'line-through text-zinc-500' : 'text-zinc-200'}`}>
+                              <GripVertical size={12} className="text-r-muted flex-shrink-0 cursor-grab" />
+                              <h3 className={`text-sm font-medium ${activity.completed ? 'line-through text-r-muted' : 'text-r-text'}`}>
                                 {activity.name}
                               </h3>
                             </div>
@@ -4593,21 +4593,21 @@ export default function PromptRepository() {
                           <div className="flex items-center gap-1 ml-2">
                             <button
                               onClick={() => setExpandedId(expandedId === activity.id ? null : activity.id)}
-                              className="p-1 text-zinc-500 hover:text-zinc-300"
+                              className="p-1 text-r-muted hover:text-r-text"
                             >
                               {expandedId === activity.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                             </button>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-4 text-xs text-zinc-500 mb-3">
+                        <div className="flex items-center gap-4 text-xs text-r-muted mb-3">
                           {editingTimeId === activity.id ? (
                             <div className="flex items-center gap-1">
                               <input
                                 type="text"
                                 value={tempTime}
                                 onChange={(e) => setTempTime(e.target.value)}
-                                className="w-20 bg-zinc-900 border border-sky-500 rounded px-1.5 py-0.5 text-xs text-zinc-200 focus:outline-none"
+                                className="w-20 bg-r-bg border border-sky-500 rounded px-1.5 py-0.5 text-xs text-r-text focus:outline-none"
                                 autoFocus
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') updateActivityTime(activity.id, tempTime);
@@ -4617,14 +4617,14 @@ export default function PromptRepository() {
                               <button onClick={() => updateActivityTime(activity.id, tempTime)} className="text-sky-400 hover:text-sky-300">
                                 <Check size={12} />
                               </button>
-                              <button onClick={() => { setEditingTimeId(null); setTempTime(''); }} className="text-zinc-500 hover:text-zinc-300">
+                              <button onClick={() => { setEditingTimeId(null); setTempTime(''); }} className="text-r-muted hover:text-r-text">
                                 <X size={12} />
                               </button>
                             </div>
                           ) : (
                             <button
                               onClick={() => { setEditingTimeId(activity.id); setTempTime(activity.time || ''); }}
-                              className="flex items-center gap-1 hover:text-zinc-300"
+                              className="flex items-center gap-1 hover:text-r-text"
                             >
                               <Clock size={11} />
                               <span>{activity.time || 'Set time'}</span>
@@ -4638,14 +4638,14 @@ export default function PromptRepository() {
                         </div>
 
                         {activity.description && (
-                          <p className="text-xs text-zinc-400 mb-3 leading-relaxed">{activity.description}</p>
+                          <p className="text-xs text-r-muted mb-3 leading-relaxed">{activity.description}</p>
                         )}
 
                         <button
                           onClick={() => toggleActivityDone(activity.id)}
                           className={`w-full py-2 rounded text-xs font-medium transition-colors ${
                             activity.completed
-                              ? 'bg-zinc-700 text-zinc-400 hover:bg-zinc-600'
+                              ? 'bg-r-hover text-r-muted hover:bg-r-hover2'
                               : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
                           }`}
                         >
@@ -4653,7 +4653,7 @@ export default function PromptRepository() {
                         </button>
 
                         {expandedId === activity.id && (
-                          <div className="mt-3 pt-3 border-t border-zinc-700">
+                          <div className="mt-3 pt-3 border-t border-r-border">
                             <button
                               onClick={() => removeActivity(activity.id)}
                               className="text-xs text-red-400 hover:text-red-300"
@@ -4916,12 +4916,12 @@ export default function PromptRepository() {
     };
 
     return (
-      <div className="flex h-full bg-zinc-900 rounded-lg overflow-hidden">
+      <div className="flex h-full bg-r-bg rounded-lg overflow-hidden">
         {/* Left panel: Script list */}
-        <div className={`${scriptsDrawerCollapsed ? 'w-10' : 'w-56'} bg-zinc-900 border-r border-zinc-700 flex flex-col min-h-0 transition-all duration-200`}>
-          <div className={`p-3 border-b border-zinc-700 flex items-center ${scriptsDrawerCollapsed ? 'justify-center' : 'justify-between'}`}>
+        <div className={`${scriptsDrawerCollapsed ? 'w-10' : 'w-56'} bg-r-bg border-r border-r-border flex flex-col min-h-0 transition-all duration-200`}>
+          <div className={`p-3 border-b border-r-border flex items-center ${scriptsDrawerCollapsed ? 'justify-center' : 'justify-between'}`}>
             {!scriptsDrawerCollapsed && (
-              <span className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+              <span className="text-sm font-medium text-r-text flex items-center gap-2">
                 <Clapperboard size={14} className="text-pink-400" />
                 Scripts
               </span>
@@ -4930,7 +4930,7 @@ export default function PromptRepository() {
               {!scriptsDrawerCollapsed && (
                 <button
                   onClick={addScript}
-                  className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                  className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                   title="Add script"
                 >
                   <Plus size={14} />
@@ -4938,7 +4938,7 @@ export default function PromptRepository() {
               )}
               <button
                 onClick={() => setScriptsDrawerCollapsed(!scriptsDrawerCollapsed)}
-                className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                 title={scriptsDrawerCollapsed ? 'Expand scripts' : 'Collapse scripts'}
               >
                 {scriptsDrawerCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
@@ -4958,15 +4958,15 @@ export default function PromptRepository() {
                 onClick={() => selectScript(script.id)}
                 className={`group flex items-center gap-2 px-3 py-2 cursor-grab active:cursor-grabbing ${
                   draggingScript === script.id
-                    ? 'opacity-40 bg-zinc-700'
+                    ? 'opacity-40 bg-r-hover'
                     : dragOverIndex === index && draggingScript && draggingScript !== script.id
                       ? 'bg-pink-500/20 ring-1 ring-pink-500'
                       : scriptsData.activeScriptId === script.id
-                        ? 'bg-zinc-800 text-white'
-                        : 'text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200'
+                        ? 'bg-r-primary/10 text-r-primary'
+                        : 'text-r-muted hover:bg-r-hover hover:text-r-text'
                 }`}
               >
-                <GripVertical size={12} className="text-zinc-600 flex-shrink-0" />
+                <GripVertical size={12} className="text-r-muted flex-shrink-0" />
                 {renamingScript?.id === script.id ? (
                   <input
                     autoFocus
@@ -4975,7 +4975,7 @@ export default function PromptRepository() {
                     onKeyDown={e => { e.stopPropagation(); if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenamingScript(null); }}
                     onBlur={commitRename}
                     onClick={e => e.stopPropagation()}
-                    className="flex-1 bg-zinc-700 rounded px-1 text-xs text-white focus:outline-none"
+                    className="flex-1 bg-r-hover rounded px-1 text-xs text-r-text focus:outline-none"
                   />
                 ) : (
                   <span className="flex-1 text-xs truncate">{script.title}</span>
@@ -4984,7 +4984,7 @@ export default function PromptRepository() {
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 flex-shrink-0">
                     <button
                       onClick={e => { e.stopPropagation(); setRenamingScript({ id: script.id, title: script.title }); }}
-                      className="p-0.5 hover:text-white"
+                      className="p-0.5 hover:text-r-text"
                       title="Rename"
                     >
                       <Edit2 size={10} />
@@ -5023,8 +5023,8 @@ export default function PromptRepository() {
           {activeScript ? (
             <>
               {/* Header with title and copy button */}
-              <div className="flex items-center justify-between p-4 border-b border-zinc-700">
-                <h2 className="text-lg font-semibold text-zinc-200">{activeScript.title}</h2>
+              <div className="flex items-center justify-between p-4 border-b border-r-border">
+                <h2 className="text-lg font-semibold text-r-text">{activeScript.title}</h2>
                 <button
                   onClick={copyToClipboard}
                   disabled={!activeScript.content}
@@ -5033,7 +5033,7 @@ export default function PromptRepository() {
                       ? 'bg-green-600 text-white'
                       : activeScript.content
                         ? 'bg-pink-600 hover:bg-pink-700 text-white'
-                        : 'bg-zinc-700 text-zinc-500 cursor-not-allowed'
+                        : 'bg-r-hover text-r-muted cursor-not-allowed'
                   }`}
                 >
                   {copied ? <Check size={16} /> : <Copy size={16} />}
@@ -5054,12 +5054,12 @@ Include everything:
 • Description
 • Hashtags
 • Any other text you want to copy"
-                  className="w-full h-full bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-pink-500 resize-none leading-relaxed"
+                  className="w-full h-full bg-r-surface border border-r-border rounded-lg px-4 py-3 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-pink-500 resize-none leading-relaxed"
                 />
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-zinc-600">
+            <div className="flex-1 flex items-center justify-center text-r-muted">
               <p className="text-sm">Select a script to start editing</p>
             </div>
           )}
@@ -5315,7 +5315,7 @@ Include everything:
               type="date"
               value={cell}
               onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-zinc-700"
+              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-r-hover"
             />
           );
         case 'time':
@@ -5324,7 +5324,7 @@ Include everything:
               type="time"
               value={cell}
               onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-zinc-700"
+              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-r-hover"
             />
           );
         case 'datetime':
@@ -5333,7 +5333,7 @@ Include everything:
               type="datetime-local"
               value={cell}
               onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-zinc-700"
+              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-r-hover"
             />
           );
         case 'dropdown':
@@ -5341,7 +5341,7 @@ Include everything:
             <select
               value={cell}
               onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-zinc-700 cursor-pointer"
+              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-r-hover cursor-pointer"
             >
               <option value="">Select...</option>
               {(columnType.options || []).map((opt, i) => (
@@ -5356,7 +5356,7 @@ Include everything:
               <textarea
                 value={cell}
                 onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-                className="w-full h-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-zinc-700 resize-none"
+                className="w-full h-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-r-hover resize-none"
                 style={{ height: `${rowHeight - 4}px` }}
                 placeholder=""
               />
@@ -5367,7 +5367,7 @@ Include everything:
               type="text"
               value={cell}
               onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
-              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-zinc-700"
+              className="w-full bg-transparent px-2 py-2 text-sm focus:outline-none focus:bg-r-hover"
               placeholder=""
             />
           );
@@ -5482,14 +5482,14 @@ Include everything:
     return (
       <div className="h-full flex flex-col min-h-0">
         {/* Table Tabs */}
-        <div className="flex items-center gap-1 mb-2 flex-shrink-0 border-b border-zinc-700 pb-2">
+        <div className="flex items-center gap-1 mb-2 flex-shrink-0 border-b border-r-border pb-2">
           {spreadsheetData.tables.map((table, tableIndex) => (
             <div
               key={tableIndex}
               className={`group flex items-center gap-1 px-3 py-1.5 rounded-t text-sm cursor-pointer ${
                 tableIndex === spreadsheetData.activeTableIndex
-                  ? 'bg-zinc-700 text-white'
-                  : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700/50'
+                  ? 'bg-r-primary/10 text-r-primary border-b-2 border-r-primary'
+                  : 'bg-r-surface text-r-muted hover:bg-r-hover/50'
               }`}
               onClick={() => switchTable(tableIndex)}
             >
@@ -5501,7 +5501,7 @@ Include everything:
                   renameTable(tableIndex, e.target.value);
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-transparent w-20 text-sm focus:outline-none focus:bg-zinc-600 rounded px-1"
+                className="bg-transparent w-20 text-sm focus:outline-none focus:bg-r-hover2 rounded px-1"
               />
               {spreadsheetData.tables.length > 1 && (
                 <button
@@ -5509,7 +5509,7 @@ Include everything:
                     e.stopPropagation();
                     removeTable(tableIndex);
                   }}
-                  className="p-0.5 text-zinc-500 hover:text-red-400 opacity-0 group-hover:opacity-100"
+                  className="p-0.5 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100"
                   title="Delete table"
                 >
                   <X size={12} />
@@ -5519,7 +5519,7 @@ Include everything:
           ))}
           <button
             onClick={addTable}
-            className="flex items-center gap-1 px-2 py-1.5 text-sm text-zinc-400 hover:text-white hover:bg-zinc-700 rounded"
+            className="flex items-center gap-1 px-2 py-1.5 text-sm text-r-muted hover:text-r-text hover:bg-r-hover rounded"
             title="Add new table"
           >
             <Plus size={14} />
@@ -5530,19 +5530,19 @@ Include everything:
         <div className="flex items-center gap-2 mb-4 flex-wrap flex-shrink-0">
           <button
             onClick={addRow}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-zinc-700 hover:bg-zinc-600 rounded"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-r-hover hover:bg-r-hover2 rounded"
           >
             <Plus size={14} /> Add Row
           </button>
           <button
             onClick={addColumn}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-zinc-700 hover:bg-zinc-600 rounded"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-r-hover hover:bg-r-hover2 rounded"
           >
             <Plus size={14} /> Add Column
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 rounded"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-r-primary hover:bg-blue-700 rounded"
           >
             <Upload size={14} /> Import Spreadsheet
           </button>
@@ -5555,16 +5555,16 @@ Include everything:
           />
 
           {/* Row Height Control */}
-          <div className="flex items-center gap-2 ml-4 pl-4 border-l border-zinc-700">
-            <span className="text-xs text-zinc-500">Row Height:</span>
+          <div className="flex items-center gap-2 ml-4 pl-4 border-l border-r-border">
+            <span className="text-xs text-r-muted">Row Height:</span>
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4].map((multiplier) => (
                 <label
                   key={multiplier}
                   className={`flex items-center justify-center px-2 py-1 text-xs rounded cursor-pointer transition-colors ${
                     (activeTable.rowHeightMultiplier || 1) === multiplier
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-zinc-700 text-zinc-400 hover:bg-zinc-600'
+                      ? 'bg-r-primary text-white'
+                      : 'bg-r-hover text-r-muted hover:bg-r-hover2'
                   }`}
                 >
                   <input
@@ -5581,24 +5581,24 @@ Include everything:
             </div>
           </div>
 
-          <span className="text-xs text-zinc-500 ml-2">
+          <span className="text-xs text-r-muted ml-2">
             {activeTable.rows.length} rows × {activeTable.columns.length} columns
           </span>
         </div>
 
         {/* Table */}
         <div
-          className="flex-1 border border-zinc-700 rounded spreadsheet-scroll"
+          className="flex-1 border border-r-border rounded spreadsheet-scroll"
           style={{ maxHeight: 'calc(100vh - 320px)' }}
         >
           <table className="border-collapse" style={{ tableLayout: 'fixed' }}>
             <thead className="sticky top-0 z-10">
               <tr>
-                <th className="w-10 bg-zinc-800 border border-zinc-700 p-2 text-xs text-zinc-500 sticky left-0 z-20">#</th>
+                <th className="w-10 bg-r-surface border border-r-border p-2 text-xs text-r-muted sticky left-0 z-20">#</th>
                 {activeTable.columns.map((col, colIndex) => (
                   <th
                     key={colIndex}
-                    className="bg-zinc-800 border border-zinc-700 p-0 relative"
+                    className="bg-r-surface border border-r-border p-0 relative"
                     style={{ width: `${activeTable.columnWidths[colIndex]}px`, minWidth: `${activeTable.columnWidths[colIndex]}px` }}
                   >
                     <div className="flex items-center">
@@ -5608,35 +5608,35 @@ Include everything:
                           onClick={() => setColumnTypeMenu(
                             columnTypeMenu?.colIndex === colIndex ? null : { tableIndex: spreadsheetData.activeTableIndex, colIndex }
                           )}
-                          className="p-1.5 text-zinc-500 hover:text-white hover:bg-zinc-700"
+                          className="p-1.5 text-r-muted hover:text-r-text hover:bg-r-hover"
                           title="Change column type"
                         >
                           {getColumnTypeIcon(activeTable.columnTypes[colIndex]?.type || 'text')}
                         </button>
                         {/* Column type dropdown */}
                         {columnTypeMenu?.colIndex === colIndex && (
-                          <div className="absolute top-full left-0 mt-1 bg-zinc-800 border border-zinc-700 rounded shadow-lg z-30 min-w-[160px]">
+                          <div className="absolute top-full left-0 mt-1 bg-r-surface border border-r-border rounded shadow-lg z-30 min-w-[160px]">
                             <button
                               onClick={() => updateColumnType(colIndex, 'text')}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-700 text-left"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-r-hover text-left"
                             >
                               <Type size={14} /> Text
                             </button>
                             <button
                               onClick={() => updateColumnType(colIndex, 'date')}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-700 text-left"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-r-hover text-left"
                             >
                               <Calendar size={14} /> Date
                             </button>
                             <button
                               onClick={() => updateColumnType(colIndex, 'time')}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-700 text-left"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-r-hover text-left"
                             >
                               <Clock size={14} /> Time
                             </button>
                             <button
                               onClick={() => updateColumnType(colIndex, 'datetime')}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-700 text-left"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-r-hover text-left"
                             >
                               <Calendar size={14} /> Date & Time
                             </button>
@@ -5650,7 +5650,7 @@ Include everything:
                                 });
                                 setColumnTypeMenu(null);
                               }}
-                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-700 text-left"
+                              className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-r-hover text-left"
                             >
                               <ChevronDown size={14} /> Dropdown
                             </button>
@@ -5661,12 +5661,12 @@ Include everything:
                         type="text"
                         value={col}
                         onChange={(e) => updateColumnHeader(colIndex, e.target.value)}
-                        className="flex-1 bg-transparent px-2 py-2 text-sm font-medium text-center focus:outline-none focus:bg-zinc-700 min-w-0"
+                        className="flex-1 bg-transparent px-2 py-2 text-sm font-medium text-center focus:outline-none focus:bg-r-hover min-w-0"
                       />
                       {activeTable.columns.length > 1 && (
                         <button
                           onClick={() => removeColumn(colIndex)}
-                          className="p-1 text-zinc-500 hover:text-red-400 hover:bg-zinc-700"
+                          className="p-1 text-r-muted hover:text-red-400 hover:bg-r-hover"
                           title="Remove column"
                         >
                           <X size={12} />
@@ -5675,12 +5675,12 @@ Include everything:
                     </div>
                     {/* Resize handle */}
                     <div
-                      className="absolute top-0 right-0 w-2 h-full cursor-col-resize hover:bg-blue-500/50 z-10"
+                      className="absolute top-0 right-0 w-2 h-full cursor-col-resize hover:bg-r-primary/50 z-10"
                       onMouseDown={(e) => handleResizeStart(e, colIndex)}
                     />
                   </th>
                 ))}
-                <th className="w-10 bg-zinc-800 border border-zinc-700"></th>
+                <th className="w-10 bg-r-surface border border-r-border"></th>
               </tr>
             </thead>
             <tbody>
@@ -5690,7 +5690,7 @@ Include everything:
                 return (
                   <tr key={rowIndex} className="group" style={{ height: `${rowHeight}px` }}>
                     <td
-                      className="bg-zinc-800 border border-zinc-700 p-2 text-xs text-zinc-500 text-center sticky left-0 z-10"
+                      className="bg-r-surface border border-r-border p-2 text-xs text-r-muted text-center sticky left-0 z-10"
                       style={{ height: `${rowHeight}px` }}
                     >
                       {rowIndex + 1}
@@ -5698,7 +5698,7 @@ Include everything:
                     {row.map((cell, colIndex) => (
                       <td
                         key={colIndex}
-                        className="border border-zinc-700 p-0 align-top"
+                        className="border border-r-border p-0 align-top"
                         style={{
                           width: `${activeTable.columnWidths[colIndex]}px`,
                           minWidth: `${activeTable.columnWidths[colIndex]}px`,
@@ -5708,11 +5708,11 @@ Include everything:
                         {renderCellInput(cell, rowIndex, colIndex)}
                       </td>
                     ))}
-                    <td className="border border-zinc-700 p-1 bg-zinc-800/50 align-top" style={{ height: `${rowHeight}px` }}>
+                    <td className="border border-r-border p-1 bg-r-surface/80 align-top" style={{ height: `${rowHeight}px` }}>
                       {activeTable.rows.length > 1 && (
                         <button
                           onClick={() => removeRow(rowIndex)}
-                          className="p-1 text-zinc-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="p-1 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Remove row"
                         >
                           <Minus size={14} />
@@ -5729,32 +5729,32 @@ Include everything:
         {/* Dropdown options editor modal */}
         {dropdownOptionsEdit && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={() => setDropdownOptionsEdit(null)}>
-            <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+            <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
                 <h3 className="text-lg font-medium">Configure Dropdown Options</h3>
                 <button
                   onClick={() => setDropdownOptionsEdit(null)}
-                  className="text-zinc-400 hover:text-white"
+                  className="text-r-muted hover:text-r-text"
                 >
                   <X size={20} />
                 </button>
               </div>
               <div className="p-4 flex-1 min-h-0 modal-scroll">
-                <p className="text-sm text-zinc-400 mb-3">Enter each option on a new line:</p>
+                <p className="text-sm text-r-muted mb-3">Enter each option on a new line:</p>
                 <textarea
                   value={dropdownOptionsEdit.options.join('\n')}
                   onChange={(e) => setDropdownOptionsEdit({
                     ...dropdownOptionsEdit,
                     options: e.target.value.split('\n').filter(o => o.trim())
                   })}
-                  className="w-full h-64 bg-zinc-900 border border-zinc-700 rounded p-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full h-64 bg-r-bg border border-r-border rounded p-3 text-sm focus:outline-none focus:ring-1 focus:ring-r-primary"
                   placeholder="Option 1&#10;Option 2&#10;Option 3"
                 />
               </div>
-              <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+              <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
                 <button
                   onClick={() => setDropdownOptionsEdit(null)}
-                  className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+                  className="px-4 py-2 text-sm hover:bg-r-hover rounded"
                 >
                   Cancel
                 </button>
@@ -5763,7 +5763,7 @@ Include everything:
                     updateColumnType(dropdownOptionsEdit.colIndex, 'dropdown', dropdownOptionsEdit.options);
                     setDropdownOptionsEdit(null);
                   }}
-                  className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded"
+                  className="px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 rounded"
                 >
                   Save
                 </button>
@@ -5783,8 +5783,8 @@ Include everything:
     return (
       <div className="flex h-full">
         {/* Notes Sidebar */}
-        <div className={`${notesPanelOpen ? 'w-72' : 'w-12'} border-r border-zinc-800 flex flex-col bg-zinc-900/50 transition-all duration-300 flex-shrink-0`}>
-          <div className="p-2 border-b border-zinc-800 flex items-center justify-between">
+        <div className={`${notesPanelOpen ? 'w-72' : 'w-12'} border-r border-r-border flex flex-col bg-r-bg/70 transition-all duration-300 flex-shrink-0`}>
+          <div className="p-2 border-b border-r-border flex items-center justify-between">
             {notesPanelOpen ? (
               <>
                 <div className="flex items-center gap-2 px-2">
@@ -5799,25 +5799,25 @@ Include everything:
                           clearNoteSelection();
                         }
                       }}
-                      className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
+                      className="w-4 h-4 rounded border-r-border bg-r-surface text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer"
                       title="Select all notes"
                     />
                   )}
-                  <span className="text-sm font-medium text-zinc-400">
+                  <span className="text-sm font-medium text-r-muted">
                     {isBookNotebook ? `Chapters (${notebookNotes.length})` : `Notes (${notebookNotes.length})`}
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => { setShowNewNote(true); setNoteForm({ title: '', content: '', type: 'text', tags: [] }); }}
-                    className="p-1.5 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                    className="p-1.5 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                     title={isBookNotebook ? "New chapter" : "New note"}
                   >
                     <Plus size={16} />
                   </button>
                   <button
                     onClick={() => setNotesPanelOpen(false)}
-                    className="p-1.5 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                    className="p-1.5 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                     title="Collapse notes panel"
                   >
                     <PanelLeftClose size={16} />
@@ -5827,7 +5827,7 @@ Include everything:
             ) : (
               <button
                 onClick={() => setNotesPanelOpen(true)}
-                className="p-1.5 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white mx-auto"
+                className="p-1.5 hover:bg-r-hover rounded text-r-muted hover:text-r-text mx-auto"
                 title="Expand notes panel"
               >
                 <Menu size={16} />
@@ -5836,7 +5836,7 @@ Include everything:
           </div>
           {notesPanelOpen && <div className="flex-1 overflow-auto">
             {notebookNotes.length === 0 ? (
-              <div className="p-4 text-center text-zinc-500">
+              <div className="p-4 text-center text-r-muted">
                 {isBookNotebook ? (
                   <BookOpen size={32} className="mx-auto mb-2 opacity-50 text-amber-500/50" />
                 ) : (
@@ -5845,7 +5845,7 @@ Include everything:
                 <p className="text-sm">{isBookNotebook ? 'No chapters yet' : 'No notes yet'}</p>
                 <button
                   onClick={() => { setShowNewNote(true); setNoteForm({ title: '', content: '' }); }}
-                  className={`mt-2 text-xs ${isBookNotebook ? 'text-amber-400 hover:text-amber-300' : 'text-blue-400 hover:text-blue-300'}`}
+                  className={`mt-2 text-xs ${isBookNotebook ? 'text-amber-400 hover:text-amber-300' : 'text-r-primary hover:text-r-primary'}`}
                 >
                   {isBookNotebook ? 'Add your first chapter' : 'Create your first note'}
                 </button>
@@ -5861,18 +5861,18 @@ Include everything:
                     onDragOver={(e) => handleNoteDragOver(e, index)}
                     onDrop={(e) => handleNoteListDrop(e, index)}
                     onClick={() => setActiveNote(note.id)}
-                    className={`group w-full text-left px-4 py-3 border-b border-zinc-800/50 transition-colors cursor-grab active:cursor-grabbing ${
+                    className={`group w-full text-left px-4 py-3 border-b border-r-border/50 transition-colors cursor-grab active:cursor-grabbing ${
                       activeNote === note.id
                         ? isBookNotebook
                           ? 'bg-amber-600/20 border-l-2 border-l-amber-500'
-                          : 'bg-blue-600/20 border-l-2 border-l-blue-500'
+                          : 'bg-r-primary/20 border-l-2 border-l-blue-500'
                         : draggingNote?.id === note.id
                           ? 'opacity-50'
                           : dragOverNoteIndex === index && draggingNote
                             ? isBookNotebook
                               ? 'border-t-2 border-t-amber-500'
                               : 'border-t-2 border-t-blue-500'
-                            : 'hover:bg-zinc-800'
+                            : 'hover:bg-r-hover'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -5881,9 +5881,9 @@ Include everything:
                         checked={selectedNotes.has(note.id)}
                         onChange={(e) => { e.stopPropagation(); toggleNoteSelection(note.id); }}
                         onClick={(e) => e.stopPropagation()}
-                        className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-blue-500 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer flex-shrink-0"
+                        className="w-4 h-4 rounded border-r-border bg-r-surface text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer flex-shrink-0"
                       />
-                      <GripVertical size={12} className="text-zinc-600 flex-shrink-0 cursor-grab" />
+                      <GripVertical size={12} className="text-r-muted flex-shrink-0 cursor-grab" />
                       {isBookNotebook ? (
                         <span className="flex-shrink-0 w-6 h-6 rounded bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">
                           {index + 1}
@@ -5899,28 +5899,28 @@ Include everything:
                       ) : note.type === 'prompt' || note.template === 'prompt' ? (
                         <MessageSquare size={14} className="text-purple-500 flex-shrink-0" />
                       ) : (
-                        <FileText size={14} className="text-blue-500 flex-shrink-0" />
+                        <FileText size={14} className="text-r-primary flex-shrink-0" />
                       )}
                       <span className="font-medium text-sm truncate flex-1">{note.title}</span>
                       {/* Note actions - visible on hover */}
                       <div className="hidden group-hover:flex items-center gap-1 flex-shrink-0">
                         <button
                           onClick={(e) => { e.stopPropagation(); setMovingNoteId(note.id); setShowMoveNote(true); }}
-                          className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                          className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                           title="Move to another notebook"
                         >
                           <Move size={12} />
                         </button>
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }}
-                          className="p-1 hover:bg-zinc-700 rounded text-zinc-400 hover:text-red-400"
+                          className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-red-400"
                           title="Delete note"
                         >
                           <Trash2 size={12} />
                         </button>
                       </div>
                     </div>
-                    <div className={`text-xs text-zinc-500 mt-1 line-clamp-2 ${isBookNotebook ? 'ml-10' : 'ml-8'}`}>
+                    <div className={`text-xs text-r-muted mt-1 line-clamp-2 ${isBookNotebook ? 'ml-10' : 'ml-8'}`}>
                       {note.type === 'spreadsheet' ? (
                         <span className="text-green-500/70">Spreadsheet</span>
                       ) : note.type === 'tiktok' ? (
@@ -5944,7 +5944,7 @@ Include everything:
                       dragOverNoteIndex === notebookNotes.length
                         ? isBookNotebook
                           ? 'bg-amber-500/20 border-2 border-dashed border-amber-500'
-                          : 'bg-blue-500/20 border-2 border-dashed border-blue-500'
+                          : 'bg-r-primary/20 border-2 border-dashed border-r-primary'
                         : ''
                     }`}
                   />
@@ -5959,7 +5959,7 @@ Include everything:
           {currentNote ? (
             <>
               {/* Note Header */}
-              <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+              <div className="p-4 border-b border-r-border flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {isBookNotebook ? (
                     <span className="flex-shrink-0 w-8 h-8 rounded bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center">
@@ -5970,14 +5970,14 @@ Include everything:
                   ) : currentNote.type === 'book' ? (
                     <BookOpen size={20} className="text-amber-400 flex-shrink-0" />
                   ) : (
-                    <FileText size={20} className="text-blue-500 flex-shrink-0" />
+                    <FileText size={20} className="text-r-primary flex-shrink-0" />
                   )}
                   {editingNoteId === currentNote.id ? (
                     <input
                       type="text"
                       value={noteForm.title}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="flex-1 bg-zinc-800 rounded px-3 py-2 text-lg font-medium"
+                      className="flex-1 bg-r-surface rounded px-3 py-2 text-lg font-medium"
                       placeholder="Note title"
                       autoFocus
                     />
@@ -5992,7 +5992,7 @@ Include everything:
                       className={`p-2 rounded transition-colors ${
                         copiedNoteId === currentNote.id
                           ? 'bg-green-600 text-white'
-                          : 'hover:bg-zinc-700 text-zinc-400 hover:text-white'
+                          : 'hover:bg-r-hover text-r-muted hover:text-r-text'
                       }`}
                       title="Copy content"
                     >
@@ -6001,7 +6001,7 @@ Include everything:
                   )}
                   <button
                     onClick={() => openChatWithNote(currentNote.id)}
-                    className="p-2 hover:bg-zinc-700 rounded text-zinc-400 hover:text-purple-400 flex items-center gap-1"
+                    className="p-2 hover:bg-r-hover rounded text-r-muted hover:text-purple-400 flex items-center gap-1"
                     title="Chat with AI about this note"
                   >
                     <Sparkles size={16} />
@@ -6018,7 +6018,7 @@ Include everything:
                       </button>
                       <button
                         onClick={() => setEditingNoteId(null)}
-                        className="px-3 py-1.5 bg-zinc-700 hover:bg-zinc-600 rounded text-sm"
+                        className="px-3 py-1.5 bg-r-hover hover:bg-r-hover2 rounded text-sm"
                       >
                         Cancel
                       </button>
@@ -6031,7 +6031,7 @@ Include everything:
                             setEditingNoteId(currentNote.id);
                             setNoteForm({ title: currentNote.title, content: currentNote.content, type: currentNote.type || 'text', tags: currentNote.tags || [] });
                           }}
-                          className="p-2 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                          className="p-2 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                           title="Edit note"
                         >
                           <Edit2 size={16} />
@@ -6039,21 +6039,21 @@ Include everything:
                       )}
                       <button
                         onClick={() => duplicateNoteToNotebook(currentNote.id)}
-                        className="p-2 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                        className="p-2 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                         title="Duplicate note"
                       >
                         <Copy size={16} />
                       </button>
                       <button
                         onClick={() => { setMovingNoteId(currentNote.id); setShowMoveNote(true); }}
-                        className="p-2 hover:bg-zinc-700 rounded text-zinc-400 hover:text-white"
+                        className="p-2 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
                         title="Move to another notebook"
                       >
                         <Move size={16} />
                       </button>
                       <button
                         onClick={() => deleteNote(currentNote.id)}
-                        className="p-2 hover:bg-zinc-700 rounded text-red-400 hover:text-red-300"
+                        className="p-2 hover:bg-r-hover rounded text-red-400 hover:text-red-300"
                         title="Delete note"
                       >
                         <Trash2 size={16} />
@@ -6102,13 +6102,13 @@ Include everything:
                     <textarea
                       value={noteForm.content}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, content: e.target.value }))}
-                      className="flex-1 bg-zinc-800 rounded-lg p-4 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="flex-1 bg-r-surface rounded-lg p-4 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-r-primary"
                       placeholder="Write your note here..."
                     />
                     {/* Tags input for prompt-type notes */}
                     {(currentNote.type === 'prompt' || currentNote.template === 'prompt') && (
                       <div className="flex flex-col gap-2">
-                        <label className="text-sm text-zinc-400">Tags</label>
+                        <label className="text-sm text-r-muted">Tags</label>
                         <div className="flex flex-wrap gap-2 mb-2">
                           {(noteForm.tags || []).map(tag => (
                             <span key={tag} className="bg-purple-600/30 text-purple-300 px-2 py-1 rounded text-xs flex items-center gap-1">
@@ -6126,7 +6126,7 @@ Include everything:
                           <input
                             type="text"
                             placeholder="Add a tag and press Enter"
-                            className="flex-1 bg-zinc-800 rounded px-3 py-2 text-sm"
+                            className="flex-1 bg-r-surface rounded px-3 py-2 text-sm"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && e.target.value.trim()) {
                                 const newTag = e.target.value.trim().toLowerCase();
@@ -6141,12 +6141,12 @@ Include everything:
                         {/* Suggested tags from existing tags */}
                         {data.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
-                            <span className="text-xs text-zinc-500">Suggestions:</span>
+                            <span className="text-xs text-r-muted">Suggestions:</span>
                             {data.tags.filter(t => !(noteForm.tags || []).includes(t)).slice(0, 8).map(tag => (
                               <button
                                 key={tag}
                                 onClick={() => setNoteForm(prev => ({ ...prev, tags: [...(prev.tags || []), tag] }))}
-                                className="text-xs px-1.5 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded"
+                                className="text-xs px-1.5 py-0.5 bg-r-surface hover:bg-r-hover rounded"
                               >
                                 + {tag}
                               </button>
@@ -6158,12 +6158,12 @@ Include everything:
                   </div>
                 ) : (
                   <div className="prose prose-invert max-w-none">
-                    <pre className="whitespace-pre-wrap font-sans text-sm text-zinc-300 leading-relaxed">
-                      {currentNote.content || <span className="text-zinc-500 italic">No content yet. Click edit to add content.</span>}
+                    <pre className="whitespace-pre-wrap font-sans text-sm text-r-text leading-relaxed">
+                      {currentNote.content || <span className="text-r-muted italic">No content yet. Click edit to add content.</span>}
                     </pre>
                     {/* Display tags for prompt-type notes */}
                     {(currentNote.type === 'prompt' || currentNote.template === 'prompt') && currentNote.tags?.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-zinc-800">
+                      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-r-border">
                         {currentNote.tags.map(tag => (
                           <span key={tag} className="bg-purple-600/30 text-purple-300 px-2 py-1 rounded text-xs">{tag}</span>
                         ))}
@@ -6174,14 +6174,14 @@ Include everything:
               </div>
 
               {/* Note Footer */}
-              <div className="px-4 py-2 border-t border-zinc-800 text-xs text-zinc-500">
+              <div className="px-4 py-2 border-t border-r-border text-xs text-r-muted">
                 {currentNote.type === 'spreadsheet' && <span className="text-green-500/70 mr-2">Spreadsheet</span>}
                 {currentNote.type === 'book' && <span className="text-amber-400/70 mr-2">Book</span>}
                 Last updated: {new Date(currentNote.updatedAt).toLocaleString()}
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-zinc-500">
+            <div className="flex-1 flex items-center justify-center text-r-muted">
               <div className="text-center">
                 <FileText size={48} className="mx-auto mb-4 opacity-50" />
                 <p>Select a note or create a new one</p>
@@ -6194,20 +6194,20 @@ Include everything:
   };
 
   return (
-    <div className="min-h-screen bg-zinc-900 text-zinc-100 flex">
+    <div className="min-h-screen bg-r-bg text-r-text flex">
       {/* Sidebar Drawer */}
-      <div className={`${drawerOpen ? 'w-64' : 'w-16'} bg-zinc-950 border-r border-zinc-800 flex flex-col transition-all duration-300 flex-shrink-0`}>
+      <div className={`${drawerOpen ? 'w-64' : 'w-16'} bg-r-bg border-r border-r-border flex flex-col transition-all duration-300 flex-shrink-0`}>
         {/* Drawer Header */}
-        <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
+        <div className="p-4 border-b border-r-border flex items-center justify-between">
           {drawerOpen ? (
             <>
               <div className="flex items-center gap-2">
-                <BookOpen size={20} className="text-blue-500" />
+                <BookOpen size={20} className="text-r-primary" />
                 <span className="font-semibold">Notebooks</span>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+                className="p-1.5 hover:bg-r-hover rounded-lg text-r-muted hover:text-r-text transition-colors"
                 title="Collapse sidebar"
               >
                 <PanelLeftClose size={18} />
@@ -6216,7 +6216,7 @@ Include everything:
           ) : (
             <button
               onClick={() => setDrawerOpen(true)}
-              className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors mx-auto"
+              className="p-1.5 hover:bg-r-hover rounded-lg text-r-muted hover:text-r-text transition-colors mx-auto"
               title="Expand sidebar"
             >
               <Menu size={18} />
@@ -6225,10 +6225,10 @@ Include everything:
         </div>
 
         {/* New Notebook Button */}
-        <div className="px-3 py-2 border-b border-zinc-800">
+        <div className="px-3 py-2 border-b border-r-border">
           <button
             onClick={() => setShowNewNotebook(true)}
-            className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors ${!drawerOpen ? 'px-0' : ''}`}
+            className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-r-muted hover:text-r-text hover:bg-r-hover rounded-lg transition-colors ${!drawerOpen ? 'px-0' : ''}`}
             title="Create new notebook"
           >
             <Plus size={16} />
@@ -6247,10 +6247,10 @@ Include everything:
               onDrop={(e) => handleNotebookDrop(e, notebook.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
                 activeNotebook === notebook.id
-                  ? 'bg-blue-600/20 text-blue-400 border-r-2 border-blue-500'
+                  ? 'bg-r-primary/20 text-r-primary border-r-2 border-r-primary'
                   : dragOverNotebook === notebook.id
                     ? 'bg-green-600/30 text-green-400 border-r-2 border-green-500'
-                    : 'text-zinc-400 hover:bg-zinc-800 hover:text-white'
+                    : 'text-r-muted hover:bg-r-hover hover:text-r-text'
               }`}
               title={notebook.name}
             >
@@ -6260,7 +6260,7 @@ Include everything:
                 const customColorClass = notebook.iconColor ? getIconColorClass(notebook.iconColor) : null;
 
                 if (CustomIcon) {
-                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-zinc-400');
+                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-r-primary' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-r-muted');
                   return <CustomIcon size={18} className={colorClass} />;
                 }
                 // Default type-based icons (custom color overrides default if set)
@@ -6276,7 +6276,7 @@ Include everything:
                   const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-green-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-green-500/70');
                   return <Table size={18} className={colorClass} />;
                 }
-                const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-blue-400' : dragOverNotebook === notebook.id ? 'text-green-400' : '');
+                const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-r-primary' : dragOverNotebook === notebook.id ? 'text-green-400' : '');
                 return <Notebook size={18} className={colorClass} />;
               })()}
               {drawerOpen && <span className="truncate">{notebook.name}</span>}
@@ -6297,7 +6297,7 @@ Include everything:
 
         {/* Bulk Action Bar for Prompts */}
         {selectedPrompts.size > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-800 border-t border-zinc-700 px-6 py-3 shadow-lg">
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-r-surface border-t border-r-border px-6 py-3 shadow-lg">
             <div className="max-w-5xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium">
@@ -6305,7 +6305,7 @@ Include everything:
                 </span>
                 <button
                   onClick={clearSelection}
-                  className="text-sm text-zinc-400 hover:text-white"
+                  className="text-sm text-r-muted hover:text-r-text"
                 >
                   Clear selection
                 </button>
@@ -6313,7 +6313,7 @@ Include everything:
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowBulkMove(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded-lg"
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 rounded-lg"
                 >
                   <Move size={14} /> Move to folder
                 </button>
@@ -6330,7 +6330,7 @@ Include everything:
 
         {/* Bulk Action Bar for Notes */}
         {selectedNotes.size > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 z-40 bg-zinc-800 border-t border-zinc-700 px-6 py-3 shadow-lg">
+          <div className="fixed bottom-0 left-0 right-0 z-40 bg-r-surface border-t border-r-border px-6 py-3 shadow-lg">
             <div className="max-w-5xl mx-auto flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium">
@@ -6338,7 +6338,7 @@ Include everything:
                 </span>
                 <button
                   onClick={clearNoteSelection}
-                  className="text-sm text-zinc-400 hover:text-white"
+                  className="text-sm text-r-muted hover:text-r-text"
                 >
                   Clear selection
                 </button>
@@ -6346,7 +6346,7 @@ Include everything:
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowBulkMoveNotes(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded-lg"
+                  className="flex items-center gap-2 px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 rounded-lg"
                 >
                   <Move size={14} /> Move to notebook
                 </button>
@@ -6362,13 +6362,13 @@ Include everything:
         )}
 
         {/* Header */}
-        <div className="border-b border-zinc-800 px-6 py-4">
+        <div className="border-b border-r-border px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {!drawerOpen && (
                 <button
                   onClick={() => setDrawerOpen(true)}
-                  className="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors mr-2"
+                  className="p-1.5 hover:bg-r-hover rounded-lg text-r-muted hover:text-r-text transition-colors mr-2"
                   title="Expand sidebar"
                 >
                   <Menu size={18} />
@@ -6376,7 +6376,7 @@ Include everything:
               )}
               <h1 className="font-bold text-xl flex items-center gap-2">
                 {isPromptsNotebook ? (
-                  <FileText size={24} className="text-blue-500" />
+                  <FileText size={24} className="text-r-primary" />
                 ) : isBookNotebook ? (
                   <BookOpen size={24} className="text-amber-400" />
                 ) : (
@@ -6388,15 +6388,15 @@ Include everything:
             <div className="flex items-center gap-2">
               {isPromptsNotebook ? (
                 <>
-                  <button onClick={exportData} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 rounded" title="Download full backup"><Download size={14} /> Backup</button>
-                  <button onClick={() => setShowBackupRestore(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 rounded" title="Restore from backup"><Upload size={14} /> Restore</button>
-                  <button onClick={openMergeDuplicates} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 rounded" title="Merge duplicate folders"><GitMerge size={14} /> Merge Duplicates</button>
+                  <button onClick={exportData} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-r-surface hover:bg-r-hover rounded" title="Download full backup"><Download size={14} /> Backup</button>
+                  <button onClick={() => setShowBackupRestore(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-r-surface hover:bg-r-hover rounded" title="Restore from backup"><Upload size={14} /> Restore</button>
+                  <button onClick={openMergeDuplicates} className="flex items-center gap-2 px-3 py-1.5 text-sm bg-r-surface hover:bg-r-hover rounded" title="Merge duplicate folders"><GitMerge size={14} /> Merge Duplicates</button>
                 </>
               ) : (
                 <>
                   <button
                     onClick={() => openEditNotebook(notebooks.find(n => n.id === activeNotebook))}
-                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 rounded"
+                    className="flex items-center gap-2 px-3 py-1.5 text-sm bg-r-surface hover:bg-r-hover rounded"
                     title="Edit notebook details"
                   >
                     <Edit2 size={14} /> Edit
@@ -6416,15 +6416,15 @@ Include everything:
 
       {/* Toolbar - Only show for Prompts notebook */}
       {isPromptsNotebook && (
-        <div className="border-b border-zinc-800 px-6 py-3">
+        <div className="border-b border-r-border px-6 py-3">
           <div className="flex items-center gap-3">
             <div className="flex-1 relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-              <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-zinc-800 rounded-lg pl-10 pr-10 py-2 text-sm" placeholder="Search prompts..." />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
+              <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-r-surface rounded-lg pl-10 pr-10 py-2 text-sm" placeholder="Search prompts..." />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-r-muted hover:text-r-text transition-colors"
                   title="Clear search"
                 >
                   <X size={16} />
@@ -6434,24 +6434,24 @@ Include everything:
             <button
               type="button"
               onClick={toggleAllFolders}
-              className="flex items-center gap-2 px-3 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 rounded-lg"
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-r-surface hover:bg-r-hover rounded-lg"
               title={areAllFoldersExpanded() ? 'Collapse all folders' : 'Expand all folders'}
             >
               {areAllFoldersExpanded() ? <ChevronsDownUp size={14} /> : <ChevronsUpDown size={14} />}
               {areAllFoldersExpanded() ? 'Collapse' : 'Expand'}
             </button>
-            <div className="h-6 w-px bg-zinc-700" />
-            <div className="flex items-center bg-zinc-800 rounded-lg p-1">
+            <div className="h-6 w-px bg-r-hover" />
+            <div className="flex items-center bg-r-surface rounded-lg p-1">
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-zinc-600 text-white' : 'text-zinc-400 hover:text-white'}`}
+                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-r-primary text-white' : 'text-r-muted hover:text-r-text'}`}
                 title="List view"
               >
                 <List size={16} />
               </button>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-zinc-600 text-white' : 'text-zinc-400 hover:text-white'}`}
+                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-r-primary text-white' : 'text-r-muted hover:text-r-text'}`}
                 title="Grid view"
               >
                 <LayoutGrid size={16} />
@@ -6460,23 +6460,23 @@ Include everything:
             {viewMode === 'grid' && (
               <button
                 onClick={() => setGridEditMode(!gridEditMode)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg ${gridEditMode ? 'bg-blue-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:text-white'}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg ${gridEditMode ? 'bg-r-primary text-white' : 'bg-r-surface text-r-muted hover:text-r-text'}`}
                 title="Toggle edit mode"
               >
                 <Edit2 size={14} />
                 <span>Edit</span>
               </button>
             )}
-            <div className="flex items-center gap-2 bg-zinc-800 rounded-lg px-3 py-1.5">
-              <ArrowUpDown size={14} className="text-zinc-500" />
+            <div className="flex items-center gap-2 bg-r-surface rounded-lg px-3 py-1.5">
+              <ArrowUpDown size={14} className="text-r-muted" />
               <select
                 value={folderSort}
                 onChange={(e) => setFolderSort(e.target.value)}
-                className="bg-transparent text-sm text-zinc-300 cursor-pointer focus:outline-none"
+                className="bg-transparent text-sm text-r-text cursor-pointer focus:outline-none"
               >
-                <option value="name" className="bg-zinc-800">Name</option>
-                <option value="prompts" className="bg-zinc-800">Prompts</option>
-                <option value="subfolders" className="bg-zinc-800">Subfolders</option>
+                <option value="name" className="bg-r-surface">Name</option>
+                <option value="prompts" className="bg-r-surface">Prompts</option>
+                <option value="subfolders" className="bg-r-surface">Subfolders</option>
               </select>
             </div>
           </div>
@@ -6485,42 +6485,42 @@ Include everything:
 
       {/* Tag Filter - Only show for Prompts notebook */}
       {isPromptsNotebook && showTagManager && (
-        <div className="border-b border-zinc-800 px-6 py-3">
+        <div className="border-b border-r-border px-6 py-3">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-zinc-400">Filter by tags</span>
-              <button onClick={() => setShowTagCategoryManager(true)} className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded">Manage Categories</button>
+              <span className="text-sm text-r-muted">Filter by tags</span>
+              <button onClick={() => setShowTagCategoryManager(true)} className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded">Manage Categories</button>
             </div>
             <div className="space-y-3">
               {(data.tagCategories || []).map(category => (
                 <div key={category.id}>
-                  <div className="text-xs text-zinc-500 mb-1.5 uppercase tracking-wide">{category.name}</div>
+                  <div className="text-xs text-r-muted mb-1.5 uppercase tracking-wide">{category.name}</div>
                   <div className="flex flex-wrap gap-2">
                     {category.tags.filter(tag => data.tags.includes(tag)).map(tag => (
-                      <button key={tag} onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])} className={`px-2 py-1 rounded text-xs ${selectedTags.includes(tag) ? 'bg-blue-600' : 'bg-zinc-800 hover:bg-zinc-700'}`}>{tag}</button>
+                      <button key={tag} onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])} className={`px-2 py-1 rounded text-xs ${selectedTags.includes(tag) ? 'bg-r-primary' : 'bg-r-surface hover:bg-r-hover'}`}>{tag}</button>
                     ))}
                     {category.tags.filter(tag => data.tags.includes(tag)).length === 0 && (
-                      <span className="text-xs text-zinc-600 italic">No tags in this category</span>
+                      <span className="text-xs text-r-muted italic">No tags in this category</span>
                     )}
                   </div>
                 </div>
               ))}
               {getUncategorizedTags().length > 0 && (
                 <div>
-                  <div className="text-xs text-zinc-500 mb-1.5 uppercase tracking-wide">Uncategorized</div>
+                  <div className="text-xs text-r-muted mb-1.5 uppercase tracking-wide">Uncategorized</div>
                   <div className="flex flex-wrap gap-2">
                     {getUncategorizedTags().map(tag => (
-                      <button key={tag} onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])} className={`px-2 py-1 rounded text-xs ${selectedTags.includes(tag) ? 'bg-blue-600' : 'bg-zinc-800 hover:bg-zinc-700'}`}>{tag}</button>
+                      <button key={tag} onClick={() => setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag])} className={`px-2 py-1 rounded text-xs ${selectedTags.includes(tag) ? 'bg-r-primary' : 'bg-r-surface hover:bg-r-hover'}`}>{tag}</button>
                     ))}
                   </div>
                 </div>
               )}
               {data.tags.length === 0 && (
-                <span className="text-xs text-zinc-600 italic">No tags yet. Add tags when creating prompts.</span>
+                <span className="text-xs text-r-muted italic">No tags yet. Add tags when creating prompts.</span>
               )}
             </div>
             {selectedTags.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-zinc-700">
+              <div className="mt-3 pt-3 border-t border-r-border">
                 <button onClick={() => setSelectedTags([])} className="px-2 py-1 rounded text-xs bg-red-600/30 hover:bg-red-600/50 text-red-300">Clear all filters</button>
               </div>
             )}
@@ -6533,18 +6533,18 @@ Include everything:
         <div className="px-6 py-6 flex-1 overflow-auto">
           <div className={`max-w-5xl mx-auto ${viewMode === 'list' ? 'space-y-1' : ''}`}>
             {loading ? (
-              <div className="text-center text-zinc-500 py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <div className="text-center text-r-muted py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-r-primary mx-auto mb-4"></div>
                 <p>Loading...</p>
               </div>
             ) : (
               <>
                 {viewMode === 'list' ? <FolderAccordion /> : <FolderGrid />}
                 {data.folders.length === 0 && (
-                  <div className="text-center text-zinc-500 py-12">
+                  <div className="text-center text-r-muted py-12">
                     <Folder size={48} className="mx-auto mb-4 opacity-50" />
                     <p>No folders yet</p>
-                    <button onClick={() => setShowNewFolder(true)} className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm">Create your first folder</button>
+                    <button onClick={() => setShowNewFolder(true)} className="mt-4 px-4 py-2 bg-r-primary hover:bg-blue-700 rounded text-sm">Create your first folder</button>
                   </div>
                 )}
               </>
@@ -6588,13 +6588,13 @@ Include everything:
                       </button>
                       <button
                         onClick={() => { setShowNewFolder(true); setNewFolderParent(null); setShowFabMenu(false); }}
-                        className="flex items-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded-lg shadow-lg text-sm whitespace-nowrap"
+                        className="flex items-center gap-2 px-4 py-2 bg-r-hover hover:bg-r-hover2 rounded-lg shadow-lg text-sm whitespace-nowrap"
                       >
                         <FolderPlus size={16} /> New Folder
                       </button>
                       <button
                         onClick={() => { setShowNewPrompt(true); setNewPromptFolder(null); setShowFabMenu(false); }}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg text-sm whitespace-nowrap"
+                        className="flex items-center gap-2 px-4 py-2 bg-r-primary hover:bg-blue-700 rounded-lg shadow-lg text-sm whitespace-nowrap"
                       >
                         <Plus size={16} /> New Prompt
                       </button>
@@ -6613,7 +6613,7 @@ Include everything:
                   ) : (
                     <button
                       onClick={() => { setShowNewNote(true); setNoteForm({ title: '', content: '', type: 'text', tags: [] }); setShowFabMenu(false); }}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg text-sm whitespace-nowrap"
+                      className="flex items-center gap-2 px-4 py-2 bg-r-primary hover:bg-blue-700 rounded-lg shadow-lg text-sm whitespace-nowrap"
                     >
                       <Plus size={16} /> New Note
                     </button>
@@ -6622,7 +6622,7 @@ Include everything:
               )}
               <button
                 onClick={() => setShowFabMenu(!showFabMenu)}
-                className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all ${showFabMenu ? 'bg-zinc-600 rotate-45' : isSpreadsheetContext ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'}`}
+                className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all ${showFabMenu ? 'bg-r-hover2 rotate-45' : isSpreadsheetContext ? 'bg-green-600 hover:bg-green-700' : 'bg-r-primary hover:bg-blue-700'}`}
               >
                 <Plus size={24} />
               </button>
@@ -6644,35 +6644,35 @@ Include everything:
       {/* Move Note Modal */}
       {showMoveNote && movingNoteId && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold flex items-center gap-2">
-                <Move size={20} className="text-blue-500" />
+                <Move size={20} className="text-r-primary" />
                 Move Note to Notebook
               </h2>
-              <button onClick={() => { setShowMoveNote(false); setMovingNoteId(null); setMoveNoteSearch(''); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowMoveNote(false); setMovingNoteId(null); setMoveNoteSearch(''); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
             <div className="p-4 flex-1 min-h-0 flex flex-col">
-              <p className="text-sm text-zinc-400 mb-3">
+              <p className="text-sm text-r-muted mb-3">
                 Select a notebook to move "{notes.find(n => n.id === movingNoteId)?.title}" to:
               </p>
               {/* Search bar */}
               <div className="relative mb-4">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
                 <input
                   type="text"
                   value={moveNoteSearch}
                   onChange={(e) => setMoveNoteSearch(e.target.value)}
                   placeholder="Search notebooks..."
-                  className="w-full bg-zinc-900 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-r-bg rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-r-primary"
                   autoFocus
                 />
                 {moveNoteSearch && (
                   <button
                     onClick={() => setMoveNoteSearch('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-r-muted hover:text-r-text"
                   >
                     <X size={14} />
                   </button>
@@ -6689,7 +6689,7 @@ Include everything:
 
                   if (filteredNotebooks.length === 0) {
                     return (
-                      <p className="text-zinc-500 text-sm text-center py-4">
+                      <p className="text-r-muted text-sm text-center py-4">
                         {moveNoteSearch ? 'No notebooks match your search.' : 'No other notebooks available. Create a new notebook first.'}
                       </p>
                     );
@@ -6707,7 +6707,7 @@ Include everything:
                         setActiveNotebook(notebook.id);
                         setActiveNote(noteIdToSelect);
                       }}
-                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-700 text-left transition-colors"
+                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-r-hover text-left transition-colors"
                     >
                       {notebook.type === 'book' ? (
                         <BookOpen size={18} className="text-amber-400" />
@@ -6716,12 +6716,12 @@ Include everything:
                       ) : notebook.type === 'spreadsheet' ? (
                         <Table size={18} className="text-green-400" />
                       ) : (
-                        <Notebook size={18} className="text-blue-400" />
+                        <Notebook size={18} className="text-r-primary" />
                       )}
                       <div className="flex-1 min-w-0">
                         <span className="block truncate">{notebook.name}</span>
                         {notebook.description && (
-                          <span className="text-xs text-zinc-500 truncate block">{notebook.description}</span>
+                          <span className="text-xs text-r-muted truncate block">{notebook.description}</span>
                         )}
                       </div>
                     </button>
@@ -6729,10 +6729,10 @@ Include everything:
                 })()}
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
               <button
                 onClick={() => { setShowMoveNote(false); setMovingNoteId(null); setMoveNoteSearch(''); }}
-                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+                className="px-4 py-2 text-sm hover:bg-r-hover rounded"
               >
                 Cancel
               </button>
@@ -6744,35 +6744,35 @@ Include everything:
       {/* Bulk Move Notes Modal */}
       {showBulkMoveNotes && selectedNotes.size > 0 && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[500px] max-h-[80vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[500px] max-h-[80vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold flex items-center gap-2">
-                <Move size={20} className="text-blue-500" />
+                <Move size={20} className="text-r-primary" />
                 Move {selectedNotes.size} Note{selectedNotes.size > 1 ? 's' : ''}
               </h2>
-              <button onClick={() => { setShowBulkMoveNotes(false); setBulkMoveNotesSearch(''); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowBulkMoveNotes(false); setBulkMoveNotesSearch(''); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
             <div className="p-4 flex-1 min-h-0 flex flex-col">
-              <p className="text-sm text-zinc-400 mb-3">
+              <p className="text-sm text-r-muted mb-3">
                 Select a notebook to move the selected notes to:
               </p>
               {/* Search bar */}
               <div className="relative mb-4">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
                 <input
                   type="text"
                   value={bulkMoveNotesSearch}
                   onChange={(e) => setBulkMoveNotesSearch(e.target.value)}
                   placeholder="Search notebooks..."
-                  className="w-full bg-zinc-900 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-r-bg rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-r-primary"
                   autoFocus
                 />
                 {bulkMoveNotesSearch && (
                   <button
                     onClick={() => setBulkMoveNotesSearch('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-r-muted hover:text-r-text"
                   >
                     <X size={14} />
                   </button>
@@ -6787,7 +6787,7 @@ Include everything:
 
                   if (filteredNotebooks.length === 0) {
                     return (
-                      <p className="text-zinc-500 text-sm text-center py-4">
+                      <p className="text-r-muted text-sm text-center py-4">
                         {bulkMoveNotesSearch ? 'No notebooks match your search.' : 'No notebooks available.'}
                       </p>
                     );
@@ -6797,7 +6797,7 @@ Include everything:
                     <button
                       key={notebook.id}
                       onClick={() => bulkMoveNotes(notebook.id)}
-                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-700 text-left transition-colors"
+                      className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-r-hover text-left transition-colors"
                     >
                       {notebook.type === 'book' ? (
                         <BookOpen size={18} className="text-amber-400" />
@@ -6806,12 +6806,12 @@ Include everything:
                       ) : notebook.type === 'spreadsheet' ? (
                         <Table size={18} className="text-green-400" />
                       ) : (
-                        <Notebook size={18} className="text-blue-400" />
+                        <Notebook size={18} className="text-r-primary" />
                       )}
                       <div className="flex-1 min-w-0">
                         <span className="block truncate">{notebook.name}</span>
                         {notebook.description && (
-                          <span className="text-xs text-zinc-500 truncate block">{notebook.description}</span>
+                          <span className="text-xs text-r-muted truncate block">{notebook.description}</span>
                         )}
                       </div>
                     </button>
@@ -6819,10 +6819,10 @@ Include everything:
                 })()}
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
               <button
                 onClick={() => { setShowBulkMoveNotes(false); setBulkMoveNotesSearch(''); }}
-                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+                className="px-4 py-2 text-sm hover:bg-r-hover rounded"
               >
                 Cancel
               </button>
@@ -6834,40 +6834,40 @@ Include everything:
       {/* Edit Notebook Modal */}
       {showEditNotebook && editingNotebook && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[500px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold flex items-center gap-2">
-                <Edit2 size={20} className="text-blue-500" />
+                <Edit2 size={20} className="text-r-primary" />
                 Edit Notebook
               </h2>
-              <button onClick={() => { setShowEditNotebook(false); setEditingNotebook(null); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowEditNotebook(false); setEditingNotebook(null); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Title</label>
+                <label className="block text-sm text-r-muted mb-2">Title</label>
                 <input
                   type="text"
                   value={editNotebookForm.name}
                   onChange={(e) => setEditNotebookForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-r-primary"
                   placeholder="Notebook title"
                   autoFocus
                 />
               </div>
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Description (optional)</label>
+                <label className="block text-sm text-r-muted mb-2">Description (optional)</label>
                 <textarea
                   value={editNotebookForm.description}
                   onChange={(e) => setEditNotebookForm(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-r-primary resize-none"
                   placeholder="A brief description of this notebook..."
                   rows={3}
                 />
               </div>
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Icon</label>
+                <label className="block text-sm text-r-muted mb-2">Icon</label>
                 <div className="grid grid-cols-8 gap-2">
                   {['', 'Notebook', 'BookOpen', 'FileText', 'Database', 'Table', 'Folder', 'Archive', 'Briefcase', 'Heart', 'Star', 'Target', 'Bookmark', 'Calendar', 'Clock', 'Globe'].map((iconName) => {
                     const IconComponent = iconName ? {
@@ -6879,8 +6879,8 @@ Include everything:
                         onClick={() => setEditNotebookForm(prev => ({ ...prev, icon: iconName }))}
                         className={`p-2 rounded-lg flex items-center justify-center transition-colors ${
                           editNotebookForm.icon === iconName
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-zinc-900 hover:bg-zinc-700 text-zinc-400'
+                            ? 'bg-r-primary text-white'
+                            : 'bg-r-bg hover:bg-r-hover text-r-muted'
                         }`}
                         title={iconName || 'No icon'}
                       >
@@ -6891,7 +6891,7 @@ Include everything:
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Icon Color</label>
+                <label className="block text-sm text-r-muted mb-2">Icon Color</label>
                 <div className="flex flex-wrap gap-2">
                   {notebookIconColors.map((color) => (
                     <button
@@ -6899,7 +6899,7 @@ Include everything:
                       onClick={() => setEditNotebookForm(prev => ({ ...prev, iconColor: color.id }))}
                       className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
                         editNotebookForm.iconColor === color.id
-                          ? 'ring-2 ring-white ring-offset-2 ring-offset-zinc-800'
+                          ? 'ring-2 ring-white ring-offset-2 ring-offset-r-surface'
                           : 'hover:scale-110'
                       }`}
                       style={{
@@ -6907,7 +6907,7 @@ Include everything:
                       }}
                       title={color.name}
                     >
-                      {color.id === '' && <X size={14} className="text-zinc-300" />}
+                      {color.id === '' && <X size={14} className="text-r-text" />}
                     </button>
                   ))}
                 </div>
@@ -6925,17 +6925,17 @@ Include everything:
                 `}</style>
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
               <button
                 onClick={() => { setShowEditNotebook(false); setEditingNotebook(null); }}
-                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+                className="px-4 py-2 text-sm hover:bg-r-hover rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={updateNotebookDetails}
                 disabled={!editNotebookForm.name.trim()}
-                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save Changes
               </button>
@@ -6947,51 +6947,51 @@ Include everything:
       {/* New Notebook Modal */}
       {showNewNotebook && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[500px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold flex items-center gap-2">
                 <Notebook size={20} className="text-purple-500" />
                 Create New Notebook
               </h2>
-              <button onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookDescription(''); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookDescription(''); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
             <div className="p-4 space-y-4">
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Title</label>
+                <label className="block text-sm text-r-muted mb-2">Title</label>
                 <input
                   type="text"
                   value={newNotebookName}
                   onChange={(e) => setNewNotebookName(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500"
                   placeholder="My Notebook"
                   autoFocus
                   onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) createNotebook(); }}
                 />
               </div>
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Description <span className="text-zinc-600">(optional)</span></label>
+                <label className="block text-sm text-r-muted mb-2">Description <span className="text-r-muted">(optional)</span></label>
                 <textarea
                   value={newNotebookDescription}
                   onChange={(e) => setNewNotebookDescription(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 resize-none"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-purple-500 resize-none"
                   placeholder="A brief description of this notebook..."
                   rows={3}
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
               <button
                 onClick={() => { setShowNewNotebook(false); setNewNotebookName(''); setNewNotebookDescription(''); }}
-                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+                className="px-4 py-2 text-sm hover:bg-r-hover rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={createNotebook}
                 disabled={!newNotebookName.trim()}
-                className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-700 disabled:bg-zinc-600 disabled:cursor-not-allowed rounded flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-purple-600 hover:bg-purple-700 disabled:bg-r-hover2 disabled:cursor-not-allowed rounded flex items-center gap-2"
               >
                 <Plus size={14} /> Create Notebook
               </button>
@@ -7003,8 +7003,8 @@ Include everything:
       {/* New Note Modal */}
       {showNewNote && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold flex items-center gap-2">
                 {isBookNotebook ? (
                   <BookOpen size={20} className="text-amber-400" />
@@ -7015,18 +7015,18 @@ Include everything:
                 ) : noteForm.type === 'filepath' ? (
                   <FolderSymlink size={20} className="text-cyan-500" />
                 ) : (
-                  <FileText size={20} className="text-blue-500" />
+                  <FileText size={20} className="text-r-primary" />
                 )}
                 {isBookNotebook ? 'Add New Chapter' : 'Create New Note'}
               </h2>
-              <button onClick={() => { setShowNewNote(false); setNoteForm({ title: '', content: '', type: 'text', tags: [] }); setSelectedSpreadsheetTemplate(null); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowNewNote(false); setNoteForm({ title: '', content: '', type: 'text', tags: [] }); setSelectedSpreadsheetTemplate(null); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
             <div className="p-4 space-y-4 flex-1 min-h-0 modal-scroll">
               {/* Template Selection */}
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">Template</label>
+                <label className="block text-sm text-r-muted mb-2">Template</label>
                 <div className="grid grid-cols-2 gap-3">
                   {noteTemplates.map(template => {
                     const isRepository = template.id === 'repository';
@@ -7034,12 +7034,12 @@ Include everything:
                     const isActive = isRepository ? isRepoSubType : noteForm.type === template.id;
 
                     const iconMap = {
-                      'FileText': <FileText size={20} className={isActive ? 'text-blue-400' : 'text-zinc-400'} />,
-                      'Table': <Table size={20} className={isActive ? 'text-blue-400' : 'text-zinc-400'} />,
-                      'Database': <Database size={20} className={isActive ? 'text-cyan-400' : 'text-zinc-400'} />,
-                      'BookOpen': <BookOpen size={20} className={isActive ? 'text-amber-400' : 'text-zinc-400'} />,
-                      'Plane': <Plane size={20} className={isActive ? 'text-sky-400' : 'text-zinc-400'} />,
-                      'Clapperboard': <Clapperboard size={20} className={isActive ? 'text-pink-400' : 'text-zinc-400'} />,
+                      'FileText': <FileText size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
+                      'Table': <Table size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
+                      'Database': <Database size={20} className={isActive ? 'text-cyan-400' : 'text-r-muted'} />,
+                      'BookOpen': <BookOpen size={20} className={isActive ? 'text-amber-400' : 'text-r-muted'} />,
+                      'Plane': <Plane size={20} className={isActive ? 'text-sky-400' : 'text-r-muted'} />,
+                      'Clapperboard': <Clapperboard size={20} className={isActive ? 'text-pink-400' : 'text-r-muted'} />,
                     };
 
                     return (
@@ -7060,15 +7060,15 @@ Include everything:
                           }}
                           className={`p-4 rounded-lg border-2 text-left transition-colors ${
                             isActive
-                              ? isRepository ? 'border-cyan-500 bg-cyan-500/10' : 'border-blue-500 bg-blue-500/10'
-                              : 'border-zinc-700 hover:border-zinc-600 bg-zinc-900'
+                              ? isRepository ? 'border-cyan-500 bg-cyan-500/10' : 'border-r-primary bg-r-primary/10'
+                              : 'border-r-border hover:border-r-border bg-r-bg'
                           }`}
                         >
                           <div className="flex items-center gap-3 mb-2">
-                            {iconMap[template.icon] || <FileText size={20} className="text-zinc-400" />}
+                            {iconMap[template.icon] || <FileText size={20} className="text-r-muted" />}
                             <span className="font-medium">{template.name}</span>
                           </div>
-                          <p className="text-xs text-zinc-500">{template.description}</p>
+                          <p className="text-xs text-r-muted">{template.description}</p>
                         </button>
                         {/* Sub-category selector for Repository */}
                         {isRepository && isRepoSubType && (
@@ -7082,18 +7082,18 @@ Include everything:
                                   className={`p-3 rounded-lg border text-left transition-colors ${
                                     subActive
                                       ? 'border-cyan-500 bg-cyan-500/10'
-                                      : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800'
+                                      : 'border-r-border hover:border-r-border bg-r-surface'
                                   }`}
                                 >
                                   <div className="flex items-center gap-2 mb-1">
                                     {sub.icon === 'MessageSquare' ? (
-                                      <MessageSquare size={16} className={subActive ? 'text-purple-400' : 'text-zinc-400'} />
+                                      <MessageSquare size={16} className={subActive ? 'text-purple-400' : 'text-r-muted'} />
                                     ) : (
-                                      <FolderSymlink size={16} className={subActive ? 'text-cyan-400' : 'text-zinc-400'} />
+                                      <FolderSymlink size={16} className={subActive ? 'text-cyan-400' : 'text-r-muted'} />
                                     )}
                                     <span className="font-medium text-sm">{sub.name}</span>
                                   </div>
-                                  <p className="text-xs text-zinc-500">{sub.description}</p>
+                                  <p className="text-xs text-r-muted">{sub.description}</p>
                                 </button>
                               );
                             })}
@@ -7106,12 +7106,12 @@ Include everything:
               </div>
 
               <div>
-                <label className="block text-sm text-zinc-400 mb-2">{isBookNotebook ? 'Chapter Title' : 'Title'}</label>
+                <label className="block text-sm text-r-muted mb-2">{isBookNotebook ? 'Chapter Title' : 'Title'}</label>
                 <input
                   type="text"
                   value={noteForm.title}
                   onChange={(e) => setNoteForm(prev => ({ ...prev, title: e.target.value }))}
-                  className={`w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm focus:outline-none ${isBookNotebook ? 'focus:border-amber-500' : 'focus:border-blue-500'}`}
+                  className={`w-full bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm focus:outline-none ${isBookNotebook ? 'focus:border-amber-500' : 'focus:border-r-primary'}`}
                   placeholder={isBookNotebook ? 'Chapter title' : 'Note title'}
                   autoFocus
                 />
@@ -7120,11 +7120,11 @@ Include everything:
               {/* Only show content field for text notes */}
               {noteForm.type === 'text' && (
                 <div>
-                  <label className="block text-sm text-zinc-400 mb-2">{isBookNotebook ? 'Chapter Content (optional)' : 'Content (optional)'}</label>
+                  <label className="block text-sm text-r-muted mb-2">{isBookNotebook ? 'Chapter Content (optional)' : 'Content (optional)'}</label>
                   <textarea
                     value={noteForm.content}
                     onChange={(e) => setNoteForm(prev => ({ ...prev, content: e.target.value }))}
-                    className={`w-full h-32 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm resize-none focus:outline-none ${isBookNotebook ? 'focus:border-amber-500' : 'focus:border-blue-500'}`}
+                    className={`w-full h-32 bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm resize-none focus:outline-none ${isBookNotebook ? 'focus:border-amber-500' : 'focus:border-r-primary'}`}
                     placeholder={isBookNotebook ? 'Write your chapter content here...' : 'Write your note content here... You can paste any text content.'}
                   />
                 </div>
@@ -7132,9 +7132,9 @@ Include everything:
 
               {noteForm.type === 'spreadsheet' && (
                 <div className="space-y-4">
-                  <label className="block text-sm text-zinc-400">Choose a Spreadsheet Template</label>
+                  <label className="block text-sm text-r-muted">Choose a Spreadsheet Template</label>
                   {spreadsheetCategories.map(category => (
-                    <div key={category.id} className="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+                    <div key={category.id} className="bg-r-bg border border-r-border rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-3">
                         {category.icon === 'Heart' ? (
                           <Heart size={18} className="text-red-400" />
@@ -7143,7 +7143,7 @@ Include everything:
                         ) : category.icon === 'Briefcase' ? (
                           <Briefcase size={18} className="text-amber-400" />
                         ) : (
-                          <Target size={18} className="text-blue-400" />
+                          <Target size={18} className="text-r-primary" />
                         )}
                         <h3 className="font-medium text-sm">{category.name}</h3>
                       </div>
@@ -7154,33 +7154,33 @@ Include everything:
                             onClick={() => setSelectedSpreadsheetTemplate(template)}
                             className={`p-3 rounded-lg border text-left transition-colors ${
                               selectedSpreadsheetTemplate?.id === template.id
-                                ? 'border-blue-500 bg-blue-500/10'
-                                : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800'
+                                ? 'border-r-primary bg-r-primary/10'
+                                : 'border-r-border hover:border-r-border bg-r-surface'
                             }`}
                           >
                             <div className="font-medium text-sm mb-1">{template.name}</div>
-                            <p className="text-xs text-zinc-500">{template.description}</p>
+                            <p className="text-xs text-r-muted">{template.description}</p>
                           </button>
                         ))}
                       </div>
                     </div>
                   ))}
                   {/* Blank spreadsheet option */}
-                  <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+                  <div className="bg-r-bg border border-r-border rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <Table size={18} className="text-zinc-400" />
+                      <Table size={18} className="text-r-muted" />
                       <h3 className="font-medium text-sm">Blank</h3>
                     </div>
                     <button
                       onClick={() => setSelectedSpreadsheetTemplate({ id: 'blank', name: 'Blank Spreadsheet', data: null })}
                       className={`w-full p-3 rounded-lg border text-left transition-colors ${
                         selectedSpreadsheetTemplate?.id === 'blank'
-                          ? 'border-blue-500 bg-blue-500/10'
-                          : 'border-zinc-700 hover:border-zinc-600 bg-zinc-800'
+                          ? 'border-r-primary bg-r-primary/10'
+                          : 'border-r-border hover:border-r-border bg-r-surface'
                       }`}
                     >
                       <div className="font-medium text-sm mb-1">Blank Spreadsheet</div>
-                      <p className="text-xs text-zinc-500">Start with 3 empty columns and rows</p>
+                      <p className="text-xs text-r-muted">Start with 3 empty columns and rows</p>
                     </button>
                   </div>
                 </div>
@@ -7190,16 +7190,16 @@ Include everything:
               {noteForm.type === 'prompt' && (
                 <>
                   <div>
-                    <label className="block text-sm text-zinc-400 mb-2">Prompt Content</label>
+                    <label className="block text-sm text-r-muted mb-2">Prompt Content</label>
                     <textarea
                       value={noteForm.content}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, content: e.target.value }))}
-                      className="w-full h-32 bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:border-blue-500"
+                      className="w-full h-32 bg-r-bg border border-r-border rounded-lg px-4 py-3 text-sm resize-none focus:outline-none focus:border-r-primary"
                       placeholder="Enter your AI prompt here..."
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-zinc-400 mb-2">Tags</label>
+                    <label className="block text-sm text-r-muted mb-2">Tags</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {(noteForm.tags || []).map(tag => (
                         <span key={tag} className="bg-purple-600/30 text-purple-300 px-2 py-1 rounded text-xs flex items-center gap-1">
@@ -7216,7 +7216,7 @@ Include everything:
                     <input
                       type="text"
                       placeholder="Type a tag and press Enter"
-                      className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500"
+                      className="w-full bg-r-bg border border-r-border rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-r-primary"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.target.value.trim()) {
                           e.preventDefault();
@@ -7231,12 +7231,12 @@ Include everything:
                     {/* Suggested tags */}
                     {data.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
-                        <span className="text-xs text-zinc-500">Suggestions:</span>
+                        <span className="text-xs text-r-muted">Suggestions:</span>
                         {data.tags.filter(t => !(noteForm.tags || []).includes(t)).slice(0, 10).map(tag => (
                           <button
                             key={tag}
                             onClick={() => setNoteForm(prev => ({ ...prev, tags: [...(prev.tags || []), tag] }))}
-                            className="text-xs px-1.5 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded"
+                            className="text-xs px-1.5 py-0.5 bg-r-surface hover:bg-r-hover rounded"
                           >
                             + {tag}
                           </button>
@@ -7250,28 +7250,28 @@ Include everything:
               {/* Filepath-specific fields */}
               {noteForm.type === 'filepath' && (
                 <div className="space-y-3">
-                  <p className="text-xs text-zinc-500">This creates a spreadsheet to store filepaths you can quickly copy to your terminal or use to locate files and folders.</p>
-                  <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-4">
+                  <p className="text-xs text-r-muted">This creates a spreadsheet to store filepaths you can quickly copy to your terminal or use to locate files and folders.</p>
+                  <div className="bg-r-bg border border-r-border rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <FolderSymlink size={16} className="text-cyan-400" />
-                      <span className="text-sm font-medium text-zinc-300">Filepath columns: Name, Path, Type, Description</span>
+                      <span className="text-sm font-medium text-r-text">Filepath columns: Name, Path, Type, Description</span>
                     </div>
-                    <p className="text-xs text-zinc-500">Each row stores a filepath with a label, the full path, type (file/folder), and an optional description.</p>
+                    <p className="text-xs text-r-muted">Each row stores a filepath with a label, the full path, type (file/folder), and an optional description.</p>
                   </div>
                 </div>
               )}
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
               <button
                 onClick={() => { setShowNewNote(false); setNoteForm({ title: '', content: '', type: 'text', tags: [] }); }}
-                className="px-4 py-2 text-sm hover:bg-zinc-700 rounded"
+                className="px-4 py-2 text-sm hover:bg-r-hover rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={createNote}
                 disabled={!noteForm.title.trim()}
-                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-600 disabled:cursor-not-allowed rounded flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 disabled:bg-r-hover2 disabled:cursor-not-allowed rounded flex items-center gap-2"
               >
                 <Plus size={14} /> Create Note
               </button>
@@ -7304,10 +7304,10 @@ Include everything:
       )}
       {showNewFolder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h3 className="font-semibold">New Folder</h3>
-              <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="p-1 hover:bg-zinc-700 rounded">
+              <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
@@ -7316,11 +7316,11 @@ Include everything:
                 id="new-folder-input"
                 autoFocus
                 placeholder="Folder name..."
-                className="w-full bg-zinc-900 rounded px-3 py-2 text-sm mb-3"
+                className="w-full bg-r-bg rounded px-3 py-2 text-sm mb-3"
                 onKeyDown={(e) => { if (e.key === 'Enter' && e.target.value.trim()) addFolder(e.target.value.trim(), newFolderParent); }}
               />
               <div className="mb-3">
-                <label className="text-sm text-zinc-400 mb-1 block">Parent Folder</label>
+                <label className="text-sm text-r-muted mb-1 block">Parent Folder</label>
                 <FolderPathSelector
                   selectedFolderId={newFolderParent}
                   onSelect={(folderId) => setNewFolderParent(folderId)}
@@ -7329,9 +7329,9 @@ Include everything:
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="px-3 py-1.5 text-sm hover:bg-zinc-700 rounded">Cancel</button>
-              <button onClick={() => { const input = document.getElementById('new-folder-input'); if (input?.value.trim()) addFolder(input.value.trim(), newFolderParent); }} className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 rounded">Create</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="px-3 py-1.5 text-sm hover:bg-r-hover rounded">Cancel</button>
+              <button onClick={() => { const input = document.getElementById('new-folder-input'); if (input?.value.trim()) addFolder(input.value.trim(), newFolderParent); }} className="px-3 py-1.5 text-sm bg-r-primary hover:bg-blue-700 rounded">Create</button>
             </div>
           </div>
         </div>
@@ -7346,12 +7346,12 @@ Include everything:
       {/* Context Menu */}
       {contextMenu && (
         <div className="fixed inset-0 z-50" onClick={() => setContextMenu(null)}>
-          <div className="absolute bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl py-1 w-48" style={{ left: contextMenu.x, top: contextMenu.y }}>
-            <button onClick={() => { setRenameFolder(contextMenu.folderId); setRenameFolderValue(contextMenu.folderName); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 flex items-center gap-2"><Edit2 size={14} /> Rename</button>
-            <button onClick={() => { setNewFolderParent(contextMenu.folderId); setShowNewFolder(true); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 flex items-center gap-2"><FolderPlus size={14} /> Add Subfolder</button>
-            <button onClick={() => { setNewPromptFolder(contextMenu.folderId); setShowNewPrompt(true); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 flex items-center gap-2"><Plus size={14} /> Add Prompt</button>
-            <div className="border-t border-zinc-700 my-1" />
-            <button onClick={() => { deleteFolder(contextMenu.folderId); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-700 text-red-400 flex items-center gap-2"><Trash2 size={14} /> Delete</button>
+          <div className="absolute bg-r-surface border border-r-border rounded-lg shadow-xl py-1 w-48" style={{ left: contextMenu.x, top: contextMenu.y }}>
+            <button onClick={() => { setRenameFolder(contextMenu.folderId); setRenameFolderValue(contextMenu.folderName); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover flex items-center gap-2"><Edit2 size={14} /> Rename</button>
+            <button onClick={() => { setNewFolderParent(contextMenu.folderId); setShowNewFolder(true); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover flex items-center gap-2"><FolderPlus size={14} /> Add Subfolder</button>
+            <button onClick={() => { setNewPromptFolder(contextMenu.folderId); setShowNewPrompt(true); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover flex items-center gap-2"><Plus size={14} /> Add Prompt</button>
+            <div className="border-t border-r-border my-1" />
+            <button onClick={() => { deleteFolder(contextMenu.folderId); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover text-red-400 flex items-center gap-2"><Trash2 size={14} /> Delete</button>
           </div>
         </div>
       )}
@@ -7359,28 +7359,28 @@ Include everything:
       {/* Backup/Restore Modal */}
       {showBackupRestore && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold">Restore from Backup</h2>
-              <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               {!backupPreview ? (
                 <div>
-                  <div className="border-2 border-dashed border-zinc-600 rounded-lg p-8 text-center mb-4">
-                    <Upload size={32} className="mx-auto mb-3 text-zinc-500" />
-                    <p className="text-sm text-zinc-400 mb-3">Upload a Prompt Repository backup file</p>
-                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded cursor-pointer text-sm">
+                  <div className="border-2 border-dashed border-r-border rounded-lg p-8 text-center mb-4">
+                    <Upload size={32} className="mx-auto mb-3 text-r-muted" />
+                    <p className="text-sm text-r-muted mb-3">Upload a Prompt Repository backup file</p>
+                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-r-primary hover:bg-blue-700 rounded cursor-pointer text-sm">
                       <Upload size={14} /> Choose Backup File
                       <input type="file" accept=".json" onChange={handleBackupFile} className="hidden" />
                     </label>
                   </div>
-                  <div className="bg-zinc-900 rounded-lg p-4 text-sm text-zinc-400">
-                    <p className="mb-2"><strong className="text-zinc-300">How it works:</strong></p>
+                  <div className="bg-r-bg rounded-lg p-4 text-sm text-r-muted">
+                    <p className="mb-2"><strong className="text-r-text">How it works:</strong></p>
                     <ul className="list-disc list-inside space-y-1">
                       <li>Upload a backup file previously exported from Prompt Repository</li>
                       <li>Preview what will be imported before confirming</li>
-                      <li>Choose to <strong className="text-zinc-300">Replace</strong> all data or <strong className="text-zinc-300">Merge</strong> with existing</li>
+                      <li>Choose to <strong className="text-r-text">Replace</strong> all data or <strong className="text-r-text">Merge</strong> with existing</li>
                       <li>All folders, subfolders, prompts, tags, and categories will be restored</li>
                     </ul>
                   </div>
@@ -7388,50 +7388,50 @@ Include everything:
               ) : !backupPreview.valid ? (
                 <div className="text-center py-8">
                   <div className="text-red-400 mb-2">Invalid Backup File</div>
-                  <p className="text-sm text-zinc-400 mb-4">{backupPreview.error}</p>
-                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-700 hover:bg-zinc-600 rounded cursor-pointer text-sm">
+                  <p className="text-sm text-r-muted mb-4">{backupPreview.error}</p>
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-r-hover hover:bg-r-hover2 rounded cursor-pointer text-sm">
                     Try Another File
                     <input type="file" accept=".json" onChange={handleBackupFile} className="hidden" />
                   </label>
                 </div>
               ) : (
                 <div>
-                  <div className="bg-zinc-900 rounded-lg p-4 mb-4">
+                  <div className="bg-r-bg rounded-lg p-4 mb-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <FileText size={18} className="text-blue-400" />
+                      <FileText size={18} className="text-r-primary" />
                       <span className="font-medium">{backupPreview.fileName}</span>
                     </div>
                     {backupPreview.exportDate && (
-                      <div className="text-xs text-zinc-500 mb-3">
+                      <div className="text-xs text-r-muted mb-3">
                         Exported: {new Date(backupPreview.exportDate).toLocaleString()}
                       </div>
                     )}
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-zinc-800 rounded p-3 text-center">
+                      <div className="bg-r-surface rounded p-3 text-center">
                         <div className="text-2xl font-bold text-yellow-400">{backupPreview.folderCount}</div>
-                        <div className="text-xs text-zinc-400">Folders</div>
+                        <div className="text-xs text-r-muted">Folders</div>
                       </div>
-                      <div className="bg-zinc-800 rounded p-3 text-center">
-                        <div className="text-2xl font-bold text-blue-400">{backupPreview.promptCount}</div>
-                        <div className="text-xs text-zinc-400">Prompts</div>
+                      <div className="bg-r-surface rounded p-3 text-center">
+                        <div className="text-2xl font-bold text-r-primary">{backupPreview.promptCount}</div>
+                        <div className="text-xs text-r-muted">Prompts</div>
                       </div>
-                      <div className="bg-zinc-800 rounded p-3 text-center">
+                      <div className="bg-r-surface rounded p-3 text-center">
                         <div className="text-2xl font-bold text-green-400">{backupPreview.tagCount}</div>
-                        <div className="text-xs text-zinc-400">Tags</div>
+                        <div className="text-xs text-r-muted">Tags</div>
                       </div>
-                      <div className="bg-zinc-800 rounded p-3 text-center">
+                      <div className="bg-r-surface rounded p-3 text-center">
                         <div className="text-2xl font-bold text-purple-400">{backupPreview.categoryCount}</div>
-                        <div className="text-xs text-zinc-400">Tag Categories</div>
+                        <div className="text-xs text-r-muted">Tag Categories</div>
                       </div>
                     </div>
                   </div>
 
                   {backupPreview.rootFolders.length > 0 && (
-                    <div className="bg-zinc-900 rounded-lg p-4 mb-4">
-                      <div className="text-sm text-zinc-400 mb-2">Root Folders:</div>
+                    <div className="bg-r-bg rounded-lg p-4 mb-4">
+                      <div className="text-sm text-r-muted mb-2">Root Folders:</div>
                       <div className="flex flex-wrap gap-2">
                         {backupPreview.rootFolders.map(f => (
-                          <span key={f.id} className="px-2 py-1 bg-zinc-800 rounded text-sm flex items-center gap-1">
+                          <span key={f.id} className="px-2 py-1 bg-r-surface rounded text-sm flex items-center gap-1">
                             <Folder size={12} className="text-yellow-500" /> {f.name}
                           </span>
                         ))}
@@ -7442,22 +7442,22 @@ Include everything:
                   <div className="space-y-2">
                     <button
                       onClick={() => restoreFromBackup('replace')}
-                      className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-left"
+                      className="w-full p-3 bg-r-primary hover:bg-blue-700 rounded-lg text-left"
                     >
                       <div className="font-medium">Replace All</div>
                       <div className="text-xs text-blue-200">Clear existing data and restore from backup</div>
                     </button>
                     <button
                       onClick={() => restoreFromBackup('merge')}
-                      className="w-full p-3 bg-zinc-700 hover:bg-zinc-600 rounded-lg text-left"
+                      className="w-full p-3 bg-r-hover hover:bg-r-hover2 rounded-lg text-left"
                     >
                       <div className="font-medium">Merge</div>
-                      <div className="text-xs text-zinc-400">Add new items, keep existing data</div>
+                      <div className="text-xs text-r-muted">Add new items, keep existing data</div>
                     </button>
                   </div>
 
                   <div className="mt-4 text-center">
-                    <label className="text-xs text-zinc-500 hover:text-zinc-300 cursor-pointer">
+                    <label className="text-xs text-r-muted hover:text-r-text cursor-pointer">
                       Choose a different file
                       <input type="file" accept=".json" onChange={handleBackupFile} className="hidden" />
                     </label>
@@ -7465,8 +7465,8 @@ Include everything:
                 </div>
               )}
             </div>
-            <div className="flex justify-end p-4 border-t border-zinc-700">
-              <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="px-4 py-2 text-sm hover:bg-zinc-700 rounded">Cancel</button>
+            <div className="flex justify-end p-4 border-t border-r-border">
+              <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="px-4 py-2 text-sm hover:bg-r-hover rounded">Cancel</button>
             </div>
           </div>
         </div>
@@ -7475,23 +7475,23 @@ Include everything:
       {/* Rename Folder Modal */}
       {renameFolder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h3 className="font-semibold">Rename Folder</h3>
-              <button onClick={() => setRenameFolder(null)} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => setRenameFolder(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               <input
                 autoFocus
                 value={renameFolderValue}
                 onChange={(e) => setRenameFolderValue(e.target.value)}
-                className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                 onKeyDown={(e) => { if (e.key === 'Enter' && renameFolderValue.trim()) { updateFolder(renameFolder, renameFolderValue.trim()); setRenameFolder(null); } }}
               />
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => setRenameFolder(null)} className="px-3 py-1.5 text-sm hover:bg-zinc-700 rounded">Cancel</button>
-              <button onClick={() => { if (renameFolderValue.trim()) { updateFolder(renameFolder, renameFolderValue.trim()); setRenameFolder(null); } }} className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 rounded">Rename</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => setRenameFolder(null)} className="px-3 py-1.5 text-sm hover:bg-r-hover rounded">Cancel</button>
+              <button onClick={() => { if (renameFolderValue.trim()) { updateFolder(renameFolder, renameFolderValue.trim()); setRenameFolder(null); } }} className="px-3 py-1.5 text-sm bg-r-primary hover:bg-blue-700 rounded">Rename</button>
             </div>
           </div>
         </div>
@@ -7500,27 +7500,27 @@ Include everything:
       {/* Move Prompt Modal */}
       {movingPrompt && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <div>
                 <h3 className="font-semibold">Move Prompt</h3>
-                <p className="text-sm text-zinc-400">"{movingPrompt.title}"</p>
+                <p className="text-sm text-r-muted">"{movingPrompt.title}"</p>
               </div>
-              <button onClick={() => setMovingPrompt(null)} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => setMovingPrompt(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               <div className="relative mb-3">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
                 <input
                   type="text"
                   placeholder="Search folders..."
-                  className="w-full bg-zinc-900 rounded px-3 py-2 pl-9 text-sm"
+                  className="w-full bg-r-bg rounded px-3 py-2 pl-9 text-sm"
                   onChange={(e) => setMovingPrompt({ ...movingPrompt, search: e.target.value })}
                   value={movingPrompt.search || ''}
                   autoFocus
                 />
               </div>
-              <div className="bg-zinc-900 rounded-lg">
+              <div className="bg-r-bg rounded-lg">
               {getSortedFoldersHierarchically()
                 .filter(f => {
                   if (!movingPrompt.search) return true;
@@ -7536,12 +7536,12 @@ Include everything:
                         movePrompt(movingPrompt.id, f.id);
                         setMovingPrompt(null);
                       }}
-                      className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${isCurrentFolder ? 'opacity-50 cursor-not-allowed bg-zinc-800' : 'hover:bg-zinc-700'}`}
+                      className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 ${isCurrentFolder ? 'opacity-50 cursor-not-allowed bg-r-surface' : 'hover:bg-r-hover'}`}
                     >
                       <span style={{ width: `${f.depth * 16}px` }} className="flex-shrink-0" />
                       <Folder size={14} className="text-yellow-500 flex-shrink-0" />
                       <span className="truncate">{f.name}</span>
-                      {isCurrentFolder && <span className="ml-auto text-xs text-zinc-500 flex-shrink-0">(current)</span>}
+                      {isCurrentFolder && <span className="ml-auto text-xs text-r-muted flex-shrink-0">(current)</span>}
                     </button>
                   );
                 })}
@@ -7549,12 +7549,12 @@ Include everything:
                 if (!movingPrompt.search) return true;
                 return getFolderPath(f.id).toLowerCase().includes(movingPrompt.search.toLowerCase());
               }).length === 0 && (
-                  <div className="px-3 py-4 text-sm text-zinc-500 text-center">No folders found</div>
+                  <div className="px-3 py-4 text-sm text-r-muted text-center">No folders found</div>
                 )}
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => setMovingPrompt(null)} className="px-3 py-1.5 text-sm hover:bg-zinc-700 rounded">Cancel</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => setMovingPrompt(null)} className="px-3 py-1.5 text-sm hover:bg-r-hover rounded">Cancel</button>
             </div>
           </div>
         </div>
@@ -7563,38 +7563,38 @@ Include everything:
       {/* Bulk Move Modal */}
       {showBulkMove && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <div>
                 <h3 className="font-semibold">Move Prompts</h3>
-                <p className="text-sm text-zinc-400">Move {selectedPrompts.size} prompt{selectedPrompts.size > 1 ? 's' : ''} to a folder</p>
+                <p className="text-sm text-r-muted">Move {selectedPrompts.size} prompt{selectedPrompts.size > 1 ? 's' : ''} to a folder</p>
               </div>
-              <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); }} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               <div className="relative mb-3">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
                 <input
                   type="text"
                   placeholder="Search folders..."
-                  className="w-full bg-zinc-900 rounded px-3 py-2 pl-9 text-sm"
+                  className="w-full bg-r-bg rounded px-3 py-2 pl-9 text-sm"
                   onChange={(e) => setBulkMoveSearch(e.target.value)}
                   value={bulkMoveSearch}
                   autoFocus
                 />
               </div>
-              <div className="max-h-64 overflow-auto bg-zinc-900 rounded-lg mb-4">
+              <div className="max-h-64 overflow-auto bg-r-bg rounded-lg mb-4">
               {/* New root folder button */}
               <button
                 onClick={() => setBulkMoveNewFolder({ show: true, parentId: null, name: '' })}
-                className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-zinc-700 text-blue-400 border-b border-zinc-700"
+                className="w-full text-left px-3 py-2 text-sm flex items-center gap-2 hover:bg-r-hover text-r-primary border-b border-r-border"
               >
                 <FolderPlus size={14} />
                 <span>Create new folder</span>
               </button>
               {/* Inline new folder form for root level */}
               {bulkMoveNewFolder.show && bulkMoveNewFolder.parentId === null && (
-                <div className="px-3 py-2 bg-zinc-800 border-b border-zinc-700">
+                <div className="px-3 py-2 bg-r-surface border-b border-r-border">
                   <div className="flex items-center gap-2">
                     <Folder size={14} className="text-yellow-500 flex-shrink-0" />
                     <input
@@ -7603,11 +7603,11 @@ Include everything:
                       value={bulkMoveNewFolder.name}
                       onChange={(e) => setBulkMoveNewFolder(prev => ({ ...prev, name: e.target.value }))}
                       onKeyDown={(e) => { if (e.key === 'Enter') createFolderInBulkMove(); if (e.key === 'Escape') setBulkMoveNewFolder({ show: false, parentId: null, name: '' }); }}
-                      className="flex-1 bg-zinc-900 rounded px-2 py-1 text-sm"
+                      className="flex-1 bg-r-bg rounded px-2 py-1 text-sm"
                       autoFocus
                     />
-                    <button onClick={createFolderInBulkMove} className="p-1 hover:bg-zinc-600 rounded text-green-400"><Check size={14} /></button>
-                    <button onClick={() => setBulkMoveNewFolder({ show: false, parentId: null, name: '' })} className="p-1 hover:bg-zinc-600 rounded text-zinc-400"><X size={14} /></button>
+                    <button onClick={createFolderInBulkMove} className="p-1 hover:bg-r-hover2 rounded text-green-400"><Check size={14} /></button>
+                    <button onClick={() => setBulkMoveNewFolder({ show: false, parentId: null, name: '' })} className="p-1 hover:bg-r-hover2 rounded text-r-muted"><X size={14} /></button>
                   </div>
                 </div>
               )}
@@ -7627,7 +7627,7 @@ Include everything:
                   return (
                     <div key={f.id}>
                       <div
-                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 group ${allInThisFolder ? 'opacity-50 bg-zinc-800' : 'hover:bg-zinc-700'}`}
+                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-2 group ${allInThisFolder ? 'opacity-50 bg-r-surface' : 'hover:bg-r-hover'}`}
                       >
                         <span style={{ width: `${f.depth * 16}px` }} className="flex-shrink-0" />
                         <Folder size={14} className="text-yellow-500 flex-shrink-0" />
@@ -7641,11 +7641,11 @@ Include everything:
                         >
                           {f.name}
                         </button>
-                        {allInThisFolder && <span className="text-xs text-zinc-500 flex-shrink-0">(all here)</span>}
+                        {allInThisFolder && <span className="text-xs text-r-muted flex-shrink-0">(all here)</span>}
                         {!allInThisFolder && (
                           <button
                             onClick={(e) => { e.stopPropagation(); setBulkMoveNewFolder({ show: true, parentId: f.id, name: '' }); }}
-                            className="p-1 hover:bg-zinc-600 rounded opacity-0 group-hover:opacity-100 transition-opacity text-blue-400"
+                            className="p-1 hover:bg-r-hover2 rounded opacity-0 group-hover:opacity-100 transition-opacity text-r-primary"
                             title="Create subfolder"
                           >
                             <Plus size={12} />
@@ -7654,7 +7654,7 @@ Include everything:
                       </div>
                       {/* Inline new subfolder form */}
                       {isCreatingSubfolder && (
-                        <div className="px-3 py-2 bg-zinc-800">
+                        <div className="px-3 py-2 bg-r-surface">
                           <div className="flex items-center gap-2">
                             <span style={{ width: `${(f.depth + 1) * 16}px` }} className="flex-shrink-0" />
                             <Folder size={14} className="text-yellow-500 flex-shrink-0" />
@@ -7664,11 +7664,11 @@ Include everything:
                               value={bulkMoveNewFolder.name}
                               onChange={(e) => setBulkMoveNewFolder(prev => ({ ...prev, name: e.target.value }))}
                               onKeyDown={(e) => { if (e.key === 'Enter') createFolderInBulkMove(); if (e.key === 'Escape') setBulkMoveNewFolder({ show: false, parentId: null, name: '' }); }}
-                              className="flex-1 bg-zinc-900 rounded px-2 py-1 text-sm"
+                              className="flex-1 bg-r-bg rounded px-2 py-1 text-sm"
                               autoFocus
                             />
-                            <button onClick={createFolderInBulkMove} className="p-1 hover:bg-zinc-600 rounded text-green-400"><Check size={14} /></button>
-                            <button onClick={() => setBulkMoveNewFolder({ show: false, parentId: null, name: '' })} className="p-1 hover:bg-zinc-600 rounded text-zinc-400"><X size={14} /></button>
+                            <button onClick={createFolderInBulkMove} className="p-1 hover:bg-r-hover2 rounded text-green-400"><Check size={14} /></button>
+                            <button onClick={() => setBulkMoveNewFolder({ show: false, parentId: null, name: '' })} className="p-1 hover:bg-r-hover2 rounded text-r-muted"><X size={14} /></button>
                           </div>
                         </div>
                       )}
@@ -7679,12 +7679,12 @@ Include everything:
                 if (!bulkMoveSearch) return true;
                 return getFolderPath(f.id).toLowerCase().includes(bulkMoveSearch.toLowerCase());
               }).length === 0 && !bulkMoveNewFolder.show && (
-                  <div className="px-3 py-4 text-sm text-zinc-500 text-center">No folders found</div>
+                  <div className="px-3 py-4 text-sm text-r-muted text-center">No folders found</div>
                 )}
               </div>
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); setBulkMoveNewFolder({ show: false, parentId: null, name: '' }); }} className="px-4 py-2 text-sm hover:bg-zinc-700 rounded">Cancel</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); setBulkMoveNewFolder({ show: false, parentId: null, name: '' }); }} className="px-4 py-2 text-sm hover:bg-r-hover rounded">Cancel</button>
             </div>
           </div>
         </div>
@@ -7693,40 +7693,40 @@ Include everything:
       {/* Bulk Import Modal */}
       {showBulkImport && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold">Bulk Import Prompts</h2>
-              <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               {bulkImportData.prompts.length === 0 ? (
                 <div>
-                  <div className="border-2 border-dashed border-zinc-600 rounded-lg p-8 text-center mb-4">
-                    <Upload size={32} className="mx-auto mb-3 text-zinc-500" />
-                    <p className="text-sm text-zinc-400 mb-3">Upload a file with your prompts</p>
-                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded cursor-pointer text-sm">
+                  <div className="border-2 border-dashed border-r-border rounded-lg p-8 text-center mb-4">
+                    <Upload size={32} className="mx-auto mb-3 text-r-muted" />
+                    <p className="text-sm text-r-muted mb-3">Upload a file with your prompts</p>
+                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-r-primary hover:bg-blue-700 rounded cursor-pointer text-sm">
                       <Upload size={14} /> Choose File
                       <input type="file" accept=".txt,.md,.json,.csv" onChange={handleBulkImportFile} className="hidden" />
                     </label>
                   </div>
-                  <div className="bg-zinc-900 rounded-lg p-4">
+                  <div className="bg-r-bg rounded-lg p-4">
                     <h4 className="text-sm font-medium mb-2">Supported Formats:</h4>
-                    <div className="space-y-3 text-xs text-zinc-400">
+                    <div className="space-y-3 text-xs text-r-muted">
                       <div>
-                        <span className="text-zinc-300 font-medium">JSON:</span>
-                        <pre className="mt-1 bg-zinc-800 p-2 rounded overflow-x-auto">{`[{"title": "Prompt Name", "content": "Prompt text..."}]`}</pre>
+                        <span className="text-r-text font-medium">JSON:</span>
+                        <pre className="mt-1 bg-r-surface p-2 rounded overflow-x-auto">{`[{"title": "Prompt Name", "content": "Prompt text..."}]`}</pre>
                       </div>
                       <div>
-                        <span className="text-zinc-300 font-medium">CSV:</span>
-                        <pre className="mt-1 bg-zinc-800 p-2 rounded overflow-x-auto">{`title,content\n"My Prompt","The prompt text here"`}</pre>
+                        <span className="text-r-text font-medium">CSV:</span>
+                        <pre className="mt-1 bg-r-surface p-2 rounded overflow-x-auto">{`title,content\n"My Prompt","The prompt text here"`}</pre>
                       </div>
                       <div>
-                        <span className="text-zinc-300 font-medium">Markdown:</span>
-                        <pre className="mt-1 bg-zinc-800 p-2 rounded overflow-x-auto">{`## Prompt Title\nThe prompt content here...\n\n## Another Prompt\nMore content...`}</pre>
+                        <span className="text-r-text font-medium">Markdown:</span>
+                        <pre className="mt-1 bg-r-surface p-2 rounded overflow-x-auto">{`## Prompt Title\nThe prompt content here...\n\n## Another Prompt\nMore content...`}</pre>
                       </div>
                       <div>
-                        <span className="text-zinc-300 font-medium">Plain Text:</span>
-                        <pre className="mt-1 bg-zinc-800 p-2 rounded overflow-x-auto">{`Title: My Prompt\nPrompt: The prompt text here...\n\nTitle: Another\nPrompt: More content...`}</pre>
+                        <span className="text-r-text font-medium">Plain Text:</span>
+                        <pre className="mt-1 bg-r-surface p-2 rounded overflow-x-auto">{`Title: My Prompt\nPrompt: The prompt text here...\n\nTitle: Another\nPrompt: More content...`}</pre>
                       </div>
                     </div>
                   </div>
@@ -7737,15 +7737,15 @@ Include everything:
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <span className="px-2 py-1 bg-green-600/20 text-green-400 text-xs rounded mr-2">Full Backup</span>
-                      <span className="text-sm text-zinc-400">from {bulkImportData.fileName}</span>
+                      <span className="text-sm text-r-muted">from {bulkImportData.fileName}</span>
                     </div>
-                    <label className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded cursor-pointer">
+                    <label className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded cursor-pointer">
                       Choose Different File
                       <input type="file" accept=".txt,.md,.json,.csv" onChange={handleBulkImportFile} className="hidden" />
                     </label>
                   </div>
 
-                  <div className="bg-zinc-900 rounded-lg p-4 mb-4">
+                  <div className="bg-r-bg rounded-lg p-4 mb-4">
                     <h4 className="text-sm font-medium mb-3">Import Summary</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="flex items-center gap-2">
@@ -7753,22 +7753,22 @@ Include everything:
                         <span>{bulkImportData.folders.length} folder{bulkImportData.folders.length !== 1 ? 's' : ''}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <FileText size={16} className="text-blue-400" />
+                        <FileText size={16} className="text-r-primary" />
                         <span>{bulkImportData.prompts.filter(p => p.selected !== false).length} prompt{bulkImportData.prompts.filter(p => p.selected !== false).length !== 1 ? 's' : ''}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mb-4">
-                    <div className="text-sm text-zinc-400 mb-2">Folders to create:</div>
-                    <div className="bg-zinc-900 rounded-lg p-3 max-h-32 overflow-auto">
+                    <div className="text-sm text-r-muted mb-2">Folders to create:</div>
+                    <div className="bg-r-bg rounded-lg p-3 max-h-32 overflow-auto">
                       {bulkImportData.folders.map((folder, idx) => {
                         const parent = bulkImportData.folders.find(f => f.id === folder.parentId);
                         return (
                           <div key={idx} className="flex items-center gap-2 py-1 text-sm">
                             <Folder size={14} className="text-yellow-500" />
                             <span>{folder.name}</span>
-                            {parent && <span className="text-xs text-zinc-500">(in {parent.name})</span>}
+                            {parent && <span className="text-xs text-r-muted">(in {parent.name})</span>}
                           </div>
                         );
                       })}
@@ -7777,10 +7777,10 @@ Include everything:
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm text-zinc-400">Prompts ({bulkImportData.prompts.filter(p => p.selected !== false).length} selected)</label>
+                      <label className="text-sm text-r-muted">Prompts ({bulkImportData.prompts.filter(p => p.selected !== false).length} selected)</label>
                       <div className="flex gap-2">
-                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: true })) }))} className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded">Select All</button>
-                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: false })) }))} className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded">Deselect All</button>
+                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: true })) }))} className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded">Select All</button>
+                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: false })) }))} className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded">Deselect All</button>
                       </div>
                     </div>
                     <div className="space-y-2 max-h-48 overflow-auto">
@@ -7790,7 +7790,7 @@ Include everything:
                           <div
                             key={index}
                             onClick={() => toggleBulkImportPrompt(index)}
-                            className={`bg-zinc-900 rounded-lg p-3 cursor-pointer border-2 transition-colors ${prompt.selected === false ? 'border-transparent opacity-50' : 'border-blue-500/50'}`}
+                            className={`bg-r-bg rounded-lg p-3 cursor-pointer border-2 transition-colors ${prompt.selected === false ? 'border-transparent opacity-50' : 'border-r-primary/50'}`}
                           >
                             <div className="flex items-start gap-2">
                               <input
@@ -7801,8 +7801,8 @@ Include everything:
                               />
                               <div className="flex-1 min-w-0">
                                 <div className="font-medium text-sm truncate">{prompt.title}</div>
-                                {folder && <div className="text-xs text-zinc-500">in {folder.name}</div>}
-                                <div className="text-xs text-zinc-500 mt-1 line-clamp-2">{getPromptDisplayContent(prompt.content)}</div>
+                                {folder && <div className="text-xs text-r-muted">in {folder.name}</div>}
+                                <div className="text-xs text-r-muted mt-1 line-clamp-2">{getPromptDisplayContent(prompt.content)}</div>
                               </div>
                             </div>
                           </div>
@@ -7816,22 +7816,22 @@ Include everything:
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <div>
-                      <span className="text-sm text-zinc-400">Found </span>
+                      <span className="text-sm text-r-muted">Found </span>
                       <span className="font-medium">{bulkImportData.prompts.length} prompts</span>
-                      <span className="text-sm text-zinc-400"> in {bulkImportData.fileName}</span>
+                      <span className="text-sm text-r-muted"> in {bulkImportData.fileName}</span>
                     </div>
-                    <label className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded cursor-pointer">
+                    <label className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded cursor-pointer">
                       Choose Different File
                       <input type="file" accept=".txt,.md,.json,.csv" onChange={handleBulkImportFile} className="hidden" />
                     </label>
                   </div>
 
                   <div className="mb-4">
-                    <label className="text-sm text-zinc-400 mb-1 block">Import to Folder *</label>
+                    <label className="text-sm text-r-muted mb-1 block">Import to Folder *</label>
                     <select
                       value={bulkImportData.folderId || ''}
                       onChange={(e) => setBulkImportData(prev => ({ ...prev, folderId: e.target.value || null }))}
-                      className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                      className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                     >
                       <option value="">Select a folder...</option>
                       {getSortedFoldersHierarchically().map(f => (
@@ -7843,10 +7843,10 @@ Include everything:
                   </div>
 
                   <div className="mb-4">
-                    <label className="text-sm text-zinc-400 mb-1 block">Add Tags to All (optional)</label>
+                    <label className="text-sm text-r-muted mb-1 block">Add Tags to All (optional)</label>
                     <div className="flex flex-wrap gap-2 mb-2">
                       {bulkImportData.tags.map(tag => (
-                        <span key={tag} className="bg-zinc-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                        <span key={tag} className="bg-r-hover px-2 py-1 rounded text-xs flex items-center gap-1">
                           {tag}
                           <button onClick={() => setBulkImportData(prev => ({ ...prev, tags: prev.tags.filter(t => t !== tag) }))} className="hover:text-red-400"><X size={12} /></button>
                         </span>
@@ -7854,7 +7854,7 @@ Include everything:
                     </div>
                     <input
                       placeholder="Type tag and press Enter..."
-                      className="w-full bg-zinc-900 rounded px-3 py-2 text-sm"
+                      className="w-full bg-r-bg rounded px-3 py-2 text-sm"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && e.target.value.trim()) {
                           setBulkImportData(prev => ({ ...prev, tags: [...new Set([...prev.tags, e.target.value.trim().toLowerCase()])] }));
@@ -7864,7 +7864,7 @@ Include everything:
                     />
                     {bulkImportData.folderId && getTagsInFolder(bulkImportData.folderId).length > 0 && (
                       <div className="mt-2">
-                        <span className="text-xs text-zinc-500">Suggested from this folder:</span>
+                        <span className="text-xs text-r-muted">Suggested from this folder:</span>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {getTagsInFolder(bulkImportData.folderId)
                             .filter(t => !bulkImportData.tags.includes(t))
@@ -7872,7 +7872,7 @@ Include everything:
                               <button
                                 key={tag}
                                 onClick={() => setBulkImportData(prev => ({ ...prev, tags: [...new Set([...prev.tags, tag])] }))}
-                                className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded"
+                                className="text-xs px-2 py-1 bg-r-surface hover:bg-r-hover rounded"
                               >
                                 + {tag}
                               </button>
@@ -7881,16 +7881,16 @@ Include everything:
                       </div>
                     )}
                     {bulkImportData.folderId && getTagsInFolder(bulkImportData.folderId).length === 0 && (
-                      <div className="mt-2 text-xs text-zinc-500 italic">No existing tags in this folder</div>
+                      <div className="mt-2 text-xs text-r-muted italic">No existing tags in this folder</div>
                     )}
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm text-zinc-400">Preview ({bulkImportData.prompts.filter(p => p.selected !== false).length} selected)</label>
+                      <label className="text-sm text-r-muted">Preview ({bulkImportData.prompts.filter(p => p.selected !== false).length} selected)</label>
                       <div className="flex gap-2">
-                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: true })) }))} className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded">Select All</button>
-                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: false })) }))} className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded">Deselect All</button>
+                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: true })) }))} className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded">Select All</button>
+                        <button onClick={() => setBulkImportData(prev => ({ ...prev, prompts: prev.prompts.map(p => ({ ...p, selected: false })) }))} className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded">Deselect All</button>
                       </div>
                     </div>
                     <div className="space-y-2 max-h-64 overflow-auto">
@@ -7898,7 +7898,7 @@ Include everything:
                         <div
                           key={index}
                           onClick={() => toggleBulkImportPrompt(index)}
-                          className={`bg-zinc-900 rounded-lg p-3 cursor-pointer border-2 transition-colors ${prompt.selected === false ? 'border-transparent opacity-50' : 'border-blue-500/50'}`}
+                          className={`bg-r-bg rounded-lg p-3 cursor-pointer border-2 transition-colors ${prompt.selected === false ? 'border-transparent opacity-50' : 'border-r-primary/50'}`}
                         >
                           <div className="flex items-start gap-2">
                             <input
@@ -7909,7 +7909,7 @@ Include everything:
                             />
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-sm truncate">{prompt.title}</div>
-                              <div className="text-xs text-zinc-500 mt-1 line-clamp-2">{getPromptDisplayContent(prompt.content)}</div>
+                              <div className="text-xs text-r-muted mt-1 line-clamp-2">{getPromptDisplayContent(prompt.content)}</div>
                             </div>
                           </div>
                         </div>
@@ -7919,12 +7919,12 @@ Include everything:
                 </div>
               )}
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="px-4 py-2 text-sm hover:bg-zinc-700 rounded">Cancel</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="px-4 py-2 text-sm hover:bg-r-hover rounded">Cancel</button>
               <button
                 onClick={executeBulkImport}
                 disabled={bulkImportData.isFullBackup ? bulkImportData.prompts.filter(p => p.selected !== false).length === 0 : (!bulkImportData.folderId || bulkImportData.prompts.filter(p => p.selected !== false).length === 0)}
-                className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2 text-sm bg-r-primary hover:bg-blue-700 rounded disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 <Download size={14} />
                 {bulkImportData.isFullBackup
@@ -7940,41 +7940,41 @@ Include everything:
       {/* Merge Duplicates Modal */}
       {showMergeDuplicates && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <div>
                 <h2 className="font-semibold">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
                 {mergeScopeParentId && (
-                  <p className="text-xs text-zinc-500 mt-1">
+                  <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === mergeScopeParentId)?.name}"
                   </p>
                 )}
               </div>
-              <button onClick={() => { setShowMergeDuplicates(false); setDuplicateFolders([]); setExpandedDuplicateGroups(new Set()); setMergeScopeParentId(null); }} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => { setShowMergeDuplicates(false); setDuplicateFolders([]); setExpandedDuplicateGroups(new Set()); setMergeScopeParentId(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               {duplicateFolders.length === 0 ? (
                 <div className="text-center py-8">
-                  <GitMerge size={48} className="mx-auto mb-4 text-zinc-600" />
-                  <p className="text-zinc-400">No duplicate {mergeScopeParentId ? 'subfolders' : 'folders'} found!</p>
-                  <p className="text-sm text-zinc-500 mt-2">All {mergeScopeParentId ? 'subfolders' : 'folders'} have unique names.</p>
+                  <GitMerge size={48} className="mx-auto mb-4 text-r-muted" />
+                  <p className="text-r-muted">No duplicate {mergeScopeParentId ? 'subfolders' : 'folders'} found!</p>
+                  <p className="text-sm text-r-muted mt-2">All {mergeScopeParentId ? 'subfolders' : 'folders'} have unique names.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-zinc-400">
+                    <p className="text-sm text-r-muted">
                       Found {duplicateFolders.length} group{duplicateFolders.length !== 1 ? 's' : ''} of {mergeScopeParentId ? 'subfolders' : 'folders'} with identical names.
                     </p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => setExpandedDuplicateGroups(new Set(duplicateFolders.map((_, i) => i)))}
-                        className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded"
+                        className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded"
                       >
                         Expand All
                       </button>
                       <button
                         onClick={() => setExpandedDuplicateGroups(new Set())}
-                        className="text-xs px-2 py-1 bg-zinc-700 hover:bg-zinc-600 rounded"
+                        className="text-xs px-2 py-1 bg-r-hover hover:bg-r-hover2 rounded"
                       >
                         Collapse All
                       </button>
@@ -7985,24 +7985,24 @@ Include everything:
                     const totalPrompts = group.folders.reduce((acc, f) => acc + f.promptCount, 0);
                     const totalSubfolders = group.folders.reduce((acc, f) => acc + f.subfolderCount, 0);
                     return (
-                      <div key={groupIndex} className="bg-zinc-900 rounded-lg overflow-hidden">
+                      <div key={groupIndex} className="bg-r-bg rounded-lg overflow-hidden">
                         {/* Accordion Header */}
                         <div
                           onClick={() => toggleDuplicateGroup(groupIndex)}
-                          className="flex items-center gap-3 p-4 cursor-pointer hover:bg-zinc-800/50 transition-colors"
+                          className="flex items-center gap-3 p-4 cursor-pointer hover:bg-r-hover/80 transition-colors"
                         >
-                          {isExpanded ? <ChevronDown size={16} className="text-zinc-400" /> : <ChevronRight size={16} className="text-zinc-400" />}
+                          {isExpanded ? <ChevronDown size={16} className="text-r-muted" /> : <ChevronRight size={16} className="text-r-muted" />}
                           <Folder size={16} className="text-yellow-500" />
                           <span className="font-medium flex-1">{group.name}</span>
-                          <span className="text-xs text-zinc-500">{group.folders.length} duplicates</span>
-                          <span className="text-xs text-zinc-600">|</span>
-                          <span className="text-xs text-zinc-500">{totalPrompts} prompts, {totalSubfolders} subfolders</span>
+                          <span className="text-xs text-r-muted">{group.folders.length} duplicates</span>
+                          <span className="text-xs text-r-muted">|</span>
+                          <span className="text-xs text-r-muted">{totalPrompts} prompts, {totalSubfolders} subfolders</span>
                         </div>
 
                         {/* Accordion Content */}
                         {isExpanded && (
-                          <div className="px-4 pb-4 border-t border-zinc-800">
-                            <p className="text-xs text-zinc-500 mt-3 mb-3">
+                          <div className="px-4 pb-4 border-t border-r-border">
+                            <p className="text-xs text-r-muted mt-3 mb-3">
                               Select which folder to keep - all prompts and subfolders will be merged into it.
                             </p>
                             <div className="space-y-2 mb-4">
@@ -8011,8 +8011,8 @@ Include everything:
                                   key={folder.id}
                                   className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                                     group.targetId === folder.id
-                                      ? 'bg-blue-600/20 border border-blue-500/50'
-                                      : 'bg-zinc-800 hover:bg-zinc-700 border border-transparent'
+                                      ? 'bg-r-primary/20 border border-r-primary/50'
+                                      : 'bg-r-surface hover:bg-r-hover border border-transparent'
                                   }`}
                                 >
                                   <input
@@ -8020,17 +8020,17 @@ Include everything:
                                     name={`merge-target-${groupIndex}`}
                                     checked={group.targetId === folder.id}
                                     onChange={() => setMergeTarget(groupIndex, folder.id)}
-                                    className="text-blue-500"
+                                    className="text-r-primary"
                                   />
                                   <div className="flex-1 min-w-0">
                                     <div className="text-sm font-medium truncate">{folder.path}</div>
-                                    <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
+                                    <div className="flex items-center gap-3 text-xs text-r-muted mt-1">
                                       <span>{folder.promptCount} prompt{folder.promptCount !== 1 ? 's' : ''}</span>
                                       <span>{folder.subfolderCount} subfolder{folder.subfolderCount !== 1 ? 's' : ''}</span>
                                     </div>
                                   </div>
                                   {group.targetId === folder.id && (
-                                    <span className="text-xs bg-blue-600 px-2 py-1 rounded">Keep</span>
+                                    <span className="text-xs bg-r-primary px-2 py-1 rounded">Keep</span>
                                   )}
                                 </label>
                               ))}
@@ -8038,7 +8038,7 @@ Include everything:
                             <div className="flex justify-end">
                               <button
                                 onClick={(e) => { e.stopPropagation(); mergeSingleGroup(groupIndex); }}
-                                className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 rounded flex items-center gap-2"
+                                className="px-3 py-1.5 text-sm bg-r-primary hover:bg-blue-700 rounded flex items-center gap-2"
                               >
                                 <GitMerge size={12} /> Merge This Group
                               </button>
@@ -8051,8 +8051,8 @@ Include everything:
                 </div>
               )}
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => { setShowMergeDuplicates(false); setDuplicateFolders([]); setExpandedDuplicateGroups(new Set()); setMergeScopeParentId(null); }} className="px-4 py-2 text-sm hover:bg-zinc-700 rounded">Close</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => { setShowMergeDuplicates(false); setDuplicateFolders([]); setExpandedDuplicateGroups(new Set()); setMergeScopeParentId(null); }} className="px-4 py-2 text-sm hover:bg-r-hover rounded">Close</button>
               {duplicateFolders.length > 0 && (
                 <button
                   onClick={executeMergeDuplicates}
@@ -8069,37 +8069,37 @@ Include everything:
       {/* Duplicate Prompts Modal */}
       {showDuplicatePrompts && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <div>
                 <h2 className="font-semibold">Remove Duplicate Prompts</h2>
                 {duplicatePromptsFolderId && (
-                  <p className="text-xs text-zinc-500 mt-1">
+                  <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === duplicatePromptsFolderId)?.name}"
                   </p>
                 )}
               </div>
-              <button onClick={() => { setShowDuplicatePrompts(false); setDuplicatePromptGroups([]); setDuplicatePromptsFolderId(null); }} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => { setShowDuplicatePrompts(false); setDuplicatePromptGroups([]); setDuplicatePromptsFolderId(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               {duplicatePromptGroups.length === 0 ? (
                 <div className="text-center py-8">
-                  <Copy size={48} className="mx-auto mb-4 text-zinc-600" />
-                  <p className="text-zinc-400">No duplicate prompts found!</p>
-                  <p className="text-sm text-zinc-500 mt-2">All prompts have unique titles.</p>
+                  <Copy size={48} className="mx-auto mb-4 text-r-muted" />
+                  <p className="text-r-muted">No duplicate prompts found!</p>
+                  <p className="text-sm text-r-muted mt-2">All prompts have unique titles.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-sm text-zinc-400">
+                  <p className="text-sm text-r-muted">
                     Found {duplicatePromptGroups.length} group{duplicatePromptGroups.length !== 1 ? 's' : ''} of prompts with identical titles.
                     Select which prompt to keep from each group - the others will be deleted.
                   </p>
                   {duplicatePromptGroups.map((group, groupIndex) => (
-                    <div key={groupIndex} className="bg-zinc-900 rounded-lg p-4">
+                    <div key={groupIndex} className="bg-r-bg rounded-lg p-4">
                       <div className="flex items-center gap-2 mb-3">
-                        <FileText size={16} className="text-blue-500" />
+                        <FileText size={16} className="text-r-primary" />
                         <span className="font-medium">{group.title}</span>
-                        <span className="text-xs text-zinc-500 ml-auto">{group.prompts.length} duplicates</span>
+                        <span className="text-xs text-r-muted ml-auto">{group.prompts.length} duplicates</span>
                       </div>
                       <div className="space-y-2">
                         {group.prompts.map((prompt) => (
@@ -8108,7 +8108,7 @@ Include everything:
                             className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
                               group.keepId === prompt.id
                                 ? 'bg-green-600/20 border border-green-500/50'
-                                : 'bg-zinc-800 hover:bg-zinc-700 border border-transparent'
+                                : 'bg-r-surface hover:bg-r-hover border border-transparent'
                             }`}
                           >
                             <input
@@ -8120,11 +8120,11 @@ Include everything:
                             />
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium">{prompt.title}</div>
-                              <div className="text-xs text-zinc-500 mt-1 line-clamp-2">{getPromptDisplayContent(prompt.content).substring(0, 150)}{getPromptDisplayContent(prompt.content).length > 150 ? '...' : ''}</div>
+                              <div className="text-xs text-r-muted mt-1 line-clamp-2">{getPromptDisplayContent(prompt.content).substring(0, 150)}{getPromptDisplayContent(prompt.content).length > 150 ? '...' : ''}</div>
                               {prompt.tags?.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {prompt.tags.map(tag => (
-                                    <span key={tag} className="text-xs px-1.5 py-0.5 bg-zinc-700 rounded">{tag}</span>
+                                    <span key={tag} className="text-xs px-1.5 py-0.5 bg-r-hover rounded">{tag}</span>
                                   ))}
                                 </div>
                               )}
@@ -8142,8 +8142,8 @@ Include everything:
                 </div>
               )}
             </div>
-            <div className="flex justify-end gap-2 p-4 border-t border-zinc-700 flex-shrink-0">
-              <button onClick={() => { setShowDuplicatePrompts(false); setDuplicatePromptGroups([]); setDuplicatePromptsFolderId(null); }} className="px-4 py-2 text-sm hover:bg-zinc-700 rounded">Cancel</button>
+            <div className="flex justify-end gap-2 p-4 border-t border-r-border flex-shrink-0">
+              <button onClick={() => { setShowDuplicatePrompts(false); setDuplicatePromptGroups([]); setDuplicatePromptsFolderId(null); }} className="px-4 py-2 text-sm hover:bg-r-hover rounded">Cancel</button>
               {duplicatePromptGroups.length > 0 && (
                 <button
                   onClick={deleteDuplicatePrompts}
@@ -8160,19 +8160,19 @@ Include everything:
       {/* Tag Category Manager Modal */}
       {showTagCategoryManager && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-800 rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-zinc-700 flex-shrink-0">
+          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
               <h2 className="font-semibold">Manage Tag Categories</h2>
-              <button onClick={() => setShowTagCategoryManager(false)} className="p-1 hover:bg-zinc-700 rounded"><X size={18} /></button>
+              <button onClick={() => setShowTagCategoryManager(false)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="p-4 flex-1 min-h-0 modal-scroll">
               <div className="mb-4">
-                <label className="text-sm text-zinc-400 mb-2 block">Add New Category</label>
+                <label className="text-sm text-r-muted mb-2 block">Add New Category</label>
                 <div className="flex gap-2">
                   <input
                     id="new-category-input"
                     placeholder="Category name (e.g., Writing, Coding, Marketing)"
-                    className="flex-1 bg-zinc-900 rounded px-3 py-2 text-sm"
+                    className="flex-1 bg-r-bg rounded px-3 py-2 text-sm"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.target.value.trim()) {
                         addTagCategory(e.target.value.trim());
@@ -8188,7 +8188,7 @@ Include everything:
                         input.value = '';
                       }
                     }}
-                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+                    className="px-3 py-2 bg-r-primary hover:bg-blue-700 rounded text-sm"
                   >
                     Add
                   </button>
@@ -8197,48 +8197,48 @@ Include everything:
 
               <div className="space-y-4">
                 {(data.tagCategories || []).map(category => (
-                  <div key={category.id} className="bg-zinc-900 rounded-lg p-3">
+                  <div key={category.id} className="bg-r-bg rounded-lg p-3">
                     <div className="flex items-center justify-between mb-3">
                       <input
                         defaultValue={category.name}
-                        className="bg-transparent font-medium text-sm border-b border-transparent hover:border-zinc-600 focus:border-blue-500 focus:outline-none"
+                        className="bg-transparent font-medium text-sm border-b border-transparent hover:border-r-border focus:border-r-primary focus:outline-none"
                         onBlur={(e) => updateTagCategory(category.id, e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
                       />
-                      <button onClick={() => deleteTagCategory(category.id)} className="p-1 hover:bg-zinc-700 rounded text-red-400"><Trash2 size={14} /></button>
+                      <button onClick={() => deleteTagCategory(category.id)} className="p-1 hover:bg-r-hover rounded text-red-400"><Trash2 size={14} /></button>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {category.tags.map(tag => (
-                        <span key={tag} className="bg-zinc-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                        <span key={tag} className="bg-r-hover px-2 py-1 rounded text-xs flex items-center gap-1">
                           {tag}
                           <button onClick={() => removeTagFromCategory(tag, category.id)} className="hover:text-red-400"><X size={12} /></button>
                         </span>
                       ))}
-                      {category.tags.length === 0 && <span className="text-xs text-zinc-600 italic">No tags assigned</span>}
+                      {category.tags.length === 0 && <span className="text-xs text-r-muted italic">No tags assigned</span>}
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      <span className="text-xs text-zinc-500 mr-1">Add:</span>
+                      <span className="text-xs text-r-muted mr-1">Add:</span>
                       {data.tags.filter(t => !category.tags.includes(t)).slice(0, 8).map(tag => (
                         <button
                           key={tag}
                           onClick={() => assignTagToCategory(tag, category.id)}
-                          className="text-xs px-1.5 py-0.5 bg-zinc-800 hover:bg-zinc-700 rounded"
+                          className="text-xs px-1.5 py-0.5 bg-r-surface hover:bg-r-hover rounded"
                         >
                           + {tag}
                         </button>
                       ))}
                       {data.tags.filter(t => !category.tags.includes(t)).length > 8 && (
-                        <span className="text-xs text-zinc-500">+{data.tags.filter(t => !category.tags.includes(t)).length - 8} more</span>
+                        <span className="text-xs text-r-muted">+{data.tags.filter(t => !category.tags.includes(t)).length - 8} more</span>
                       )}
                       {data.tags.filter(t => !category.tags.includes(t)).length === 0 && (
-                        <span className="text-xs text-zinc-600 italic">All tags added</span>
+                        <span className="text-xs text-r-muted italic">All tags added</span>
                       )}
                     </div>
                   </div>
                 ))}
 
                 {(data.tagCategories || []).length === 0 && (
-                  <div className="text-center py-8 text-zinc-500">
+                  <div className="text-center py-8 text-r-muted">
                     <Tag size={32} className="mx-auto mb-2 opacity-50" />
                     <p className="text-sm">No categories yet</p>
                     <p className="text-xs">Create categories to organize your tags</p>
@@ -8246,19 +8246,19 @@ Include everything:
                 )}
 
                 {getUncategorizedTags().length > 0 && (data.tagCategories || []).length > 0 && (
-                  <div className="bg-zinc-900/50 rounded-lg p-3 border border-dashed border-zinc-700">
-                    <div className="text-sm text-zinc-400 mb-2">Uncategorized Tags ({getUncategorizedTags().length})</div>
+                  <div className="bg-r-bg/70 rounded-lg p-3 border border-dashed border-r-border">
+                    <div className="text-sm text-r-muted mb-2">Uncategorized Tags ({getUncategorizedTags().length})</div>
                     <div className="flex flex-wrap gap-2">
                       {getUncategorizedTags().map(tag => (
-                        <span key={tag} className="bg-zinc-800 px-2 py-1 rounded text-xs">{tag}</span>
+                        <span key={tag} className="bg-r-surface px-2 py-1 rounded text-xs">{tag}</span>
                       ))}
                     </div>
                   </div>
                 )}
               </div>
             </div>
-            <div className="flex justify-end p-4 border-t border-zinc-700">
-              <button onClick={() => setShowTagCategoryManager(false)} className="px-4 py-2 text-sm bg-zinc-700 hover:bg-zinc-600 rounded">Done</button>
+            <div className="flex justify-end p-4 border-t border-r-border">
+              <button onClick={() => setShowTagCategoryManager(false)} className="px-4 py-2 text-sm bg-r-hover hover:bg-r-hover2 rounded">Done</button>
             </div>
           </div>
         </div>
@@ -8275,21 +8275,21 @@ Include everything:
           />
 
           {/* Drawer */}
-          <div className="fixed right-0 top-0 bottom-0 w-[400px] bg-zinc-900 border-l border-zinc-800 z-50 flex flex-col shadow-2xl">
+          <div className="fixed right-0 top-0 bottom-0 w-[400px] bg-r-bg border-l border-r-border z-50 flex flex-col shadow-2xl">
             {/* Header */}
-            <div className="p-4 border-b border-zinc-800 flex items-center justify-between flex-shrink-0">
+            <div className="p-4 border-b border-r-border flex items-center justify-between flex-shrink-0">
               <div className="flex items-center gap-2">
                 <Bot size={20} className="text-purple-500" />
                 <div>
                   <h3 className="font-semibold">Chat with AI</h3>
-                  <p className="text-xs text-zinc-500 truncate max-w-[280px]">
+                  <p className="text-xs text-r-muted truncate max-w-[280px]">
                     About: {notes.find(n => n.id === chatNoteId)?.title}
                   </p>
                 </div>
               </div>
               <button
                 onClick={closeChatDrawer}
-                className="p-1.5 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white"
+                className="p-1.5 hover:bg-r-hover rounded text-r-muted hover:text-r-text"
               >
                 <X size={18} />
               </button>
@@ -8298,7 +8298,7 @@ Include everything:
             {/* Messages Area */}
             <div className="flex-1 overflow-auto p-4 space-y-4">
               {chatMessages.length === 0 ? (
-                <div className="text-center text-zinc-500 py-8">
+                <div className="text-center text-r-muted py-8">
                   <Sparkles size={32} className="mx-auto mb-3 opacity-50" />
                   <p className="text-sm">Ask me anything about this note!</p>
                   <p className="text-xs mt-1">I can help analyze, summarize, or answer questions.</p>
@@ -8313,7 +8313,7 @@ Include everything:
                       className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
                         msg.role === 'user'
                           ? 'bg-purple-600 text-white'
-                          : 'bg-zinc-800 text-zinc-200'
+                          : 'bg-r-surface text-r-text'
                       }`}
                     >
                       <pre className="whitespace-pre-wrap font-sans">{msg.content || '...'}</pre>
@@ -8323,7 +8323,7 @@ Include everything:
               )}
               {chatLoading && chatMessages[chatMessages.length - 1]?.role !== 'assistant' && (
                 <div className="flex justify-start">
-                  <div className="bg-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-400">
+                  <div className="bg-r-surface rounded-lg px-3 py-2 text-sm text-r-muted">
                     <span className="animate-pulse">Thinking...</span>
                   </div>
                 </div>
@@ -8331,7 +8331,7 @@ Include everything:
             </div>
 
             {/* Input Area */}
-            <div className="p-4 border-t border-zinc-800 flex-shrink-0">
+            <div className="p-4 border-t border-r-border flex-shrink-0">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -8344,7 +8344,7 @@ Include everything:
                     }
                   }}
                   placeholder="Ask about this note..."
-                  className="flex-1 bg-zinc-800 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="flex-1 bg-r-surface rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500"
                   disabled={chatLoading}
                 />
                 <button
