@@ -2853,12 +2853,12 @@ export default function PromptRepository() {
 
     return (
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-        <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-            <h2 className="font-semibold">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
+        <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+            <h2 className="text-xl font-semibold leading-tight">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
             <button onClick={onClose} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
           </div>
-          <div className="p-4 space-y-4 flex-1 min-h-0 modal-scroll">
+          <div className="px-6 py-5 space-y-4 flex-1 min-h-0 modal-scroll">
             {/* Prompt Mode Toggle */}
             <div>
               <label className="text-sm text-r-muted mb-2 block">Prompt Type</label>
@@ -3928,7 +3928,7 @@ export default function PromptRepository() {
               </div>
               <textarea
                 ref={textareaRef}
-                className="flex-1 bg-transparent p-4 text-sm text-r-text resize-none focus:outline-none leading-relaxed placeholder-zinc-600"
+                className="flex-1 bg-transparent p-6 text-base text-r-text resize-none focus:outline-none leading-relaxed placeholder-zinc-600"
                 placeholder="Start writing this chapter..."
                 value={activeChapter.content}
                 onChange={e => updateChapterContent(e.target.value)}
@@ -3944,7 +3944,7 @@ export default function PromptRepository() {
         {/* Save Version Modal */}
         {showVersionModal && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => { setShowVersionModal(false); setVersionNameError(''); }}>
-            <div className="bg-r-surface border border-r-border rounded-lg shadow-2xl w-80" onClick={e => e.stopPropagation()}>
+            <div className="bg-r-surface border border-r-border rounded-xl shadow-2xl w-80" onClick={e => e.stopPropagation()}>
               <div className="px-4 py-3 border-b border-r-border flex items-center justify-between">
                 <h3 className="text-sm font-medium text-r-text">Save Version</h3>
                 <button onClick={() => { setShowVersionModal(false); setVersionNameError(''); }} className="p-1 text-r-muted hover:text-r-text rounded">
@@ -4192,7 +4192,7 @@ export default function PromptRepository() {
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <Plane size={24} className="text-sky-400" />
-              <h2 className="text-xl font-semibold text-r-text">Travel Itinerary Setup</h2>
+              <h2 className="text-2xl font-semibold leading-tight text-r-text">Travel Itinerary Setup</h2>
             </div>
 
             <div className="space-y-4">
@@ -5024,7 +5024,7 @@ export default function PromptRepository() {
             <>
               {/* Header with title and copy button */}
               <div className="flex items-center justify-between p-4 border-b border-r-border">
-                <h2 className="text-lg font-semibold text-r-text">{activeScript.title}</h2>
+                <h2 className="text-xl font-semibold leading-tight text-r-text">{activeScript.title}</h2>
                 <button
                   onClick={copyToClipboard}
                   disabled={!activeScript.content}
@@ -5042,7 +5042,7 @@ export default function PromptRepository() {
               </div>
 
               {/* Large text area */}
-              <div className="flex-1 p-4">
+              <div className="flex-1 p-6">
                 <textarea
                   ref={textareaRef}
                   value={activeScript.content}
@@ -5054,7 +5054,7 @@ Include everything:
 • Description
 • Hashtags
 • Any other text you want to copy"
-                  className="w-full h-full bg-r-surface border border-r-border rounded-lg px-4 py-3 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-pink-500 resize-none leading-relaxed"
+                  className="w-full h-full bg-r-surface border border-r-border rounded-lg px-6 py-5 text-base text-r-text placeholder-zinc-500 focus:outline-none focus:border-pink-500 resize-none leading-relaxed"
                 />
               </div>
             </>
@@ -5729,9 +5729,9 @@ Include everything:
         {/* Dropdown options editor modal */}
         {dropdownOptionsEdit && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={() => setDropdownOptionsEdit(null)}>
-            <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-                <h3 className="text-lg font-medium">Configure Dropdown Options</h3>
+            <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+                <h3 className="text-xl font-semibold leading-tight">Configure Dropdown Options</h3>
                 <button
                   onClick={() => setDropdownOptionsEdit(null)}
                   className="text-r-muted hover:text-r-text"
@@ -5739,7 +5739,7 @@ Include everything:
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-4 flex-1 min-h-0 modal-scroll">
+              <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
                 <p className="text-sm text-r-muted mb-3">Enter each option on a new line:</p>
                 <textarea
                   value={dropdownOptionsEdit.options.join('\n')}
@@ -5977,12 +5977,12 @@ Include everything:
                       type="text"
                       value={noteForm.title}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="flex-1 bg-r-surface rounded px-3 py-2 text-lg font-medium"
+                      className="flex-1 bg-r-surface rounded px-3 py-2 text-xl font-semibold leading-tight"
                       placeholder="Note title"
                       autoFocus
                     />
                   ) : (
-                    <h2 className="text-lg font-medium truncate">{currentNote.title}</h2>
+                    <h2 className="text-xl font-semibold leading-tight truncate">{currentNote.title}</h2>
                   )}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -6102,7 +6102,7 @@ Include everything:
                     <textarea
                       value={noteForm.content}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, content: e.target.value }))}
-                      className="flex-1 bg-r-surface rounded-lg p-4 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-r-primary"
+                      className="flex-1 bg-r-surface rounded-lg p-6 text-base leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-r-primary"
                       placeholder="Write your note here..."
                     />
                     {/* Tags input for prompt-type notes */}
@@ -6203,7 +6203,7 @@ Include everything:
             <>
               <div className="flex items-center gap-2">
                 <BookOpen size={20} className="text-r-primary" />
-                <span className="font-semibold">Notebooks</span>
+                <span className="text-base font-semibold tracking-tight">Notebooks</span>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
@@ -6374,7 +6374,7 @@ Include everything:
                   <Menu size={18} />
                 </button>
               )}
-              <h1 className="font-bold text-xl flex items-center gap-2">
+              <h1 className="font-semibold text-2xl leading-tight flex items-center gap-2">
                 {isPromptsNotebook ? (
                   <FileText size={24} className="text-r-primary" />
                 ) : isBookNotebook ? (
@@ -6644,9 +6644,9 @@ Include everything:
       {/* Move Note Modal */}
       {showMoveNote && movingNoteId && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold flex items-center gap-2">
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Move size={20} className="text-r-primary" />
                 Move Note to Notebook
               </h2>
@@ -6654,7 +6654,7 @@ Include everything:
                 <X size={18} />
               </button>
             </div>
-            <div className="p-4 flex-1 min-h-0 flex flex-col">
+            <div className="px-6 py-5 flex-1 min-h-0 flex flex-col">
               <p className="text-sm text-r-muted mb-3">
                 Select a notebook to move "{notes.find(n => n.id === movingNoteId)?.title}" to:
               </p>
@@ -6745,8 +6745,8 @@ Include everything:
       {showBulkMoveNotes && selectedNotes.size > 0 && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] max-h-[80vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold flex items-center gap-2">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Move size={20} className="text-r-primary" />
                 Move {selectedNotes.size} Note{selectedNotes.size > 1 ? 's' : ''}
               </h2>
@@ -6754,7 +6754,7 @@ Include everything:
                 <X size={18} />
               </button>
             </div>
-            <div className="p-4 flex-1 min-h-0 flex flex-col">
+            <div className="px-6 py-5 flex-1 min-h-0 flex flex-col">
               <p className="text-sm text-r-muted mb-3">
                 Select a notebook to move the selected notes to:
               </p>
@@ -6835,8 +6835,8 @@ Include everything:
       {showEditNotebook && editingNotebook && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold flex items-center gap-2">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Edit2 size={20} className="text-r-primary" />
                 Edit Notebook
               </h2>
@@ -6948,8 +6948,8 @@ Include everything:
       {showNewNotebook && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold flex items-center gap-2">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Notebook size={20} className="text-purple-500" />
                 Create New Notebook
               </h2>
@@ -7003,9 +7003,9 @@ Include everything:
       {/* New Note Modal */}
       {showNewNote && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold flex items-center gap-2">
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 {isBookNotebook ? (
                   <BookOpen size={20} className="text-amber-400" />
                 ) : noteForm.type === 'spreadsheet' ? (
@@ -7023,7 +7023,7 @@ Include everything:
                 <X size={18} />
               </button>
             </div>
-            <div className="p-4 space-y-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 space-y-4 flex-1 min-h-0 modal-scroll">
               {/* Template Selection */}
               <div>
                 <label className="block text-sm text-r-muted mb-2">Template</label>
@@ -7304,14 +7304,14 @@ Include everything:
       )}
       {showNewFolder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h3 className="font-semibold">New Folder</h3>
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h3 className="text-lg font-semibold leading-tight">New Folder</h3>
               <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               <input
                 id="new-folder-input"
                 autoFocus
@@ -7346,7 +7346,7 @@ Include everything:
       {/* Context Menu */}
       {contextMenu && (
         <div className="fixed inset-0 z-50" onClick={() => setContextMenu(null)}>
-          <div className="absolute bg-r-surface border border-r-border rounded-lg shadow-xl py-1 w-48" style={{ left: contextMenu.x, top: contextMenu.y }}>
+          <div className="absolute bg-r-surface border border-r-border rounded-xl shadow-xl py-1 w-48" style={{ left: contextMenu.x, top: contextMenu.y }}>
             <button onClick={() => { setRenameFolder(contextMenu.folderId); setRenameFolderValue(contextMenu.folderName); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover flex items-center gap-2"><Edit2 size={14} /> Rename</button>
             <button onClick={() => { setNewFolderParent(contextMenu.folderId); setShowNewFolder(true); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover flex items-center gap-2"><FolderPlus size={14} /> Add Subfolder</button>
             <button onClick={() => { setNewPromptFolder(contextMenu.folderId); setShowNewPrompt(true); setContextMenu(null); }} className="w-full text-left px-3 py-2 text-sm hover:bg-r-hover flex items-center gap-2"><Plus size={14} /> Add Prompt</button>
@@ -7359,12 +7359,12 @@ Include everything:
       {/* Backup/Restore Modal */}
       {showBackupRestore && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold">Restore from Backup</h2>
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight">Restore from Backup</h2>
               <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               {!backupPreview ? (
                 <div>
                   <div className="border-2 border-dashed border-r-border rounded-lg p-8 text-center mb-4">
@@ -7475,12 +7475,12 @@ Include everything:
       {/* Rename Folder Modal */}
       {renameFolder && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h3 className="font-semibold">Rename Folder</h3>
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h3 className="text-lg font-semibold leading-tight">Rename Folder</h3>
               <button onClick={() => setRenameFolder(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               <input
                 autoFocus
                 value={renameFolderValue}
@@ -7500,15 +7500,15 @@ Include everything:
       {/* Move Prompt Modal */}
       {movingPrompt && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h3 className="font-semibold">Move Prompt</h3>
+                <h3 className="text-lg font-semibold leading-tight">Move Prompt</h3>
                 <p className="text-sm text-r-muted">"{movingPrompt.title}"</p>
               </div>
               <button onClick={() => setMovingPrompt(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               <div className="relative mb-3">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
                 <input
@@ -7563,15 +7563,15 @@ Include everything:
       {/* Bulk Move Modal */}
       {showBulkMove && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h3 className="font-semibold">Move Prompts</h3>
+                <h3 className="text-lg font-semibold leading-tight">Move Prompts</h3>
                 <p className="text-sm text-r-muted">Move {selectedPrompts.size} prompt{selectedPrompts.size > 1 ? 's' : ''} to a folder</p>
               </div>
               <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               <div className="relative mb-3">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-r-muted" />
                 <input
@@ -7693,12 +7693,12 @@ Include everything:
       {/* Bulk Import Modal */}
       {showBulkImport && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold">Bulk Import Prompts</h2>
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight">Bulk Import Prompts</h2>
               <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               {bulkImportData.prompts.length === 0 ? (
                 <div>
                   <div className="border-2 border-dashed border-r-border rounded-lg p-8 text-center mb-4">
@@ -7940,10 +7940,10 @@ Include everything:
       {/* Merge Duplicates Modal */}
       {showMergeDuplicates && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h2 className="font-semibold">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
+                <h2 className="text-xl font-semibold leading-tight">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
                 {mergeScopeParentId && (
                   <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === mergeScopeParentId)?.name}"
@@ -7952,7 +7952,7 @@ Include everything:
               </div>
               <button onClick={() => { setShowMergeDuplicates(false); setDuplicateFolders([]); setExpandedDuplicateGroups(new Set()); setMergeScopeParentId(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               {duplicateFolders.length === 0 ? (
                 <div className="text-center py-8">
                   <GitMerge size={48} className="mx-auto mb-4 text-r-muted" />
@@ -8069,10 +8069,10 @@ Include everything:
       {/* Duplicate Prompts Modal */}
       {showDuplicatePrompts && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h2 className="font-semibold">Remove Duplicate Prompts</h2>
+                <h2 className="text-xl font-semibold leading-tight">Remove Duplicate Prompts</h2>
                 {duplicatePromptsFolderId && (
                   <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === duplicatePromptsFolderId)?.name}"
@@ -8081,7 +8081,7 @@ Include everything:
               </div>
               <button onClick={() => { setShowDuplicatePrompts(false); setDuplicatePromptGroups([]); setDuplicatePromptsFolderId(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               {duplicatePromptGroups.length === 0 ? (
                 <div className="text-center py-8">
                   <Copy size={48} className="mx-auto mb-4 text-r-muted" />
@@ -8160,12 +8160,12 @@ Include everything:
       {/* Tag Category Manager Modal */}
       {showTagCategoryManager && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-r-surface rounded-lg w-[75vw] h-[75vh] flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
-              <h2 className="font-semibold">Manage Tag Categories</h2>
+          <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
+              <h2 className="text-xl font-semibold leading-tight">Manage Tag Categories</h2>
               <button onClick={() => setShowTagCategoryManager(false)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
-            <div className="p-4 flex-1 min-h-0 modal-scroll">
+            <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
               <div className="mb-4">
                 <label className="text-sm text-r-muted mb-2 block">Add New Category</label>
                 <div className="flex gap-2">
@@ -8281,7 +8281,7 @@ Include everything:
               <div className="flex items-center gap-2">
                 <Bot size={20} className="text-purple-500" />
                 <div>
-                  <h3 className="font-semibold">Chat with AI</h3>
+                  <h3 className="text-lg font-semibold leading-tight">Chat with AI</h3>
                   <p className="text-xs text-r-muted truncate max-w-[280px]">
                     About: {notes.find(n => n.id === chatNoteId)?.title}
                   </p>
