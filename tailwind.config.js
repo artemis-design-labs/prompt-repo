@@ -7,61 +7,56 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Momentum Design Lab — Dark Mode ("Dark-first · dual theme")
       colors: {
-        'r-bg':          '#fafafa',
-        'r-surface':     '#ffffff',
-        'r-hover':       '#f0f0f0',
-        'r-hover2':      '#e5e5e5',
-        'r-primary':     '#2f77ea',
-        'r-text':        '#141414',
-        'r-muted':       '#6f7984',
-        'r-border':      '#e0e0e0',
-        'r-border-dark': '#000000',
+        'r-bg':          '#030303',  // bg-dark      — page background
+        'r-surface':     '#1d1d1d',  // surface-dark — cards, panels, modals
+        'r-hover':       '#2a2a2a',  // hover on surface
+        'r-hover2':      '#3a3a3a',  // stronger hover / active chips
+        'r-primary':     '#fdb447',  // primary      — amber accent
+        'r-text':        '#f7f7f7',  // surface-light as on-dark text
+        'r-muted':       '#a3a3a3',  // text-muted
+        'r-border':      '#333333',  // subtle dark borders
+        'r-border-dark': '#000000',  // text-accent / hardest border
+        'r-on-primary':  '#141414',  // text-on-dark — dark text over amber
       },
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        // Momentum uses Open Sauce Sans
+        sans: ['Open Sauce Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
-      // Ramotion radius scale: sm=8px, md=20px, lg=22px
-      // Mapped across the Tailwind scale for gradual progression
+      // Momentum radius scale: sm=6px, md=12px, lg=20px, full=∞
       borderRadius: {
         'none': '0',
         'sm':   '4px',
-        DEFAULT: '8px',   // `rounded`    → 8px  (Ramotion sm)
-        'md':   '10px',
-        'lg':   '14px',   // `rounded-lg` → 14px (cards, inputs)
-        'xl':   '20px',   // `rounded-xl` → 20px (Ramotion md: modals, panels)
-        '2xl':  '22px',   // `rounded-2xl`→ 22px (Ramotion lg)
-        '3xl':  '28px',
+        DEFAULT: '6px',   // `rounded`     → 6px  (Momentum sm)
+        'md':   '12px',   // `rounded-md`  → 12px (Momentum md)
+        'lg':   '12px',   // `rounded-lg`  → 12px (cards, inputs)
+        'xl':   '20px',   // `rounded-xl`  → 20px (Momentum lg — modals, panels)
+        '2xl':  '20px',   // `rounded-2xl` → 20px
+        '3xl':  '24px',
         'full': '9999px',
-        // Named Ramotion tokens
-        'r-sm': '8px',
-        'r-md': '20px',
-        'r-lg': '22px',
+        // Named Momentum tokens
+        'r-sm': '6px',
+        'r-md': '12px',
+        'r-lg': '20px',
       },
       fontSize: {
-        // Ramotion caption: 13px · 1.4lh
+        // Momentum: body 16px · 1.5lh; light-weight large headings · 1.1lh
         'xs':   ['13px', { lineHeight: '1.4' }],
-        // UI labels: 14px · 1.5lh
         'sm':   ['14px', { lineHeight: '1.5' }],
-        // Body: 16px · 1.5lh
         'base': ['16px', { lineHeight: '1.5' }],
-        // Body LG: 18px · 1.5lh
-        'lg':   ['18px', { lineHeight: '1.5' }],
-        // Heading SM: 20px · 1.2lh
-        'xl':   ['20px', { lineHeight: '1.2' }],
-        // Heading LG: 24px · 1.2lh
-        '2xl':  ['24px', { lineHeight: '1.2' }],
-        // Heading XL: 32px · 1.2lh
-        '3xl':  ['32px', { lineHeight: '1.2' }],
-        // Display: 48px · 1.0lh
-        '4xl':  ['48px', { lineHeight: '1.0' }],
-        '5xl':  ['60px', { lineHeight: '1.0' }],
-        '6xl':  ['72px', { lineHeight: '1.0' }],
-        '7xl':  ['92px', { lineHeight: '1.0' }],
+        'lg':   ['18px', { lineHeight: '1.4' }],
+        'xl':   ['22px', { lineHeight: '1.2' }],
+        '2xl':  ['28px', { lineHeight: '1.15' }],
+        '3xl':  ['36px', { lineHeight: '1.2' }],   // Momentum H3
+        '4xl':  ['48px', { lineHeight: '1.1' }],
+        '5xl':  ['60px', { lineHeight: '1.1' }],   // Momentum H2
+        '6xl':  ['72px', { lineHeight: '1.1' }],   // Momentum Display
+        '7xl':  ['92px', { lineHeight: '1.05' }],
       },
       lineHeight: {
-        'tight':   '1.2',
-        'snug':    '1.35',
+        'tight':   '1.1',
+        'snug':    '1.2',
         'normal':  '1.5',
         'relaxed': '1.625',
       },

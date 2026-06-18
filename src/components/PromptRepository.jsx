@@ -2855,7 +2855,7 @@ export default function PromptRepository() {
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
         <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
           <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-            <h2 className="text-xl font-semibold leading-tight">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
+            <h2 className="text-xl font-normal leading-tight">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
             <button onClick={onClose} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
           </div>
           <div className="px-6 py-5 space-y-4 flex-1 min-h-0 modal-scroll">
@@ -2867,7 +2867,7 @@ export default function PromptRepository() {
                   onClick={() => setPromptMode('freeform')}
                   className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                     promptMode === 'freeform'
-                      ? 'bg-r-primary text-white'
+                      ? 'bg-r-primary text-r-on-primary'
                       : 'bg-r-hover text-r-text hover:bg-r-hover2'
                   }`}
                 >
@@ -2877,7 +2877,7 @@ export default function PromptRepository() {
                   onClick={() => setPromptMode('structured')}
                   className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
                     promptMode === 'structured'
-                      ? 'bg-r-primary text-white'
+                      ? 'bg-r-primary text-r-on-primary'
                       : 'bg-r-hover text-r-text hover:bg-r-hover2'
                   }`}
                 >
@@ -4064,7 +4064,7 @@ export default function PromptRepository() {
       { id: 'culture', label: 'Culture', icon: '🏛️', color: 'bg-purple-500/20 text-purple-400' },
       { id: 'shopping', label: 'Shopping', icon: '🛍️', color: 'bg-pink-500/20 text-pink-400' },
       { id: 'adventure', label: 'Adventure', icon: '🏔️', color: 'bg-green-500/20 text-green-400' },
-      { id: 'transport', label: 'Transport', icon: '🚗', color: 'bg-sky-500/20 text-sky-400' },
+      { id: 'transport', label: 'Transport', icon: '🚗', color: 'bg-r-primary/20 text-r-primary' },
       { id: 'other', label: 'Other', icon: '📍', color: 'bg-r-hover2/40 text-r-muted' },
       { id: 'completed', label: 'Done', icon: '✅', color: 'bg-emerald-500/20 text-emerald-400' }
     ];
@@ -4191,8 +4191,8 @@ export default function PromptRepository() {
         <div className="h-full overflow-y-auto p-6">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
-              <Plane size={24} className="text-sky-400" />
-              <h2 className="text-2xl font-semibold leading-tight text-r-text">Travel Itinerary Setup</h2>
+              <Plane size={24} className="text-r-primary" />
+              <h2 className="text-2xl font-normal leading-tight text-r-text">Travel Itinerary Setup</h2>
             </div>
 
             <div className="space-y-4">
@@ -4203,7 +4203,7 @@ export default function PromptRepository() {
                   value={travelData.tripData.destination}
                   onChange={(e) => updateTripData('destination', e.target.value)}
                   placeholder="e.g., Paris, France"
-                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                 />
               </div>
 
@@ -4214,7 +4214,7 @@ export default function PromptRepository() {
                     type="date"
                     value={travelData.tripData.startDate}
                     onChange={(e) => updateTripData('startDate', e.target.value)}
-                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text focus:outline-none focus:border-r-primary"
                   />
                 </div>
                 <div>
@@ -4223,7 +4223,7 @@ export default function PromptRepository() {
                     type="date"
                     value={travelData.tripData.endDate}
                     onChange={(e) => updateTripData('endDate', e.target.value)}
-                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text focus:outline-none focus:border-r-primary"
                   />
                 </div>
               </div>
@@ -4236,7 +4236,7 @@ export default function PromptRepository() {
                     value={travelData.tripData.arrivalTime}
                     onChange={(e) => updateTripData('arrivalTime', e.target.value)}
                     placeholder="e.g., 2:00 PM"
-                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                 </div>
                 <div>
@@ -4246,7 +4246,7 @@ export default function PromptRepository() {
                     value={travelData.tripData.departureTime}
                     onChange={(e) => updateTripData('departureTime', e.target.value)}
                     placeholder="e.g., 6:00 PM"
-                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                 </div>
               </div>
@@ -4258,7 +4258,7 @@ export default function PromptRepository() {
                   value={travelData.tripData.accommodation}
                   onChange={(e) => updateTripData('accommodation', e.target.value)}
                   placeholder="e.g., Hotel Marais, 15 Rue de Rivoli"
-                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                 />
               </div>
 
@@ -4270,7 +4270,7 @@ export default function PromptRepository() {
                     value={travelData.tripData.checkInTime}
                     onChange={(e) => updateTripData('checkInTime', e.target.value)}
                     placeholder="e.g., 3:00 PM"
-                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                 </div>
                 <div>
@@ -4280,7 +4280,7 @@ export default function PromptRepository() {
                     value={travelData.tripData.checkOutTime}
                     onChange={(e) => updateTripData('checkOutTime', e.target.value)}
                     placeholder="e.g., 11:00 AM"
-                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                 </div>
               </div>
@@ -4292,14 +4292,14 @@ export default function PromptRepository() {
                   onChange={(e) => updateTripData('preferences', e.target.value)}
                   placeholder="e.g., Love local cuisine, prefer morning activities..."
                   rows={3}
-                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500 resize-none"
+                  className="w-full bg-r-surface border border-r-border rounded-lg px-4 py-2.5 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary resize-none"
                 />
               </div>
 
               {travelData.tripData.startDate && travelData.tripData.endDate && (
                 <div className="pt-4 text-center">
                   <p className="text-sm text-r-muted">
-                    Trip duration: <span className="text-sky-400 font-medium">{days.length} days</span>
+                    Trip duration: <span className="text-r-primary font-medium">{days.length} days</span>
                   </p>
                 </div>
               )}
@@ -4317,7 +4317,7 @@ export default function PromptRepository() {
           {/* Trip Overview */}
           <div className="p-3 border-b border-r-border">
             <div className="flex items-center gap-2 mb-2">
-              <Plane size={14} className="text-sky-400" />
+              <Plane size={14} className="text-r-primary" />
               <span className="text-sm font-medium text-r-text">{travelData.tripData.destination || 'Trip'}</span>
             </div>
             <div className="text-xs text-r-muted space-y-0.5">
@@ -4353,7 +4353,7 @@ export default function PromptRepository() {
                   value={newTraveler.name}
                   onChange={(e) => setNewTraveler({ ...newTraveler, name: e.target.value })}
                   placeholder="Name"
-                  className="w-full bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                 />
                 <div className="grid grid-cols-2 gap-1">
                   <input
@@ -4361,14 +4361,14 @@ export default function PromptRepository() {
                     value={newTraveler.age}
                     onChange={(e) => setNewTraveler({ ...newTraveler, age: e.target.value })}
                     placeholder="Age"
-                    className="bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                   <input
                     type="text"
                     value={newTraveler.interests}
                     onChange={(e) => setNewTraveler({ ...newTraveler, interests: e.target.value })}
                     placeholder="Interests"
-                    className="bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                 </div>
                 <input
@@ -4376,13 +4376,13 @@ export default function PromptRepository() {
                   value={newTraveler.dietaryRestrictions}
                   onChange={(e) => setNewTraveler({ ...newTraveler, dietaryRestrictions: e.target.value })}
                   placeholder="Dietary restrictions (optional)"
-                  className="w-full bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-bg border border-r-border rounded px-2 py-1.5 text-xs text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                 />
                 <div className="flex gap-1">
                   <button
                     onClick={addTraveler}
                     disabled={!newTraveler.name.trim()}
-                    className="flex-1 px-2 py-1 text-xs bg-sky-500 text-white rounded hover:bg-sky-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-2 py-1 text-xs bg-r-primary text-r-on-primary rounded hover:bg-r-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add
                   </button>
@@ -4427,7 +4427,7 @@ export default function PromptRepository() {
                     onClick={() => selectDay(day.key)}
                     className={`w-full text-left px-2 py-2 rounded-lg transition-colors ${
                       selectedDay === day.key
-                        ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
+                        ? 'bg-r-primary/20 text-r-primary border border-r-primary/30'
                         : 'hover:bg-r-hover text-r-muted'
                     }`}
                   >
@@ -4461,7 +4461,7 @@ export default function PromptRepository() {
               </div>
               <button
                 onClick={() => setShowAddActivity(true)}
-                className="flex items-center gap-1 px-2 py-1 text-xs bg-sky-500 text-white rounded hover:bg-sky-400"
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-r-primary text-r-on-primary rounded hover:bg-r-primary/90"
               >
                 <Plus size={12} />
                 Add Activity
@@ -4476,7 +4476,7 @@ export default function PromptRepository() {
                   onClick={() => setSelectedCategory(cat.id)}
                   className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
                     selectedCategory === cat.id
-                      ? 'bg-sky-500 text-white'
+                      ? 'bg-r-primary text-r-on-primary'
                       : 'bg-r-surface text-r-muted hover:bg-r-hover'
                   }`}
                 >
@@ -4495,14 +4495,14 @@ export default function PromptRepository() {
                   value={newActivity.name}
                   onChange={(e) => setNewActivity({ ...newActivity, name: e.target.value })}
                   placeholder="Activity name"
-                  className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   autoFocus
                 />
                 <div className="grid grid-cols-3 gap-2">
                   <select
                     value={newActivity.category}
                     onChange={(e) => setNewActivity({ ...newActivity, category: e.target.value })}
-                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text focus:outline-none focus:border-r-primary"
                   >
                     {categories.filter(c => !['all', 'completed'].includes(c.id)).map(cat => (
                       <option key={cat.id} value={cat.id}>{cat.icon} {cat.label}</option>
@@ -4513,14 +4513,14 @@ export default function PromptRepository() {
                     value={newActivity.time}
                     onChange={(e) => setNewActivity({ ...newActivity, time: e.target.value })}
                     placeholder="Time (e.g., 9:00 AM)"
-                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                   <input
                     type="text"
                     value={newActivity.duration}
                     onChange={(e) => setNewActivity({ ...newActivity, duration: e.target.value })}
                     placeholder="Duration"
-                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500"
+                    className="bg-r-bg border border-r-border rounded-lg px-2 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary"
                   />
                 </div>
                 <textarea
@@ -4528,13 +4528,13 @@ export default function PromptRepository() {
                   onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
                   placeholder="Description (optional)"
                   rows={2}
-                  className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-sky-500 resize-none"
+                  className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-r-primary resize-none"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={addActivity}
                     disabled={!newActivity.name.trim()}
-                    className="flex-1 px-3 py-2 text-sm bg-sky-500 text-white rounded-lg hover:bg-sky-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 px-3 py-2 text-sm bg-r-primary text-r-on-primary rounded-lg hover:bg-r-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Add Activity
                   </button>
@@ -4557,7 +4557,7 @@ export default function PromptRepository() {
                 <p className="text-sm">No {selectedCategory === 'all' ? '' : selectedCategory} activities yet</p>
                 <button
                   onClick={() => setShowAddActivity(true)}
-                  className="mt-3 text-xs text-sky-400 hover:text-sky-300"
+                  className="mt-3 text-xs text-r-primary hover:text-r-primary"
                 >
                   + Add your first activity
                 </button>
@@ -4607,14 +4607,14 @@ export default function PromptRepository() {
                                 type="text"
                                 value={tempTime}
                                 onChange={(e) => setTempTime(e.target.value)}
-                                className="w-20 bg-r-bg border border-sky-500 rounded px-1.5 py-0.5 text-xs text-r-text focus:outline-none"
+                                className="w-20 bg-r-bg border border-r-primary rounded px-1.5 py-0.5 text-xs text-r-text focus:outline-none"
                                 autoFocus
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') updateActivityTime(activity.id, tempTime);
                                   if (e.key === 'Escape') { setEditingTimeId(null); setTempTime(''); }
                                 }}
                               />
-                              <button onClick={() => updateActivityTime(activity.id, tempTime)} className="text-sky-400 hover:text-sky-300">
+                              <button onClick={() => updateActivityTime(activity.id, tempTime)} className="text-r-primary hover:text-r-primary">
                                 <Check size={12} />
                               </button>
                               <button onClick={() => { setEditingTimeId(null); setTempTime(''); }} className="text-r-muted hover:text-r-text">
@@ -5024,7 +5024,7 @@ export default function PromptRepository() {
             <>
               {/* Header with title and copy button */}
               <div className="flex items-center justify-between p-4 border-b border-r-border">
-                <h2 className="text-xl font-semibold leading-tight text-r-text">{activeScript.title}</h2>
+                <h2 className="text-xl font-normal leading-tight text-r-text">{activeScript.title}</h2>
                 <button
                   onClick={copyToClipboard}
                   disabled={!activeScript.content}
@@ -5563,7 +5563,7 @@ Include everything:
                   key={multiplier}
                   className={`flex items-center justify-center px-2 py-1 text-xs rounded cursor-pointer transition-colors ${
                     (activeTable.rowHeightMultiplier || 1) === multiplier
-                      ? 'bg-r-primary text-white'
+                      ? 'bg-r-primary text-r-on-primary'
                       : 'bg-r-hover text-r-muted hover:bg-r-hover2'
                   }`}
                 >
@@ -5731,7 +5731,7 @@ Include everything:
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={() => setDropdownOptionsEdit(null)}>
             <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-                <h3 className="text-xl font-semibold leading-tight">Configure Dropdown Options</h3>
+                <h3 className="text-xl font-normal leading-tight">Configure Dropdown Options</h3>
                 <button
                   onClick={() => setDropdownOptionsEdit(null)}
                   className="text-r-muted hover:text-r-text"
@@ -5977,12 +5977,12 @@ Include everything:
                       type="text"
                       value={noteForm.title}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="flex-1 bg-r-surface rounded px-3 py-2 text-xl font-semibold leading-tight"
+                      className="flex-1 bg-r-surface rounded px-3 py-2 text-xl font-normal leading-tight"
                       placeholder="Note title"
                       autoFocus
                     />
                   ) : (
-                    <h2 className="text-xl font-semibold leading-tight truncate">{currentNote.title}</h2>
+                    <h2 className="text-xl font-normal leading-tight truncate">{currentNote.title}</h2>
                   )}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -6203,7 +6203,7 @@ Include everything:
             <>
               <div className="flex items-center gap-2">
                 <BookOpen size={20} className="text-r-primary" />
-                <span className="text-base font-semibold tracking-tight">Notebooks</span>
+                <span className="text-base font-medium tracking-tight">Notebooks</span>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
@@ -6374,7 +6374,7 @@ Include everything:
                   <Menu size={18} />
                 </button>
               )}
-              <h1 className="font-semibold text-2xl leading-tight flex items-center gap-2">
+              <h1 className="font-normal text-2xl leading-tight flex items-center gap-2">
                 {isPromptsNotebook ? (
                   <FileText size={24} className="text-r-primary" />
                 ) : isBookNotebook ? (
@@ -6444,14 +6444,14 @@ Include everything:
             <div className="flex items-center bg-r-surface rounded-lg p-1">
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-r-primary text-white' : 'text-r-muted hover:text-r-text'}`}
+                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-r-primary text-r-on-primary' : 'text-r-muted hover:text-r-text'}`}
                 title="List view"
               >
                 <List size={16} />
               </button>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-r-primary text-white' : 'text-r-muted hover:text-r-text'}`}
+                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-r-primary text-r-on-primary' : 'text-r-muted hover:text-r-text'}`}
                 title="Grid view"
               >
                 <LayoutGrid size={16} />
@@ -6460,7 +6460,7 @@ Include everything:
             {viewMode === 'grid' && (
               <button
                 onClick={() => setGridEditMode(!gridEditMode)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg ${gridEditMode ? 'bg-r-primary text-white' : 'bg-r-surface text-r-muted hover:text-r-text'}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg ${gridEditMode ? 'bg-r-primary text-r-on-primary' : 'bg-r-surface text-r-muted hover:text-r-text'}`}
                 title="Toggle edit mode"
               >
                 <Edit2 size={14} />
@@ -6646,7 +6646,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
                 <Move size={20} className="text-r-primary" />
                 Move Note to Notebook
               </h2>
@@ -6746,7 +6746,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] max-h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
                 <Move size={20} className="text-r-primary" />
                 Move {selectedNotes.size} Note{selectedNotes.size > 1 ? 's' : ''}
               </h2>
@@ -6836,7 +6836,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
                 <Edit2 size={20} className="text-r-primary" />
                 Edit Notebook
               </h2>
@@ -6879,7 +6879,7 @@ Include everything:
                         onClick={() => setEditNotebookForm(prev => ({ ...prev, icon: iconName }))}
                         className={`p-2 rounded-lg flex items-center justify-center transition-colors ${
                           editNotebookForm.icon === iconName
-                            ? 'bg-r-primary text-white'
+                            ? 'bg-r-primary text-r-on-primary'
                             : 'bg-r-bg hover:bg-r-hover text-r-muted'
                         }`}
                         title={iconName || 'No icon'}
@@ -6949,7 +6949,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
                 <Notebook size={20} className="text-purple-500" />
                 Create New Notebook
               </h2>
@@ -7005,7 +7005,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
                 {isBookNotebook ? (
                   <BookOpen size={20} className="text-amber-400" />
                 ) : noteForm.type === 'spreadsheet' ? (
@@ -7038,7 +7038,7 @@ Include everything:
                       'Table': <Table size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
                       'Database': <Database size={20} className={isActive ? 'text-cyan-400' : 'text-r-muted'} />,
                       'BookOpen': <BookOpen size={20} className={isActive ? 'text-amber-400' : 'text-r-muted'} />,
-                      'Plane': <Plane size={20} className={isActive ? 'text-sky-400' : 'text-r-muted'} />,
+                      'Plane': <Plane size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
                       'Clapperboard': <Clapperboard size={20} className={isActive ? 'text-pink-400' : 'text-r-muted'} />,
                     };
 
@@ -7306,7 +7306,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h3 className="text-lg font-semibold leading-tight">New Folder</h3>
+              <h3 className="text-lg font-normal leading-tight">New Folder</h3>
               <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
@@ -7361,7 +7361,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight">Restore from Backup</h2>
+              <h2 className="text-xl font-normal leading-tight">Restore from Backup</h2>
               <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -7477,7 +7477,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h3 className="text-lg font-semibold leading-tight">Rename Folder</h3>
+              <h3 className="text-lg font-normal leading-tight">Rename Folder</h3>
               <button onClick={() => setRenameFolder(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -7503,7 +7503,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h3 className="text-lg font-semibold leading-tight">Move Prompt</h3>
+                <h3 className="text-lg font-normal leading-tight">Move Prompt</h3>
                 <p className="text-sm text-r-muted">"{movingPrompt.title}"</p>
               </div>
               <button onClick={() => setMovingPrompt(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
@@ -7566,7 +7566,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h3 className="text-lg font-semibold leading-tight">Move Prompts</h3>
+                <h3 className="text-lg font-normal leading-tight">Move Prompts</h3>
                 <p className="text-sm text-r-muted">Move {selectedPrompts.size} prompt{selectedPrompts.size > 1 ? 's' : ''} to a folder</p>
               </div>
               <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
@@ -7695,7 +7695,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight">Bulk Import Prompts</h2>
+              <h2 className="text-xl font-normal leading-tight">Bulk Import Prompts</h2>
               <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -7943,7 +7943,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h2 className="text-xl font-semibold leading-tight">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
+                <h2 className="text-xl font-normal leading-tight">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
                 {mergeScopeParentId && (
                   <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === mergeScopeParentId)?.name}"
@@ -8072,7 +8072,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h2 className="text-xl font-semibold leading-tight">Remove Duplicate Prompts</h2>
+                <h2 className="text-xl font-normal leading-tight">Remove Duplicate Prompts</h2>
                 {duplicatePromptsFolderId && (
                   <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === duplicatePromptsFolderId)?.name}"
@@ -8162,7 +8162,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-semibold leading-tight">Manage Tag Categories</h2>
+              <h2 className="text-xl font-normal leading-tight">Manage Tag Categories</h2>
               <button onClick={() => setShowTagCategoryManager(false)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -8281,7 +8281,7 @@ Include everything:
               <div className="flex items-center gap-2">
                 <Bot size={20} className="text-purple-500" />
                 <div>
-                  <h3 className="text-lg font-semibold leading-tight">Chat with AI</h3>
+                  <h3 className="text-lg font-normal leading-tight">Chat with AI</h3>
                   <p className="text-xs text-r-muted truncate max-w-[280px]">
                     About: {notes.find(n => n.id === chatNoteId)?.title}
                   </p>
