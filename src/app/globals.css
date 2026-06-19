@@ -1,4 +1,4 @@
-@import url('https://fonts.cdnfonts.com/css/open-sauce-sans');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,21 +7,21 @@
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: 'Open Sauce Sans', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Momentum typography: light-weight headings · 1.1 line-height */
+/* Ramotion typography: headings 600 weight · 1.2 line-height */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 400;
-  line-height: 1.1;
+  font-weight: 600;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
-/* Spreadsheet scrollbar styles - always visible (dark) */
+/* Spreadsheet scrollbar styles - always visible (light) */
 .spreadsheet-scroll {
   overflow: scroll !important;
 }
@@ -32,25 +32,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .spreadsheet-scroll::-webkit-scrollbar-track {
-  background: #1d1d1d;
+  background: #f0f0f0;
   border-radius: 6px;
 }
 
 .spreadsheet-scroll::-webkit-scrollbar-thumb {
-  background: #3a3a3a;
+  background: #c8c8c8;
   border-radius: 6px;
-  border: 2px solid #1d1d1d;
+  border: 2px solid #f0f0f0;
 }
 
 .spreadsheet-scroll::-webkit-scrollbar-thumb:hover {
-  background: #4a4a4a;
+  background: #b0b0b0;
 }
 
 .spreadsheet-scroll::-webkit-scrollbar-corner {
-  background: #1d1d1d;
+  background: #f0f0f0;
 }
 
-/* Modal scrollbar styles - always visible (dark) */
+/* Modal scrollbar styles - always visible (light) */
 .modal-scroll {
   overflow: scroll !important;
 }
@@ -61,20 +61,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .modal-scroll::-webkit-scrollbar-track {
-  background: #1d1d1d;
+  background: #f0f0f0;
   border-radius: 5px;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb {
-  background: #3a3a3a;
+  background: #c8c8c8;
   border-radius: 5px;
-  border: 2px solid #1d1d1d;
+  border: 2px solid #f0f0f0;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb:hover {
-  background: #4a4a4a;
+  background: #b0b0b0;
 }
 
 .modal-scroll::-webkit-scrollbar-corner {
-  background: #1d1d1d;
+  background: #f0f0f0;
 }

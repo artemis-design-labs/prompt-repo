@@ -231,6 +231,7 @@ export default function PromptRepository() {
   const [gridEditMode, setGridEditMode] = useState(false);
   const [folderSort, setFolderSort] = useState('name'); // 'name', 'prompts', 'subfolders'
   const [selectedPrompts, setSelectedPrompts] = useState(new Set());
+  const [selectedPromptId, setSelectedPromptId] = useState(null); // 3-pane detail selection
   const [showBulkMove, setShowBulkMove] = useState(false);
   const [bulkMoveSearch, setBulkMoveSearch] = useState('');
   const [bulkMoveNewFolder, setBulkMoveNewFolder] = useState({ show: false, parentId: null, name: '' });
@@ -2389,63 +2390,101 @@ export default function PromptRepository() {
     reader.readAsText(file);
   };
 
+  // Evernote-style selectable list row. Clicking selects the prompt; full
+  // content + actions render in the right-hand detail pane (PromptDetailPane).
   const PromptAccordion = ({ prompt }) => {
-    const isExpanded = expandedPrompts.has(prompt.id);
-    const isSelected = selectedPrompts.has(prompt.id);
+    const isChecked = selectedPrompts.has(prompt.id);
+    const isActive = selectedPromptId === prompt.id;
+    const preview = getPromptDisplayContent(prompt.content).replace(/\s+/g, ' ').trim();
     return (
-      <div className={`border rounded-lg overflow-hidden bg-r-surface/80 ${isSelected ? 'border-r-primary bg-r-primary/10' : 'border-r-border'}`}>
-        <div
-          onClick={() => togglePrompt(prompt.id)}
-          className="flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-r-hover/50 transition-colors"
-        >
+      <div
+        onClick={() => setSelectedPromptId(prompt.id)}
+        className={`group rounded-lg px-3 py-2.5 cursor-pointer transition-colors border ${
+          isActive ? 'bg-r-primary/10 border-r-primary' : 'border-transparent hover:bg-r-hover/60'
+        }`}
+      >
+        <div className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={isSelected}
+            checked={isChecked}
             onChange={(e) => { e.stopPropagation(); togglePromptSelection(prompt.id); }}
             onClick={(e) => e.stopPropagation()}
-            className="w-4 h-4 rounded border-r-border bg-r-hover text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer"
+            className="w-4 h-4 rounded border-r-border text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity"
           />
-          {isExpanded ? <ChevronDown size={16} className="text-r-muted" /> : <ChevronRight size={16} className="text-r-muted" />}
-          <FileText size={14} className="text-r-primary" />
-          <span className="flex-1 text-sm font-medium truncate">{prompt.title}</span>
+          <FileText size={14} className="text-r-primary flex-shrink-0" />
+          <span className="flex-1 text-sm font-medium truncate text-r-text">{prompt.title}</span>
           <button
             onClick={(e) => { e.stopPropagation(); copyPrompt(prompt.content, prompt.id); }}
-            className={`p-1.5 rounded transition-colors ${copiedId === prompt.id ? 'bg-green-600 text-white' : 'hover:bg-r-hover2 text-r-muted hover:text-r-text'}`}
+            className={`p-1.5 rounded transition-all ${copiedId === prompt.id ? 'bg-green-600 text-white' : 'opacity-0 group-hover:opacity-100 hover:bg-r-hover2 text-r-muted hover:text-r-text'}`}
             title={copiedId === prompt.id ? 'Copied!' : 'Copy prompt'}
           >
             {copiedId === prompt.id ? <Check size={14} /> : <Copy size={14} />}
           </button>
-          <div className="flex items-center gap-1">
-            {prompt.tags.slice(0, 2).map(tag => (
-              <span key={tag} className="text-xs px-1.5 py-0.5 bg-r-hover rounded">{tag}</span>
-            ))}
-            {prompt.tags.length > 2 && <span className="text-xs text-r-muted">+{prompt.tags.length - 2}</span>}
-          </div>
         </div>
-        {isExpanded && (
-          <div className="px-3 pb-3 pt-1 border-t border-r-border bg-r-bg/70">
-            <pre className="text-xs text-r-text bg-r-bg rounded p-3 whitespace-pre-wrap font-mono mb-3 max-h-64 overflow-auto">{getPromptDisplayContent(prompt.content)}</pre>
-            {isStructuredPrompt(prompt.content) && (
-              <div className="text-xs text-purple-400 mb-2 flex items-center gap-1">
-                <span className="px-1.5 py-0.5 bg-purple-500/20 rounded">Structured Prompt</span>
-              </div>
-            )}
-            <div className="flex flex-wrap gap-1 mb-3">
-              {prompt.tags.map(tag => <span key={tag} className="text-xs px-2 py-0.5 bg-r-hover rounded">{tag}</span>)}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={(e) => { e.stopPropagation(); copyPrompt(prompt.content, prompt.id); }}
-                className={`flex-1 py-2 rounded text-sm flex items-center justify-center gap-2 transition-colors ${copiedId === prompt.id ? 'bg-green-600' : 'bg-r-hover hover:bg-r-hover2'}`}
-              >
-                {copiedId === prompt.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Prompt</>}
-              </button>
-              <button onClick={(e) => { e.stopPropagation(); setMovingPrompt(prompt); }} className="p-2 hover:bg-r-hover rounded" title="Move to folder"><Move size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); setEditingPrompt(prompt); }} className="p-2 hover:bg-r-hover rounded" title="Edit"><Edit2 size={14} /></button>
-              <button onClick={(e) => { e.stopPropagation(); deletePrompt(prompt.id); }} className="p-2 hover:bg-r-hover rounded text-red-400" title="Delete"><Trash2 size={14} /></button>
-            </div>
+        {preview && (
+          <p className="mt-1 ml-6 text-xs text-r-muted line-clamp-2 leading-snug">{preview}</p>
+        )}
+        {prompt.tags.length > 0 && (
+          <div className="mt-1.5 ml-6 flex items-center gap-1 flex-wrap">
+            {prompt.tags.slice(0, 3).map(tag => (
+              <span key={tag} className="text-[11px] px-1.5 py-0.5 bg-r-hover rounded text-r-muted">{tag}</span>
+            ))}
+            {prompt.tags.length > 3 && <span className="text-[11px] text-r-muted">+{prompt.tags.length - 3}</span>}
           </div>
         )}
+      </div>
+    );
+  };
+
+  // Right-hand detail pane: full view of the selected prompt with actions.
+  const PromptDetailPane = () => {
+    const prompt = data.prompts.find(p => p.id === selectedPromptId);
+    if (!prompt) {
+      return (
+        <div className="h-full flex flex-col items-center justify-center text-center text-r-muted px-8">
+          <FileText size={40} className="mb-4 opacity-40" />
+          <p className="text-base text-r-text font-medium">No prompt selected</p>
+          <p className="text-sm mt-1">Choose a prompt from the list to view its contents here.</p>
+        </div>
+      );
+    }
+    const folder = data.folders.find(f => f.id === prompt.folderId);
+    return (
+      <div className="h-full flex flex-col min-h-0">
+        {/* Detail top bar */}
+        <div className="flex items-center justify-between px-8 py-4 border-b border-r-border flex-shrink-0">
+          <div className="min-w-0">
+            {folder && (
+              <div className="text-xs text-r-muted mb-1 truncate">{folder.name}</div>
+            )}
+            <h2 className="text-2xl font-semibold leading-tight text-r-text truncate">{prompt.title}</h2>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => copyPrompt(prompt.content, prompt.id)}
+              className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg font-medium transition-colors ${copiedId === prompt.id ? 'bg-green-600 text-white' : 'bg-r-primary text-r-on-primary hover:bg-blue-700'}`}
+            >
+              {copiedId === prompt.id ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
+            </button>
+            <button onClick={() => setMovingPrompt(prompt)} className="p-2 hover:bg-r-hover rounded-lg text-r-muted hover:text-r-text" title="Move to folder"><Move size={16} /></button>
+            <button onClick={() => setEditingPrompt(prompt)} className="p-2 hover:bg-r-hover rounded-lg text-r-muted hover:text-r-text" title="Edit"><Edit2 size={16} /></button>
+            <button onClick={() => { deletePrompt(prompt.id); setSelectedPromptId(null); }} className="p-2 hover:bg-r-hover rounded-lg text-red-500" title="Delete"><Trash2 size={16} /></button>
+          </div>
+        </div>
+        {/* Detail body */}
+        <div className="flex-1 overflow-auto px-8 py-6 min-h-0">
+          {isStructuredPrompt(prompt.content) && (
+            <div className="mb-4">
+              <span className="text-xs px-2 py-0.5 bg-r-primary/10 text-r-primary rounded">Structured Prompt</span>
+            </div>
+          )}
+          <pre className="text-sm text-r-text bg-r-surface border border-r-border rounded-xl p-5 whitespace-pre-wrap font-mono leading-relaxed">{getPromptDisplayContent(prompt.content)}</pre>
+          {prompt.tags.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-1.5">
+              {prompt.tags.map(tag => <span key={tag} className="text-xs px-2.5 py-1 bg-r-hover rounded-full text-r-muted">{tag}</span>)}
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -2855,7 +2894,7 @@ export default function PromptRepository() {
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
         <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
           <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-            <h2 className="text-xl font-normal leading-tight">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
+            <h2 className="text-xl font-semibold leading-tight">{prompt ? 'Edit Prompt' : 'New Prompt'}</h2>
             <button onClick={onClose} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
           </div>
           <div className="px-6 py-5 space-y-4 flex-1 min-h-0 modal-scroll">
@@ -4192,7 +4231,7 @@ export default function PromptRepository() {
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <Plane size={24} className="text-r-primary" />
-              <h2 className="text-2xl font-normal leading-tight text-r-text">Travel Itinerary Setup</h2>
+              <h2 className="text-2xl font-semibold leading-tight text-r-text">Travel Itinerary Setup</h2>
             </div>
 
             <div className="space-y-4">
@@ -5024,7 +5063,7 @@ export default function PromptRepository() {
             <>
               {/* Header with title and copy button */}
               <div className="flex items-center justify-between p-4 border-b border-r-border">
-                <h2 className="text-xl font-normal leading-tight text-r-text">{activeScript.title}</h2>
+                <h2 className="text-xl font-semibold leading-tight text-r-text">{activeScript.title}</h2>
                 <button
                   onClick={copyToClipboard}
                   disabled={!activeScript.content}
@@ -5731,7 +5770,7 @@ Include everything:
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onClick={() => setDropdownOptionsEdit(null)}>
             <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-                <h3 className="text-xl font-normal leading-tight">Configure Dropdown Options</h3>
+                <h3 className="text-xl font-semibold leading-tight">Configure Dropdown Options</h3>
                 <button
                   onClick={() => setDropdownOptionsEdit(null)}
                   className="text-r-muted hover:text-r-text"
@@ -5977,12 +6016,12 @@ Include everything:
                       type="text"
                       value={noteForm.title}
                       onChange={(e) => setNoteForm(prev => ({ ...prev, title: e.target.value }))}
-                      className="flex-1 bg-r-surface rounded px-3 py-2 text-xl font-normal leading-tight"
+                      className="flex-1 bg-r-surface rounded px-3 py-2 text-xl font-semibold leading-tight"
                       placeholder="Note title"
                       autoFocus
                     />
                   ) : (
-                    <h2 className="text-xl font-normal leading-tight truncate">{currentNote.title}</h2>
+                    <h2 className="text-xl font-semibold leading-tight truncate">{currentNote.title}</h2>
                   )}
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -6374,7 +6413,7 @@ Include everything:
                   <Menu size={18} />
                 </button>
               )}
-              <h1 className="font-normal text-2xl leading-tight flex items-center gap-2">
+              <h1 className="font-semibold text-2xl leading-tight flex items-center gap-2">
                 {isPromptsNotebook ? (
                   <FileText size={24} className="text-r-primary" />
                 ) : isBookNotebook ? (
@@ -6441,32 +6480,6 @@ Include everything:
               {areAllFoldersExpanded() ? 'Collapse' : 'Expand'}
             </button>
             <div className="h-6 w-px bg-r-hover" />
-            <div className="flex items-center bg-r-surface rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-r-primary text-r-on-primary' : 'text-r-muted hover:text-r-text'}`}
-                title="List view"
-              >
-                <List size={16} />
-              </button>
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-r-primary text-r-on-primary' : 'text-r-muted hover:text-r-text'}`}
-                title="Grid view"
-              >
-                <LayoutGrid size={16} />
-              </button>
-            </div>
-            {viewMode === 'grid' && (
-              <button
-                onClick={() => setGridEditMode(!gridEditMode)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg ${gridEditMode ? 'bg-r-primary text-r-on-primary' : 'bg-r-surface text-r-muted hover:text-r-text'}`}
-                title="Toggle edit mode"
-              >
-                <Edit2 size={14} />
-                <span>Edit</span>
-              </button>
-            )}
             <div className="flex items-center gap-2 bg-r-surface rounded-lg px-3 py-1.5">
               <ArrowUpDown size={14} className="text-r-muted" />
               <select
@@ -6528,27 +6541,34 @@ Include everything:
         </div>
       )}
 
-      {/* Main Content */}
+      {/* Main Content — 3-pane Evernote layout: list | detail (Prompts) */}
       {isPromptsNotebook ? (
-        <div className="px-6 py-6 flex-1 overflow-auto">
-          <div className={`max-w-5xl mx-auto ${viewMode === 'list' ? 'space-y-1' : ''}`}>
-            {loading ? (
-              <div className="text-center text-r-muted py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-r-primary mx-auto mb-4"></div>
-                <p>Loading...</p>
-              </div>
-            ) : (
-              <>
-                {viewMode === 'list' ? <FolderAccordion /> : <FolderGrid />}
-                {data.folders.length === 0 && (
-                  <div className="text-center text-r-muted py-12">
-                    <Folder size={48} className="mx-auto mb-4 opacity-50" />
-                    <p>No folders yet</p>
-                    <button onClick={() => setShowNewFolder(true)} className="mt-4 px-4 py-2 bg-r-primary hover:bg-blue-700 rounded text-sm">Create your first folder</button>
-                  </div>
-                )}
-              </>
-            )}
+        <div className="flex-1 flex min-h-0 overflow-hidden">
+          {/* Middle: prompt/folder list */}
+          <div className="w-[440px] flex-shrink-0 border-r border-r-border flex flex-col min-h-0 bg-r-surface">
+            <div className="flex-1 overflow-auto px-3 py-3 space-y-0.5">
+              {loading ? (
+                <div className="text-center text-r-muted py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-r-primary mx-auto mb-4"></div>
+                  <p>Loading...</p>
+                </div>
+              ) : (
+                <>
+                  <FolderAccordion />
+                  {data.folders.length === 0 && (
+                    <div className="text-center text-r-muted py-12">
+                      <Folder size={48} className="mx-auto mb-4 opacity-50" />
+                      <p>No folders yet</p>
+                      <button onClick={() => setShowNewFolder(true)} className="mt-4 px-4 py-2 bg-r-primary text-r-on-primary hover:bg-blue-700 rounded-lg text-sm">Create your first folder</button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+          {/* Right: detail pane */}
+          <div className="flex-1 min-w-0 overflow-hidden bg-r-bg">
+            <PromptDetailPane />
           </div>
         </div>
       ) : (
@@ -6646,7 +6666,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Move size={20} className="text-r-primary" />
                 Move Note to Notebook
               </h2>
@@ -6746,7 +6766,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] max-h-[80vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Move size={20} className="text-r-primary" />
                 Move {selectedNotes.size} Note{selectedNotes.size > 1 ? 's' : ''}
               </h2>
@@ -6836,7 +6856,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Edit2 size={20} className="text-r-primary" />
                 Edit Notebook
               </h2>
@@ -6949,7 +6969,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-lg w-[500px] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 <Notebook size={20} className="text-purple-500" />
                 Create New Notebook
               </h2>
@@ -7005,7 +7025,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight flex items-center gap-2">
+              <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 {isBookNotebook ? (
                   <BookOpen size={20} className="text-amber-400" />
                 ) : noteForm.type === 'spreadsheet' ? (
@@ -7306,7 +7326,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h3 className="text-lg font-normal leading-tight">New Folder</h3>
+              <h3 className="text-lg font-semibold leading-tight">New Folder</h3>
               <button onClick={() => { setShowNewFolder(false); setNewFolderParent(null); }} className="p-1 hover:bg-r-hover rounded">
                 <X size={18} />
               </button>
@@ -7361,7 +7381,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight">Restore from Backup</h2>
+              <h2 className="text-xl font-semibold leading-tight">Restore from Backup</h2>
               <button onClick={() => { setShowBackupRestore(false); setBackupPreview(null); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -7477,7 +7497,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h3 className="text-lg font-normal leading-tight">Rename Folder</h3>
+              <h3 className="text-lg font-semibold leading-tight">Rename Folder</h3>
               <button onClick={() => setRenameFolder(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -7503,7 +7523,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h3 className="text-lg font-normal leading-tight">Move Prompt</h3>
+                <h3 className="text-lg font-semibold leading-tight">Move Prompt</h3>
                 <p className="text-sm text-r-muted">"{movingPrompt.title}"</p>
               </div>
               <button onClick={() => setMovingPrompt(null)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
@@ -7566,7 +7586,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h3 className="text-lg font-normal leading-tight">Move Prompts</h3>
+                <h3 className="text-lg font-semibold leading-tight">Move Prompts</h3>
                 <p className="text-sm text-r-muted">Move {selectedPrompts.size} prompt{selectedPrompts.size > 1 ? 's' : ''} to a folder</p>
               </div>
               <button onClick={() => { setShowBulkMove(false); setBulkMoveSearch(''); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
@@ -7695,7 +7715,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight">Bulk Import Prompts</h2>
+              <h2 className="text-xl font-semibold leading-tight">Bulk Import Prompts</h2>
               <button onClick={() => { setShowBulkImport(false); setBulkImportData({ prompts: [], folderId: null, tags: [], isFullBackup: false, folders: [] }); }} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -7943,7 +7963,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h2 className="text-xl font-normal leading-tight">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
+                <h2 className="text-xl font-semibold leading-tight">Merge Duplicate {mergeScopeParentId ? 'Subfolders' : 'Folders'}</h2>
                 {mergeScopeParentId && (
                   <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === mergeScopeParentId)?.name}"
@@ -8072,7 +8092,7 @@ Include everything:
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <div>
-                <h2 className="text-xl font-normal leading-tight">Remove Duplicate Prompts</h2>
+                <h2 className="text-xl font-semibold leading-tight">Remove Duplicate Prompts</h2>
                 {duplicatePromptsFolderId && (
                   <p className="text-xs text-r-muted mt-1">
                     in "{data.folders.find(f => f.id === duplicatePromptsFolderId)?.name}"
@@ -8162,7 +8182,7 @@ Include everything:
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
           <div className="bg-r-surface rounded-xl w-[75vw] h-[75vh] flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
-              <h2 className="text-xl font-normal leading-tight">Manage Tag Categories</h2>
+              <h2 className="text-xl font-semibold leading-tight">Manage Tag Categories</h2>
               <button onClick={() => setShowTagCategoryManager(false)} className="p-1 hover:bg-r-hover rounded"><X size={18} /></button>
             </div>
             <div className="px-6 py-5 flex-1 min-h-0 modal-scroll">
@@ -8281,7 +8301,7 @@ Include everything:
               <div className="flex items-center gap-2">
                 <Bot size={20} className="text-purple-500" />
                 <div>
-                  <h3 className="text-lg font-normal leading-tight">Chat with AI</h3>
+                  <h3 className="text-lg font-semibold leading-tight">Chat with AI</h3>
                   <p className="text-xs text-r-muted truncate max-w-[280px]">
                     About: {notes.find(n => n.id === chatNoteId)?.title}
                   </p>
