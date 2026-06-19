@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles } from 'lucide-react';
+import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles, Home } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { defaultData as initialDefaultData } from '../data/defaultFolders';
 
@@ -248,6 +248,7 @@ export default function PromptRepository() {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [notebooks, setNotebooks] = useState([]);
   const [activeNotebook, setActiveNotebook] = useState(null);
+  const [homeActive, setHomeActive] = useState(true); // Home dashboard view
   const [showNewNotebook, setShowNewNotebook] = useState(false);
   const [newNotebookName, setNewNotebookName] = useState('');
   const [newNotebookDescription, setNewNotebookDescription] = useState('');
@@ -611,6 +612,7 @@ export default function PromptRepository() {
   };
 
   const switchNotebook = (notebookId) => {
+    setHomeActive(false);
     setActiveNotebook(notebookId);
     // Select the first note in the new notebook, or null if no notes
     const notebookNotes = notes
@@ -6232,6 +6234,140 @@ Include everything:
     );
   };
 
+  // Evernote-style Home dashboard adapted to prompts / notes / tags.
+  const HomeDashboard = () => {
+    const promptsNotebook = notebooks.find(n => n.type === 'prompts');
+    const byRecent = (a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
+    const allPrompts = data.prompts || [];
+    const recentPrompts = [...allPrompts].sort(byRecent).slice(0, 6);
+    const recentNotes = [...notes].sort(byRecent).slice(0, 6);
+    const tagCounts = {};
+    allPrompts.forEach(p => (p.tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
+    const topTags = (data.tags || []).map(t => ({ name: t, count: tagCounts[t] || 0 }))
+      .sort((a, b) => b.count - a.count).slice(0, 16);
+    const stats = [
+      { label: 'Prompts', value: allPrompts.length, Icon: FileText },
+      { label: 'Notes', value: notes.length, Icon: Notebook },
+      { label: 'Notebooks', value: notebooks.length, Icon: BookOpen },
+      { label: 'Tags', value: (data.tags || []).length, Icon: Tag },
+    ];
+    const openPrompt = (p) => { if (promptsNotebook) { switchNotebook(promptsNotebook.id); setSelectedPromptId(p.id); } };
+    const openNote = (n) => { switchNotebook(n.notebookId); setActiveNote(n.id); };
+    const scratchInit = (typeof window !== 'undefined' && window.localStorage.getItem('promptRepoScratch')) || '';
+
+    return (
+      <div className="flex-1 overflow-auto bg-r-bg min-h-0">
+        {/* Banner */}
+        <div className="h-36 w-full bg-gradient-to-r from-r-primary/25 via-indigo-300/30 to-sky-200/50" />
+        <div className="px-8 -mt-10 pb-12 max-w-r-container mx-auto w-full">
+          {/* Title */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-semibold text-r-text">Your Home</h1>
+            <p className="text-sm text-r-muted mt-1">Everything in your workspace, at a glance.</p>
+          </div>
+
+          {/* Stats + quick actions */}
+          <div className="flex flex-wrap items-center gap-3 mb-8">
+            {stats.map(s => (
+              <div key={s.label} className="flex items-center gap-3 bg-r-surface border border-r-border rounded-xl px-4 py-3">
+                <s.Icon size={18} className="text-r-primary" />
+                <div>
+                  <div className="text-xl font-semibold leading-none text-r-text">{s.value}</div>
+                  <div className="text-xs text-r-muted mt-1">{s.label}</div>
+                </div>
+              </div>
+            ))}
+            <div className="flex-1 min-w-[1rem]" />
+            <button onClick={() => { setNewPromptFolder(null); setShowNewPrompt(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-r-primary text-r-on-primary rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">
+              <Plus size={16} /> New Prompt
+            </button>
+            <button onClick={() => setShowNewNotebook(true)} className="flex items-center gap-2 px-4 py-2.5 bg-r-surface border border-r-border text-r-text rounded-xl text-sm font-medium hover:bg-r-hover transition-colors">
+              <Plus size={16} /> New Notebook
+            </button>
+          </div>
+
+          {/* Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left (2/3): Scratch pad + Recent prompts */}
+            <div className="lg:col-span-2 space-y-6">
+              <section>
+                <h2 className="text-sm font-semibold text-r-muted mb-3">Scratch pad</h2>
+                <textarea
+                  defaultValue={scratchInit}
+                  onChange={(e) => { try { window.localStorage.setItem('promptRepoScratch', e.target.value); } catch (err) {} }}
+                  placeholder="Jot down quick thoughts, todos, anything…"
+                  className="w-full h-40 bg-r-surface border border-r-border rounded-xl p-4 text-sm text-r-text resize-none focus:outline-none focus:ring-1 focus:ring-r-primary leading-relaxed"
+                />
+              </section>
+              <section>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-semibold text-r-muted">Recent prompts</h2>
+                  {promptsNotebook && (
+                    <button onClick={() => switchNotebook(promptsNotebook.id)} className="text-xs text-r-primary hover:underline">View all</button>
+                  )}
+                </div>
+                {recentPrompts.length === 0 ? (
+                  <div className="text-sm text-r-muted bg-r-surface border border-r-border rounded-xl p-6 text-center">No prompts yet.</div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {recentPrompts.map(p => (
+                      <button key={p.id} onClick={() => openPrompt(p)} className="text-left bg-r-surface border border-r-border rounded-xl p-4 hover:border-r-primary hover:shadow-sm transition-all">
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <FileText size={14} className="text-r-primary flex-shrink-0" />
+                          <span className="text-sm font-medium text-r-text truncate">{p.title}</span>
+                        </div>
+                        <p className="text-xs text-r-muted line-clamp-2 leading-snug">{getPromptDisplayContent(p.content).replace(/\s+/g, ' ').trim()}</p>
+                        {p.tags && p.tags.length > 0 && (
+                          <div className="mt-2 flex gap-1 flex-wrap">
+                            {p.tags.slice(0, 3).map(t => <span key={t} className="text-[11px] px-1.5 py-0.5 bg-r-hover rounded text-r-muted">{t}</span>)}
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+
+            {/* Right (1/3): Recent notes + Tags */}
+            <div className="space-y-6">
+              <section>
+                <h2 className="text-sm font-semibold text-r-muted mb-3">Recent notes</h2>
+                <div className="bg-r-surface border border-r-border rounded-xl divide-y divide-r-border overflow-hidden">
+                  {recentNotes.length === 0 ? (
+                    <div className="text-sm text-r-muted p-6 text-center">No notes yet.</div>
+                  ) : recentNotes.map(n => {
+                    const nb = notebooks.find(x => x.id === n.notebookId);
+                    return (
+                      <button key={n.id} onClick={() => openNote(n)} className="w-full text-left px-4 py-3 hover:bg-r-hover/60 transition-colors block">
+                        <div className="text-sm font-medium text-r-text truncate">{n.title || 'Untitled'}</div>
+                        <div className="text-xs text-r-muted mt-0.5 truncate">{nb?.name || 'Notebook'}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+              <section>
+                <h2 className="text-sm font-semibold text-r-muted mb-3">Tags</h2>
+                {topTags.length === 0 ? (
+                  <div className="text-sm text-r-muted bg-r-surface border border-r-border rounded-xl p-6 text-center">No tags yet.</div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {topTags.map(t => (
+                      <span key={t.name} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-r-surface border border-r-border rounded-full text-xs text-r-text">
+                        {t.name}{t.count > 0 && <span className="text-r-muted">{t.count}</span>}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-r-bg text-r-text flex">
       {/* Sidebar Drawer */}
@@ -6277,6 +6413,19 @@ Include everything:
 
         {/* Notebooks List */}
         <div className="flex-1 overflow-auto py-2">
+          {/* Home dashboard entry */}
+          <button
+            onClick={() => setHomeActive(true)}
+            className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+              homeActive
+                ? 'bg-r-primary/20 text-r-primary border-r-2 border-r-primary'
+                : 'text-r-muted hover:bg-r-hover hover:text-r-text'
+            }`}
+            title="Home"
+          >
+            <Home size={18} className={homeActive ? 'text-r-primary' : ''} />
+            {drawerOpen && <span className="truncate font-medium">Home</span>}
+          </button>
           {notebooks.map(notebook => (
             <button
               key={notebook.id}
@@ -6285,7 +6434,7 @@ Include everything:
               onDragLeave={handleNotebookDragLeave}
               onDrop={(e) => handleNotebookDrop(e, notebook.id)}
               className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
-                activeNotebook === notebook.id
+                !homeActive && activeNotebook === notebook.id
                   ? 'bg-r-primary/20 text-r-primary border-r-2 border-r-primary'
                   : dragOverNotebook === notebook.id
                     ? 'bg-green-600/30 text-green-400 border-r-2 border-green-500'
@@ -6400,6 +6549,11 @@ Include everything:
           </div>
         )}
 
+        {/* Home dashboard */}
+        {homeActive && <HomeDashboard />}
+
+        {/* Notebook view (hidden on Home) */}
+        {!homeActive && (<>
         {/* Header */}
         <div className="border-b border-r-border px-6 py-4">
           <div className="flex items-center justify-between">
@@ -6658,6 +6812,7 @@ Include everything:
           </>
         );
       })()}
+        </>)}
 
       {/* Modals */}
 
