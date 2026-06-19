@@ -3663,7 +3663,7 @@ export default function PromptRepository() {
             <div className="flex items-center gap-0.5">
               <button
                 onClick={toggleAutoNumbering}
-                className={`p-1 rounded ${bookData.autoNumberChapters ? 'bg-amber-500/20 text-amber-400' : 'text-r-muted hover:bg-r-hover hover:text-r-text'}`}
+                className={`p-1 rounded ${bookData.autoNumberChapters ? 'bg-amber-500/20 text-amber-500' : 'text-r-muted hover:bg-r-hover hover:text-r-text'}`}
                 title={bookData.autoNumberChapters ? 'Auto-numbering ON — click to turn off' : 'Auto-numbering OFF — click to turn on'}
               >
                 <Hash size={13} />
@@ -3675,7 +3675,7 @@ export default function PromptRepository() {
                     const currentIndex = modes.indexOf(chapterSortMode);
                     setChapterSortMode(modes[(currentIndex + 1) % modes.length]);
                   }}
-                  className={`p-1 rounded ${chapterSortMode !== 'manual' ? 'bg-amber-500/20 text-amber-400' : 'text-r-muted hover:bg-r-hover hover:text-r-text'}`}
+                  className={`p-1 rounded ${chapterSortMode !== 'manual' ? 'bg-amber-500/20 text-amber-500' : 'text-r-muted hover:bg-r-hover hover:text-r-text'}`}
                   title={`Sort: ${chapterSortMode === 'manual' ? 'Manual order' : chapterSortMode === 'chronological' ? 'By creation date' : 'By last version saved'}`}
                 >
                   <ArrowUpDown size={13} />
@@ -3748,7 +3748,7 @@ export default function PromptRepository() {
                         {renamingChapter?.id === chapter.id ? (
                           <>
                             {bookData.autoNumberChapters && (
-                              <span className="text-xs text-amber-400/70 flex-shrink-0 select-none">Ch.{getGlobalChapterNumber(bookData.sections, section.id, chapter.id)}:&nbsp;</span>
+                              <span className="text-xs text-amber-600 flex-shrink-0 select-none">Ch.{getGlobalChapterNumber(bookData.sections, section.id, chapter.id)}:&nbsp;</span>
                             )}
                             <input
                               autoFocus
@@ -3817,11 +3817,11 @@ export default function PromptRepository() {
           {activeChapter ? (
             <>
               <div className="px-4 py-2 border-b border-r-border flex items-center gap-2">
-                <BookOpen size={14} className="text-amber-400 flex-shrink-0" />
+                <BookOpen size={14} className="text-amber-500 flex-shrink-0" />
                 <span className="text-xs text-r-muted flex-shrink-0">{activeSection?.title}</span>
                 <ChevronRight size={12} className="text-r-muted flex-shrink-0" />
                 {bookData.autoNumberChapters && (
-                  <span className="text-sm font-medium text-amber-400/70 flex-shrink-0 select-none">
+                  <span className="text-sm font-medium text-amber-600 flex-shrink-0 select-none">
                     Chapter {getGlobalChapterNumber(bookData.sections, activeSection?.id, activeChapter.id)} :&nbsp;
                   </span>
                 )}
@@ -3860,14 +3860,14 @@ export default function PromptRepository() {
                       onClick={() => setShowVersionHistory(!showVersionHistory)}
                       className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-colors ${
                         activeChapterVersions.length > 0
-                          ? 'text-amber-400 hover:text-amber-300 hover:bg-r-hover'
+                          ? 'text-amber-500 hover:text-amber-300 hover:bg-r-hover'
                           : 'text-r-muted hover:text-r-muted hover:bg-r-hover'
                       }`}
                       title={activeChapterVersions.length > 0 ? `${activeChapterVersions.length} saved version(s)` : 'No saved versions'}
                     >
                       <History size={12} />
                       {activeChapterVersions.length > 0 && (
-                        <span className="bg-amber-500/20 text-amber-400 px-1.5 rounded-full text-[10px] font-medium">
+                        <span className="bg-amber-500/20 text-amber-500 px-1.5 rounded-full text-[10px] font-medium">
                           {activeChapterVersions.length}
                         </span>
                       )}
@@ -4101,7 +4101,7 @@ export default function PromptRepository() {
       { id: 'dining', label: 'Dining', icon: '🍴', color: 'bg-orange-500/20 text-orange-400' },
       { id: 'nightlife', label: 'Nightlife', icon: '🍸', color: 'bg-indigo-500/20 text-indigo-400' },
       { id: 'culture', label: 'Culture', icon: '🏛️', color: 'bg-purple-500/20 text-purple-400' },
-      { id: 'shopping', label: 'Shopping', icon: '🛍️', color: 'bg-pink-500/20 text-pink-400' },
+      { id: 'shopping', label: 'Shopping', icon: '🛍️', color: 'bg-pink-500/20 text-pink-500' },
       { id: 'adventure', label: 'Adventure', icon: '🏔️', color: 'bg-green-500/20 text-green-400' },
       { id: 'transport', label: 'Transport', icon: '🚗', color: 'bg-r-primary/20 text-r-primary' },
       { id: 'other', label: 'Other', icon: '📍', color: 'bg-r-hover2/40 text-r-muted' },
@@ -4961,7 +4961,7 @@ export default function PromptRepository() {
           <div className={`p-3 border-b border-r-border flex items-center ${scriptsDrawerCollapsed ? 'justify-center' : 'justify-between'}`}>
             {!scriptsDrawerCollapsed && (
               <span className="text-sm font-medium text-r-text flex items-center gap-2">
-                <Clapperboard size={14} className="text-pink-400" />
+                <Clapperboard size={14} className="text-pink-500" />
                 Scripts
               </span>
             )}
@@ -5822,7 +5822,7 @@ Include everything:
     return (
       <div className="flex h-full">
         {/* Notes Sidebar */}
-        <div className={`${notesPanelOpen ? 'w-72' : 'w-12'} border-r border-r-border flex flex-col bg-r-bg/70 transition-all duration-300 flex-shrink-0`}>
+        <div className={`${notesPanelOpen ? 'w-80' : 'w-12'} border-r border-r-border flex flex-col bg-r-surface transition-all duration-300 flex-shrink-0`}>
           <div className="p-2 border-b border-r-border flex items-center justify-between">
             {notesPanelOpen ? (
               <>
@@ -5884,13 +5884,13 @@ Include everything:
                 <p className="text-sm">{isBookNotebook ? 'No chapters yet' : 'No notes yet'}</p>
                 <button
                   onClick={() => { setShowNewNote(true); setNoteForm({ title: '', content: '' }); }}
-                  className={`mt-2 text-xs ${isBookNotebook ? 'text-amber-400 hover:text-amber-300' : 'text-r-primary hover:text-r-primary'}`}
+                  className={`mt-2 text-xs ${isBookNotebook ? 'text-amber-500 hover:text-amber-300' : 'text-r-primary hover:text-r-primary'}`}
                 >
                   {isBookNotebook ? 'Add your first chapter' : 'Create your first note'}
                 </button>
               </div>
             ) : (
-              <div className="py-2">
+              <div className="py-2 px-1.5">
                 {notebookNotes.map((note, index) => (
                   <div
                     key={note.id}
@@ -5900,18 +5900,18 @@ Include everything:
                     onDragOver={(e) => handleNoteDragOver(e, index)}
                     onDrop={(e) => handleNoteListDrop(e, index)}
                     onClick={() => setActiveNote(note.id)}
-                    className={`group w-full text-left px-4 py-3 border-b border-r-border/50 transition-colors cursor-grab active:cursor-grabbing ${
+                    className={`group w-full text-left rounded-lg px-3 py-2.5 mb-0.5 border transition-colors cursor-grab active:cursor-grabbing ${
                       activeNote === note.id
                         ? isBookNotebook
-                          ? 'bg-amber-600/20 border-l-2 border-l-amber-500'
-                          : 'bg-r-primary/20 border-l-2 border-l-blue-500'
+                          ? 'bg-amber-500/10 border-amber-500'
+                          : 'bg-r-primary/10 border-r-primary'
                         : draggingNote?.id === note.id
-                          ? 'opacity-50'
+                          ? 'opacity-50 border-transparent'
                           : dragOverNoteIndex === index && draggingNote
                             ? isBookNotebook
-                              ? 'border-t-2 border-t-amber-500'
-                              : 'border-t-2 border-t-blue-500'
-                            : 'hover:bg-r-hover'
+                              ? 'border-amber-500 border-dashed'
+                              : 'border-r-primary border-dashed'
+                            : 'border-transparent hover:bg-r-hover/60'
                     }`}
                   >
                     <div className="flex items-center gap-2">
@@ -5920,21 +5920,21 @@ Include everything:
                         checked={selectedNotes.has(note.id)}
                         onChange={(e) => { e.stopPropagation(); toggleNoteSelection(note.id); }}
                         onClick={(e) => e.stopPropagation()}
-                        className="w-4 h-4 rounded border-r-border bg-r-surface text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer flex-shrink-0"
+                        className="w-4 h-4 rounded border-r-border bg-r-surface text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer flex-shrink-0 opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity"
                       />
-                      <GripVertical size={12} className="text-r-muted flex-shrink-0 cursor-grab" />
+                      <GripVertical size={12} className="text-r-muted flex-shrink-0 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity" />
                       {isBookNotebook ? (
-                        <span className="flex-shrink-0 w-6 h-6 rounded bg-amber-500/20 text-amber-400 text-xs font-bold flex items-center justify-center">
+                        <span className="flex-shrink-0 w-6 h-6 rounded bg-amber-500/20 text-amber-500 text-xs font-bold flex items-center justify-center">
                           {index + 1}
                         </span>
                       ) : note.type === 'spreadsheet' ? (
                         <Table size={14} className="text-green-500 flex-shrink-0" />
                       ) : note.type === 'book' ? (
-                        <BookOpen size={14} className="text-amber-400 flex-shrink-0" />
+                        <BookOpen size={14} className="text-amber-500 flex-shrink-0" />
                       ) : note.type === 'tiktok' ? (
-                        <Clapperboard size={14} className="text-pink-400 flex-shrink-0" />
+                        <Clapperboard size={14} className="text-pink-500 flex-shrink-0" />
                       ) : note.type === 'travel' ? (
-                        <Plane size={14} className="text-cyan-400 flex-shrink-0" />
+                        <Plane size={14} className="text-cyan-500 flex-shrink-0" />
                       ) : note.type === 'prompt' || note.template === 'prompt' ? (
                         <MessageSquare size={14} className="text-purple-500 flex-shrink-0" />
                       ) : (
@@ -5961,13 +5961,13 @@ Include everything:
                     </div>
                     <div className={`text-xs text-r-muted mt-1 line-clamp-2 ${isBookNotebook ? 'ml-10' : 'ml-8'}`}>
                       {note.type === 'spreadsheet' ? (
-                        <span className="text-green-500/70">Spreadsheet</span>
+                        <span className="text-green-600">Spreadsheet</span>
                       ) : note.type === 'tiktok' ? (
-                        <span className="text-pink-400/70">TikTok Scripts</span>
+                        <span className="text-pink-600">TikTok Scripts</span>
                       ) : note.type === 'travel' ? (
-                        <span className="text-cyan-400/70">Travel Itinerary</span>
+                        <span className="text-cyan-600">Travel Itinerary</span>
                       ) : isBookNotebook ? (
-                        <span className="text-amber-500/50">Chapter {index + 1}</span>
+                        <span className="text-amber-600">Chapter {index + 1}</span>
                       ) : (
                         note.content || 'No content'
                       )}
@@ -6001,13 +6001,13 @@ Include everything:
               <div className="p-4 border-b border-r-border flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {isBookNotebook ? (
-                    <span className="flex-shrink-0 w-8 h-8 rounded bg-amber-500/20 text-amber-400 text-sm font-bold flex items-center justify-center">
+                    <span className="flex-shrink-0 w-8 h-8 rounded bg-amber-500/20 text-amber-500 text-sm font-bold flex items-center justify-center">
                       {notebookNotes.findIndex(n => n.id === currentNote.id) + 1}
                     </span>
                   ) : currentNote.type === 'spreadsheet' ? (
                     <Table size={20} className="text-green-500 flex-shrink-0" />
                   ) : currentNote.type === 'book' ? (
-                    <BookOpen size={20} className="text-amber-400 flex-shrink-0" />
+                    <BookOpen size={20} className="text-amber-500 flex-shrink-0" />
                   ) : (
                     <FileText size={20} className="text-r-primary flex-shrink-0" />
                   )}
@@ -6215,7 +6215,7 @@ Include everything:
               {/* Note Footer */}
               <div className="px-4 py-2 border-t border-r-border text-xs text-r-muted">
                 {currentNote.type === 'spreadsheet' && <span className="text-green-500/70 mr-2">Spreadsheet</span>}
-                {currentNote.type === 'book' && <span className="text-amber-400/70 mr-2">Book</span>}
+                {currentNote.type === 'book' && <span className="text-amber-600 mr-2">Book</span>}
                 Last updated: {new Date(currentNote.updatedAt).toLocaleString()}
               </div>
             </>
@@ -6304,7 +6304,7 @@ Include everything:
                 }
                 // Default type-based icons (custom color overrides default if set)
                 if (notebook.type === 'book') {
-                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-amber-400' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-amber-500/70');
+                  const colorClass = customColorClass || (activeNotebook === notebook.id ? 'text-amber-500' : dragOverNotebook === notebook.id ? 'text-green-400' : 'text-amber-500/70');
                   return <BookOpen size={18} className={colorClass} />;
                 }
                 if (notebook.type === 'repository') {
@@ -6417,7 +6417,7 @@ Include everything:
                 {isPromptsNotebook ? (
                   <FileText size={24} className="text-r-primary" />
                 ) : isBookNotebook ? (
-                  <BookOpen size={24} className="text-amber-400" />
+                  <BookOpen size={24} className="text-amber-500" />
                 ) : (
                   <Notebook size={24} className="text-purple-500" />
                 )}
@@ -6730,7 +6730,7 @@ Include everything:
                       className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-r-hover text-left transition-colors"
                     >
                       {notebook.type === 'book' ? (
-                        <BookOpen size={18} className="text-amber-400" />
+                        <BookOpen size={18} className="text-amber-500" />
                       ) : notebook.type === 'repository' ? (
                         <Database size={18} className="text-purple-400" />
                       ) : notebook.type === 'spreadsheet' ? (
@@ -6820,7 +6820,7 @@ Include everything:
                       className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-r-hover text-left transition-colors"
                     >
                       {notebook.type === 'book' ? (
-                        <BookOpen size={18} className="text-amber-400" />
+                        <BookOpen size={18} className="text-amber-500" />
                       ) : notebook.type === 'repository' ? (
                         <Database size={18} className="text-purple-400" />
                       ) : notebook.type === 'spreadsheet' ? (
@@ -7027,7 +7027,7 @@ Include everything:
             <div className="flex items-center justify-between px-6 py-5 border-b border-r-border flex-shrink-0">
               <h2 className="text-xl font-semibold leading-tight flex items-center gap-2">
                 {isBookNotebook ? (
-                  <BookOpen size={20} className="text-amber-400" />
+                  <BookOpen size={20} className="text-amber-500" />
                 ) : noteForm.type === 'spreadsheet' ? (
                   <Table size={20} className="text-green-500" />
                 ) : noteForm.type === 'prompt' ? (
@@ -7056,10 +7056,10 @@ Include everything:
                     const iconMap = {
                       'FileText': <FileText size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
                       'Table': <Table size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
-                      'Database': <Database size={20} className={isActive ? 'text-cyan-400' : 'text-r-muted'} />,
-                      'BookOpen': <BookOpen size={20} className={isActive ? 'text-amber-400' : 'text-r-muted'} />,
+                      'Database': <Database size={20} className={isActive ? 'text-cyan-500' : 'text-r-muted'} />,
+                      'BookOpen': <BookOpen size={20} className={isActive ? 'text-amber-500' : 'text-r-muted'} />,
                       'Plane': <Plane size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
-                      'Clapperboard': <Clapperboard size={20} className={isActive ? 'text-pink-400' : 'text-r-muted'} />,
+                      'Clapperboard': <Clapperboard size={20} className={isActive ? 'text-pink-500' : 'text-r-muted'} />,
                     };
 
                     return (
@@ -7109,7 +7109,7 @@ Include everything:
                                     {sub.icon === 'MessageSquare' ? (
                                       <MessageSquare size={16} className={subActive ? 'text-purple-400' : 'text-r-muted'} />
                                     ) : (
-                                      <FolderSymlink size={16} className={subActive ? 'text-cyan-400' : 'text-r-muted'} />
+                                      <FolderSymlink size={16} className={subActive ? 'text-cyan-500' : 'text-r-muted'} />
                                     )}
                                     <span className="font-medium text-sm">{sub.name}</span>
                                   </div>
@@ -7161,7 +7161,7 @@ Include everything:
                         ) : category.icon === 'DollarSign' ? (
                           <DollarSign size={18} className="text-green-400" />
                         ) : category.icon === 'Briefcase' ? (
-                          <Briefcase size={18} className="text-amber-400" />
+                          <Briefcase size={18} className="text-amber-500" />
                         ) : (
                           <Target size={18} className="text-r-primary" />
                         )}
@@ -7273,7 +7273,7 @@ Include everything:
                   <p className="text-xs text-r-muted">This creates a spreadsheet to store filepaths you can quickly copy to your terminal or use to locate files and folders.</p>
                   <div className="bg-r-bg border border-r-border rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <FolderSymlink size={16} className="text-cyan-400" />
+                      <FolderSymlink size={16} className="text-cyan-500" />
                       <span className="text-sm font-medium text-r-text">Filepath columns: Name, Path, Type, Description</span>
                     </div>
                     <p className="text-xs text-r-muted">Each row stores a filepath with a label, the full path, type (file/folder), and an optional description.</p>
