@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles, Home } from 'lucide-react';
+import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles, Home, Drama } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { defaultData as initialDefaultData } from '../data/defaultFolders';
 
@@ -291,7 +291,8 @@ export default function PromptRepository() {
     ]},
     { id: 'book', name: 'Book', icon: 'BookOpen', description: 'Organize content into sections and chapters' },
     { id: 'travel', name: 'Travel Itinerary', icon: 'Plane', description: 'Plan trips with dates, travelers, and activities' },
-    { id: 'tiktok', name: 'TikTok Scripts', icon: 'Clapperboard', description: 'Manage video scripts with hooks, CTAs, and hashtags' }
+    { id: 'tiktok', name: 'TikTok Scripts', icon: 'Clapperboard', description: 'Manage video scripts with hooks, CTAs, and hashtags' },
+    { id: 'persona', name: 'Persona Builder', icon: 'Drama', description: 'Build a character sheet with description, traits, likes, and more' }
   ];
 
   // Spreadsheet template categories and templates
@@ -698,6 +699,22 @@ export default function PromptRepository() {
         travelers: [],
         experiences: {},
         selectedDay: null
+      });
+    }
+    if (noteForm.type === 'persona') {
+      initialContent = JSON.stringify({
+        fields: {
+          description: '',
+          gender: '',
+          personality: '',
+          age: '',
+          profession: '',
+          family: '',
+          personalityTraits: '',
+          likes: '',
+          dislikes: '',
+          ethnicity: ''
+        }
       });
     }
 
@@ -5109,6 +5126,124 @@ Include everything:
     );
   };
 
+  const PersonaBuilderEditor = ({ note, onUpdate }) => {
+    const PERSONA_FIELDS = [
+      { key: 'description', label: 'Brief Description', type: 'textarea', placeholder: 'A short summary of who this character is…' },
+      { key: 'gender', label: 'Gender', type: 'dropdown', options: ['Male', 'Female', 'Non-binary', 'Genderfluid', 'Agender', 'Transgender', 'Other', 'Prefer not to say'] },
+      { key: 'personality', label: 'Personality', type: 'text', placeholder: 'Overall temperament and demeanour' },
+      { key: 'age', label: 'Age', type: 'text', placeholder: 'e.g. 32' },
+      { key: 'profession', label: 'Profession', type: 'text', placeholder: 'Occupation or role' },
+      { key: 'family', label: 'Family', type: 'text', placeholder: 'Family background and relationships' },
+      { key: 'personalityTraits', label: 'Personality Traits', type: 'text', placeholder: 'e.g. Ambitious, witty, stubborn' },
+      { key: 'likes', label: 'Likes', type: 'text', placeholder: 'Things this character enjoys' },
+      { key: 'dislikes', label: 'Dislikes', type: 'text', placeholder: 'Things this character avoids' },
+      { key: 'ethnicity', label: 'Ethnicity', type: 'text', placeholder: 'Cultural or ethnic background' },
+    ];
+
+    const parsePersonaData = (content) => {
+      const empty = PERSONA_FIELDS.reduce((acc, f) => ({ ...acc, [f.key]: '' }), {});
+      try {
+        const parsed = JSON.parse(content);
+        const fields = parsed && parsed.fields && typeof parsed.fields === 'object' ? parsed.fields : parsed;
+        if (fields && typeof fields === 'object') {
+          return { ...empty, ...fields };
+        }
+      } catch {}
+      return empty;
+    };
+
+    const [persona, setPersona] = useState(() => parsePersonaData(note.content));
+    const [copied, setCopied] = useState(false);
+
+    const saveData = (newData) => {
+      setPersona(newData);
+      onUpdate(JSON.stringify({ fields: newData }));
+    };
+
+    const setField = (key, value) => {
+      saveData({ ...persona, [key]: value });
+    };
+
+    const copyToClipboard = () => {
+      const text = PERSONA_FIELDS
+        .map(f => `${f.label}: ${persona[f.key] || '—'}`)
+        .join('\n');
+      navigator.clipboard.writeText(`${note.title}\n\n${text}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
+    const inputClass = 'w-full bg-r-surface border border-r-border rounded-lg px-3 py-2 text-sm text-r-text placeholder-zinc-500 focus:outline-none focus:border-violet-500';
+
+    return (
+      <div className="flex flex-col h-full min-h-0">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-r-border flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="flex-shrink-0 w-9 h-9 rounded-lg bg-violet-500/15 text-violet-400 flex items-center justify-center">
+              <Drama size={18} />
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold leading-tight text-r-text truncate">{note.title}</h2>
+              <p className="text-xs text-r-muted">Persona Builder · character sheet</p>
+            </div>
+          </div>
+          <button
+            onClick={copyToClipboard}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all flex-shrink-0 ${
+              copied ? 'bg-green-600 text-white' : 'bg-violet-600 hover:bg-violet-700 text-white'
+            }`}
+          >
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+            {copied ? 'Copied!' : 'Copy persona'}
+          </button>
+        </div>
+
+        {/* Form */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
+            {PERSONA_FIELDS.map(field => {
+              const fullWidth = field.type === 'textarea';
+              return (
+                <div key={field.key} className={`flex flex-col gap-1.5 ${fullWidth ? 'sm:col-span-2' : ''}`}>
+                  <label className="text-xs font-medium text-r-muted uppercase tracking-wide">{field.label}</label>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      value={persona[field.key]}
+                      onChange={e => setField(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      rows={3}
+                      className={`${inputClass} resize-none leading-relaxed`}
+                    />
+                  ) : field.type === 'dropdown' ? (
+                    <select
+                      value={persona[field.key]}
+                      onChange={e => setField(field.key, e.target.value)}
+                      className={`${inputClass} appearance-none cursor-pointer`}
+                    >
+                      <option value="">Select…</option>
+                      {field.options.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={persona[field.key]}
+                      onChange={e => setField(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      className={inputClass}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const SpreadsheetEditor = ({ note, isEditing, onUpdate }) => {
     // Default table structure
     const DEFAULT_ROW_HEIGHT = 36;
@@ -5937,6 +6072,8 @@ Include everything:
                         <Clapperboard size={14} className="text-pink-500 flex-shrink-0" />
                       ) : note.type === 'travel' ? (
                         <Plane size={14} className="text-cyan-500 flex-shrink-0" />
+                      ) : note.type === 'persona' ? (
+                        <Drama size={14} className="text-violet-500 flex-shrink-0" />
                       ) : note.type === 'prompt' || note.template === 'prompt' ? (
                         <MessageSquare size={14} className="text-purple-500 flex-shrink-0" />
                       ) : (
@@ -5968,6 +6105,8 @@ Include everything:
                         <span className="text-pink-600">TikTok Scripts</span>
                       ) : note.type === 'travel' ? (
                         <span className="text-cyan-600">Travel Itinerary</span>
+                      ) : note.type === 'persona' ? (
+                        <span className="text-violet-600">Persona Builder</span>
                       ) : isBookNotebook ? (
                         <span className="text-amber-600">Chapter {index + 1}</span>
                       ) : (
@@ -6105,7 +6244,7 @@ Include everything:
               </div>
 
               {/* Note Content */}
-              <div className={`flex-1 overflow-hidden flex flex-col min-h-0 ${currentNote.type === 'book' || currentNote.type === 'travel' ? '' : 'p-4'}`}>
+              <div className={`flex-1 overflow-hidden flex flex-col min-h-0 ${currentNote.type === 'book' || currentNote.type === 'travel' || currentNote.type === 'persona' ? '' : 'p-4'}`}>
                 {currentNote.type === 'spreadsheet' ? (
                   <SpreadsheetEditor
                     note={currentNote}
@@ -6132,6 +6271,14 @@ Include everything:
                   />
                 ) : currentNote.type === 'tiktok' ? (
                   <TikTokScriptsEditor
+                    key={currentNote.id}
+                    note={currentNote}
+                    onUpdate={(newContent) => {
+                      updateNote(currentNote.id, { content: newContent }, { silent: true });
+                    }}
+                  />
+                ) : currentNote.type === 'persona' ? (
+                  <PersonaBuilderEditor
                     key={currentNote.id}
                     note={currentNote}
                     onUpdate={(newContent) => {
@@ -7215,6 +7362,7 @@ Include everything:
                       'BookOpen': <BookOpen size={20} className={isActive ? 'text-amber-500' : 'text-r-muted'} />,
                       'Plane': <Plane size={20} className={isActive ? 'text-r-primary' : 'text-r-muted'} />,
                       'Clapperboard': <Clapperboard size={20} className={isActive ? 'text-pink-500' : 'text-r-muted'} />,
+                      'Drama': <Drama size={20} className={isActive ? 'text-violet-500' : 'text-r-muted'} />,
                     };
 
                     return (
