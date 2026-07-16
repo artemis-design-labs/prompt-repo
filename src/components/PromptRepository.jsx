@@ -256,6 +256,15 @@ export default function PromptRepository() {
   // Notes state (for generic notebooks)
   const [notes, setNotes] = useState([]);
   const [activeNote, setActiveNote] = useState(null);
+  // Refs for editor-safe saves: editors call onUpdate constantly while typing.
+  // Every setNotes() triggers a parent re-render which remounts all editor components
+  // (they're defined inside this function = new type reference each render).
+  // Fix: editors write to pendingContentRef without touching React state; state
+  // is synced once when the user switches away from the note.
+  const notesRef = useRef([]);
+  notesRef.current = notes;
+  const pendingContentRef = useRef({});
+  const prevActiveNoteRef = useRef(null);
   const [editingNoteId, setEditingNoteId] = useState(null);
   const [showNewNote, setShowNewNote] = useState(false);
   const [noteForm, setNoteForm] = useState({ title: '', content: '', type: 'text', tags: [] });
@@ -773,6 +782,33 @@ export default function PromptRepository() {
       showNotif('Failed to create note');
     }
   };
+
+  // When the user switches away from a note, flush its pending content to React
+  // state so it's correct the next time they open it.
+  useEffect(() => {
+    const prevId = prevActiveNoteRef.current;
+    if (prevId !== null && prevId !== activeNote) {
+      const pending = pendingContentRef.current[prevId];
+      if (pending !== undefined) {
+        delete pendingContentRef.current[prevId];
+        setNotes(prev => prev.map(n => n.id === prevId ? { ...n, content: pending } : n));
+      }
+    }
+    prevActiveNoteRef.current = activeNote;
+  }, [activeNote]);
+
+  // Save note content to the API without updating React state (no re-render → no
+  // editor remount). Used by all editor onUpdate callbacks during active editing.
+  const saveNoteContentSilently = useCallback(async (noteId, content) => {
+    const note = notesRef.current.find(n => n.id === noteId);
+    if (!note) return;
+    pendingContentRef.current[noteId] = content;
+    try {
+      await api.updateNote(noteId, note.title, content, note.tags);
+    } catch (err) {
+      console.error('Failed to save note content:', err);
+    }
+  }, []);
 
   const updateNote = async (noteId, updates, { silent = false } = {}) => {
     try {
@@ -6931,57 +6967,43 @@ Include everything:
                   <SpreadsheetEditor
                     note={currentNote}
                     isEditing={true}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : currentNote.type === 'book' ? (
                   <BookEditor
                     key={currentNote.id}
                     note={currentNote}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent }, { silent: true });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : currentNote.type === 'travel' ? (
                   <TravelItineraryEditor
                     key={currentNote.id}
                     note={currentNote}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent }, { silent: true });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : currentNote.type === 'tiktok' ? (
                   <TikTokScriptsEditor
                     key={currentNote.id}
                     note={currentNote}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent }, { silent: true });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : currentNote.type === 'persona' ? (
                   <PersonaBuilderEditor
                     key={currentNote.id}
                     note={currentNote}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent }, { silent: true });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : currentNote.type === 'claude-skills' ? (
                   <ClaudeSkillsEditor
                     key={currentNote.id}
                     note={currentNote}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent }, { silent: true });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : currentNote.type === 'github-repo' ? (
                   <GithubRepoEditor
                     key={currentNote.id}
                     note={currentNote}
-                    onUpdate={(newContent) => {
-                      updateNote(currentNote.id, { content: newContent }, { silent: true });
-                    }}
+                    onUpdate={(newContent) => saveNoteContentSilently(currentNote.id, newContent)}
                   />
                 ) : editingNoteId === currentNote.id ? (
                   <div className="flex flex-col h-full gap-4">
