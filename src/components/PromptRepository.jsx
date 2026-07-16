@@ -5788,7 +5788,7 @@ Include everything:
                 switchTable(tableIndex);
                 setRenamingTableIndex(tableIndex);
               }}
-              title="Double-click to rename"
+              title={table.name}
             >
               {renamingTableIndex === tableIndex ? (
                 <input
@@ -5812,13 +5812,26 @@ Include everything:
               ) : (
                 <span className="truncate max-w-[140px]">{table.name}</span>
               )}
+              {renamingTableIndex !== tableIndex && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    switchTable(tableIndex);
+                    setRenamingTableIndex(tableIndex);
+                  }}
+                  className="p-0.5 text-r-muted hover:text-r-text opacity-0 group-hover:opacity-100 flex-shrink-0"
+                  title="Rename spreadsheet"
+                >
+                  <Edit2 size={11} />
+                </button>
+              )}
               {spreadsheetData.tables.length > 1 && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     removeTable(tableIndex);
                   }}
-                  className="p-0.5 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100 flex-shrink-0 ml-0.5"
+                  className="p-0.5 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100 flex-shrink-0"
                   title="Delete spreadsheet"
                 >
                   <X size={12} />
