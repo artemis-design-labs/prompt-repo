@@ -663,7 +663,7 @@ export default function PromptRepository() {
         // Blank spreadsheet with new structure
         initialContent = JSON.stringify({
           tables: [{
-            name: 'Table 1',
+            name: 'Spreadsheet 1',
             columns: ['Column A', 'Column B', 'Column C'],
             columnWidths: [150, 150, 150],
             columnTypes: [{ type: 'text' }, { type: 'text' }, { type: 'text' }],
@@ -5358,7 +5358,7 @@ Include everything:
     // Default table structure
     const DEFAULT_ROW_HEIGHT = 36;
 
-    const createDefaultTable = (name = 'Table 1') => ({
+    const createDefaultTable = (name = 'Spreadsheet 1') => ({
       name,
       columns: ['Column A', 'Column B', 'Column C'],
       columnWidths: [150, 150, 150],
@@ -5378,7 +5378,7 @@ Include everything:
             tables: parsed.tables.map((table, idx) => {
               const rows = table.rows || [['', '', '']];
               return {
-                name: table.name || `Table ${idx + 1}`,
+                name: table.name || `Spreadsheet ${idx + 1}`,
                 columns: table.columns || ['Column A', 'Column B', 'Column C'],
                 columnWidths: table.columnWidths || table.columns?.map(() => 150) || [150, 150, 150],
                 columnTypes: table.columnTypes || table.columns?.map(() => ({ type: 'text' })) || [{ type: 'text' }, { type: 'text' }, { type: 'text' }],
@@ -5411,6 +5411,7 @@ Include everything:
     const [resizingColumn, setResizingColumn] = useState(null);
     const [columnTypeMenu, setColumnTypeMenu] = useState(null); // { tableIndex, colIndex }
     const [dropdownOptionsEdit, setDropdownOptionsEdit] = useState(null); // { tableIndex, colIndex, options }
+    const [renamingTableIndex, setRenamingTableIndex] = useState(null);
     const resizeStartX = useRef(0);
     const resizeStartWidth = useRef(0);
 
@@ -5563,11 +5564,14 @@ Include everything:
 
     // Multiple tables management
     const addTable = () => {
-      const newTable = createDefaultTable(`Table ${spreadsheetData.tables.length + 1}`);
+      const newIndex = spreadsheetData.tables.length;
+      const newTable = createDefaultTable(`Spreadsheet ${newIndex + 1}`);
       updateSpreadsheet({
         tables: [...spreadsheetData.tables, newTable],
-        activeTableIndex: spreadsheetData.tables.length
+        activeTableIndex: newIndex
       });
+      // Enter rename mode immediately so user can name it
+      setRenamingTableIndex(newIndex);
     };
 
     const removeTable = (tableIndex) => {
@@ -5767,36 +5771,55 @@ Include everything:
 
     return (
       <div className="h-full flex flex-col min-h-0">
-        {/* Table Tabs */}
-        <div className="flex items-center gap-1 mb-2 flex-shrink-0 border-b border-r-border pb-2">
+        {/* Spreadsheet Tabs */}
+        <div className="flex items-center gap-1 mb-2 flex-shrink-0 border-b border-r-border pb-2 flex-wrap">
           {spreadsheetData.tables.map((table, tableIndex) => (
             <div
               key={tableIndex}
-              className={`group flex items-center gap-1 px-3 py-1.5 rounded-t text-sm cursor-pointer ${
+              className={`group flex items-center gap-1 px-3 py-1.5 rounded-t text-sm cursor-pointer select-none ${
                 tableIndex === spreadsheetData.activeTableIndex
                   ? 'bg-r-primary/10 text-r-primary border-b-2 border-r-primary'
                   : 'bg-r-surface text-r-muted hover:bg-r-hover/50'
               }`}
-              onClick={() => switchTable(tableIndex)}
+              onClick={() => {
+                if (renamingTableIndex !== tableIndex) switchTable(tableIndex);
+              }}
+              onDoubleClick={() => {
+                switchTable(tableIndex);
+                setRenamingTableIndex(tableIndex);
+              }}
+              title="Double-click to rename"
             >
-              <input
-                type="text"
-                value={table.name}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  renameTable(tableIndex, e.target.value);
-                }}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-transparent w-20 text-sm focus:outline-none focus:bg-r-hover2 rounded px-1"
-              />
+              {renamingTableIndex === tableIndex ? (
+                <input
+                  type="text"
+                  value={table.name}
+                  autoFocus
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    renameTable(tableIndex, e.target.value);
+                  }}
+                  onBlur={() => setRenamingTableIndex(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === 'Escape') {
+                      e.preventDefault();
+                      setRenamingTableIndex(null);
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-r-hover2 w-28 text-sm focus:outline-none rounded px-1 min-w-0 border border-r-primary/40"
+                />
+              ) : (
+                <span className="truncate max-w-[140px]">{table.name}</span>
+              )}
               {spreadsheetData.tables.length > 1 && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     removeTable(tableIndex);
                   }}
-                  className="p-0.5 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100"
-                  title="Delete table"
+                  className="p-0.5 text-r-muted hover:text-red-400 opacity-0 group-hover:opacity-100 flex-shrink-0 ml-0.5"
+                  title="Delete spreadsheet"
                 >
                   <X size={12} />
                 </button>
@@ -5805,10 +5828,11 @@ Include everything:
           ))}
           <button
             onClick={addTable}
-            className="flex items-center gap-1 px-2 py-1.5 text-sm text-r-muted hover:text-r-text hover:bg-r-hover rounded"
-            title="Add new table"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-sm text-r-muted hover:text-r-text hover:bg-r-hover rounded border border-dashed border-r-border hover:border-r-muted transition-colors"
+            title="Add new spreadsheet"
           >
             <Plus size={14} />
+            <span>New Spreadsheet</span>
           </button>
         </div>
 
