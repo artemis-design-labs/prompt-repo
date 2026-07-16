@@ -40,6 +40,26 @@ export const notebookTools = [
     },
   },
   {
+    name: 'update_notebook',
+    description: 'Update notebook fields. Any omitted field is left unchanged.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        id: { type: 'string', description: 'The notebook ID' },
+        name: { type: 'string', description: 'New name (optional)' },
+        description: { type: 'string', description: 'New description (optional, pass empty string to clear)' },
+        icon: { type: 'string', description: 'New icon name/identifier (optional, pass empty string to clear)' },
+        icon_color: { type: 'string', description: 'New icon color (optional, pass empty string to clear)' },
+        type: {
+          type: 'string',
+          description: 'Notebook type (rarely changed). Allowed: prompts | notebook | book',
+          enum: ['prompts', 'notebook', 'book'],
+        },
+      },
+      required: ['id'],
+    },
+  },
+  {
     name: 'delete_notebook',
     description: 'Delete a notebook and all its notes (cannot delete the Prompts notebook)',
     inputSchema: {
@@ -290,6 +310,74 @@ export const notebookTools = [
       required: ['prompt_id', 'notebook_id'],
     },
   },
+  {
+    name: 'list_chapter_versions',
+    description: 'List saved versions of a chapter inside a book-type note. Returns metadata only (id, name, savedAt, contentLength) sorted oldest-first.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        note_id: { type: 'string', description: 'The book note ID' },
+        chapter_id: { type: 'string', description: 'The chapter ID inside the book (e.g. "ch1")' },
+      },
+      required: ['note_id', 'chapter_id'],
+    },
+  },
+  {
+    name: 'get_chapter_version',
+    description: 'Fetch the full content of one saved chapter version.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        note_id: { type: 'string', description: 'The book note ID' },
+        chapter_id: { type: 'string', description: 'The chapter ID' },
+        version_id: { type: 'string', description: 'The version ID' },
+      },
+      required: ['note_id', 'chapter_id', 'version_id'],
+    },
+  },
+  {
+    name: 'create_chapter_version',
+    description: 'Save a new version of a chapter. If content is omitted, snapshots the chapter\'s current content. Returns the new version metadata.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        note_id: { type: 'string', description: 'The book note ID' },
+        chapter_id: { type: 'string', description: 'The chapter ID' },
+        name: { type: 'string', description: 'A label for this version (e.g. "Pre-edit draft")' },
+        content: {
+          type: 'string',
+          description: 'Optional: explicit content to store. Defaults to the chapter\'s current content.',
+        },
+      },
+      required: ['note_id', 'chapter_id', 'name'],
+    },
+  },
+  {
+    name: 'restore_chapter_version',
+    description: 'Overwrite a chapter\'s current content with the content of one of its saved versions. The version itself is preserved in history.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        note_id: { type: 'string', description: 'The book note ID' },
+        chapter_id: { type: 'string', description: 'The chapter ID' },
+        version_id: { type: 'string', description: 'The version ID to restore from' },
+      },
+      required: ['note_id', 'chapter_id', 'version_id'],
+    },
+  },
+  {
+    name: 'delete_chapter_version',
+    description: 'Delete a saved chapter version permanently.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {
+        note_id: { type: 'string', description: 'The book note ID' },
+        chapter_id: { type: 'string', description: 'The chapter ID' },
+        version_id: { type: 'string', description: 'The version ID to delete' },
+      },
+      required: ['note_id', 'chapter_id', 'version_id'],
+    },
+  },
 ];
 
 // Helper to parse spreadsheet content
@@ -366,6 +454,31 @@ export async function handleNotebookTool(
           {
             type: 'text',
             text: `Created notebook "${notebook.name}" with ID: ${notebook.id}\n\n${JSON.stringify(notebook, null, 2)}`,
+          },
+        ],
+      };
+    }
+
+    case 'update_notebook': {
+      const updates: Parameters<typeof db.updateNotebook>[1] = {};
+      if (args.name !== undefined) updates.name = args.name as string;
+      if (args.type !== undefined) updates.type = args.type as string;
+      // Empty string clears these nullable fields; non-empty sets; undefined leaves alone.
+      if (args.description !== undefined) {
+        updates.description = (args.description as string) === '' ? null : (args.description as string);
+      }
+      if (args.icon !== undefined) {
+        updates.icon = (args.icon as string) === '' ? null : (args.icon as string);
+      }
+      if (args.icon_color !== undefined) {
+        updates.iconColor = (args.icon_color as string) === '' ? null : (args.icon_color as string);
+      }
+      const notebook = await db.updateNotebook(args.id as string, updates);
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Updated notebook "${notebook.name}" (ID: ${notebook.id})\n\n${JSON.stringify(notebook, null, 2)}`,
           },
         ],
       };
@@ -728,6 +841,88 @@ export async function handleNotebookTool(
           content: [{ type: 'text', text: `Failed to convert prompt: ${error}` }],
         };
       }
+    }
+
+    case 'list_chapter_versions': {
+      const versions = await db.listChapterVersions(
+        args.note_id as string,
+        args.chapter_id as string
+      );
+      return {
+        content: [
+          {
+            type: 'text',
+            text: versions.length
+              ? `${versions.length} version(s) for chapter ${args.chapter_id}:\n\n${JSON.stringify(versions, null, 2)}`
+              : `No saved versions for chapter ${args.chapter_id}.`,
+          },
+        ],
+      };
+    }
+
+    case 'get_chapter_version': {
+      const version = await db.getChapterVersion(
+        args.note_id as string,
+        args.chapter_id as string,
+        args.version_id as string
+      );
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(version, null, 2),
+          },
+        ],
+      };
+    }
+
+    case 'create_chapter_version': {
+      const version = await db.createChapterVersion(
+        args.note_id as string,
+        args.chapter_id as string,
+        args.name as string,
+        args.content as string | undefined
+      );
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Saved version "${version.name}" (ID: ${version.id}, ${version.content.length} chars) for chapter ${args.chapter_id}`,
+          },
+        ],
+      };
+    }
+
+    case 'restore_chapter_version': {
+      const result = await db.restoreChapterVersion(
+        args.note_id as string,
+        args.chapter_id as string,
+        args.version_id as string
+      );
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Restored chapter ${result.chapterId} from version ${args.version_id} (${result.newContent.length} chars)`,
+          },
+        ],
+      };
+    }
+
+    case 'delete_chapter_version': {
+      await db.deleteChapterVersion(
+        args.note_id as string,
+        args.chapter_id as string,
+        args.version_id as string
+      );
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Deleted version ${args.version_id} from chapter ${args.chapter_id}`,
+          },
+        ],
+      };
     }
 
     default:

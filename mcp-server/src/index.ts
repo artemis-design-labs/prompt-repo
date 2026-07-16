@@ -6,7 +6,6 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import 'dotenv/config';
 
 import { promptTools, handlePromptTool } from './tools/prompts.js';
 import { folderTools, handleFolderTool } from './tools/folders.js';

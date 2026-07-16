@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import * as db from '../db.js';
 
 // Tool definitions for prompts
@@ -7,7 +6,7 @@ export const promptTools = [
     name: 'list_prompts',
     description: 'List all prompts, optionally filtered by folder or tag',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         folder_id: {
           type: 'string',
@@ -24,7 +23,7 @@ export const promptTools = [
     name: 'get_prompt',
     description: 'Get a single prompt by ID with its full content',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -38,7 +37,7 @@ export const promptTools = [
     name: 'search_prompts',
     description: 'Search prompts by title or content',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         query: {
           type: 'string',
@@ -56,7 +55,7 @@ export const promptTools = [
     name: 'create_prompt',
     description: 'Create a new prompt in a folder',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         title: {
           type: 'string',
@@ -83,7 +82,7 @@ export const promptTools = [
     name: 'update_prompt',
     description: 'Update an existing prompt',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -114,7 +113,7 @@ export const promptTools = [
     name: 'delete_prompt',
     description: 'Delete a prompt by ID',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -128,7 +127,7 @@ export const promptTools = [
     name: 'copy_prompt',
     description: 'Get prompt content ready to use (returns just the content)',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -141,10 +140,7 @@ export const promptTools = [
 ];
 
 // Tool handlers
-export async function handlePromptTool(
-  name: string,
-  args: Record<string, unknown>
-): Promise<{ content: Array<{ type: string; text: string }> }> {
+export async function handlePromptTool(name: string, args: Record<string, unknown>) {
   switch (name) {
     case 'list_prompts': {
       let prompts;
@@ -160,12 +156,13 @@ export async function handlePromptTool(
           {
             type: 'text',
             text: JSON.stringify(
-              prompts.map(p => ({
+              prompts.map((p) => ({
                 id: p.id,
                 title: p.title,
                 folderId: p.folderId,
                 tags: p.tags,
-                contentPreview: p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
+                contentPreview:
+                  p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
               })),
               null,
               2
@@ -188,21 +185,19 @@ export async function handlePromptTool(
     }
 
     case 'search_prompts': {
-      const prompts = await db.searchPrompts(
-        args.query as string,
-        args.folder_id as string | undefined
-      );
+      const prompts = await db.searchPrompts(args.query as string, args.folder_id as string | undefined);
       return {
         content: [
           {
             type: 'text',
             text: JSON.stringify(
-              prompts.map(p => ({
+              prompts.map((p) => ({
                 id: p.id,
                 title: p.title,
                 folderId: p.folderId,
                 tags: p.tags,
-                contentPreview: p.content.substring(0, 150) + (p.content.length > 150 ? '...' : ''),
+                contentPreview:
+                  p.content.substring(0, 150) + (p.content.length > 150 ? '...' : ''),
               })),
               null,
               2
@@ -236,7 +231,6 @@ export async function handlePromptTool(
           content: [{ type: 'text', text: `Prompt not found: ${args.id}` }],
         };
       }
-
       const prompt = await db.updatePrompt(
         args.id as string,
         (args.title as string) || existing.title,

@@ -7,7 +7,7 @@ export const folderTools = [
     name: 'list_folders',
     description: 'List all folders in flat or tree format',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         format: {
           type: 'string',
@@ -21,7 +21,7 @@ export const folderTools = [
     name: 'get_folder',
     description: 'Get folder details including its prompts',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -35,7 +35,7 @@ export const folderTools = [
     name: 'create_folder',
     description: 'Create a new folder',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         name: {
           type: 'string',
@@ -53,7 +53,7 @@ export const folderTools = [
     name: 'update_folder',
     description: 'Update a folder name or parent',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -73,9 +73,10 @@ export const folderTools = [
   },
   {
     name: 'delete_folder',
-    description: 'Delete a folder and all its contents (prompts and subfolders). WARNING: This is irreversible!',
+    description:
+      'Delete a folder and all its contents (prompts and subfolders). WARNING: This is irreversible!',
     inputSchema: {
-      type: 'object' as const,
+      type: 'object',
       properties: {
         id: {
           type: 'string',
@@ -88,51 +89,40 @@ export const folderTools = [
 ];
 
 // Helper to render folder tree as text
-function renderTree(nodes: FolderTreeNode[], prefix: string = '', isLast: boolean = true): string {
+function renderTree(nodes: FolderTreeNode[], prefix = '', isLast = true): string {
   let result = '';
-
   nodes.forEach((node, index) => {
     const isLastNode = index === nodes.length - 1;
     const connector = isLastNode ? '└─' : '├─';
     const childPrefix = isLastNode ? '   ' : '│  ';
-
     const promptInfo = node.promptCount > 0 ? ` (${node.promptCount} prompts)` : '';
     result += `${prefix}${connector} ${node.name}${promptInfo}\n`;
-
     if (node.children.length > 0) {
       result += renderTree(node.children, prefix + childPrefix, isLastNode);
     }
   });
-
   return result;
 }
 
 // Tool handlers
-export async function handleFolderTool(
-  name: string,
-  args: Record<string, unknown>
-): Promise<{ content: Array<{ type: string; text: string }> }> {
+export async function handleFolderTool(name: string, args: Record<string, unknown>) {
   switch (name) {
     case 'list_folders': {
       const format = (args.format as string) || 'flat';
-
       if (format === 'tree') {
         const tree = await db.getFolderTree();
-        const treeText = tree.length > 0
-          ? renderTree(tree)
-          : 'No folders found.';
+        const treeText = tree.length > 0 ? renderTree(tree) : 'No folders found.';
         return {
           content: [{ type: 'text', text: `Folder Structure:\n\n${treeText}` }],
         };
       }
-
       const folders = await db.getFolders();
       return {
         content: [
           {
             type: 'text',
             text: JSON.stringify(
-              folders.map(f => ({
+              folders.map((f) => ({
                 id: f.id,
                 name: f.name,
                 parentId: f.parentId,
@@ -152,7 +142,6 @@ export async function handleFolderTool(
           content: [{ type: 'text', text: `Folder not found: ${args.id}` }],
         };
       }
-
       const { folder, prompts } = result;
       return {
         content: [
@@ -165,11 +154,12 @@ export async function handleFolderTool(
                   name: folder.name,
                   parentId: folder.parentId,
                 },
-                prompts: prompts.map(p => ({
+                prompts: prompts.map((p) => ({
                   id: p.id,
                   title: p.title,
                   tags: p.tags,
-                  contentPreview: p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
+                  contentPreview:
+                    p.content.substring(0, 100) + (p.content.length > 100 ? '...' : ''),
                 })),
                 promptCount: prompts.length,
               },
@@ -182,10 +172,7 @@ export async function handleFolderTool(
     }
 
     case 'create_folder': {
-      const folder = await db.createFolder(
-        args.name as string,
-        (args.parent_id as string) || null
-      );
+      const folder = await db.createFolder(args.name as string, (args.parent_id as string) || null);
       return {
         content: [
           {
@@ -203,7 +190,6 @@ export async function handleFolderTool(
           content: [{ type: 'text', text: `Folder not found: ${args.id}` }],
         };
       }
-
       const folder = await db.updateFolder(
         args.id as string,
         (args.name as string) || existing.name,
@@ -226,13 +212,11 @@ export async function handleFolderTool(
           content: [{ type: 'text', text: `Folder not found: ${args.id}` }],
         };
       }
-
       // Get prompt count for warning
       const folderData = await db.getFolderWithPrompts(args.id as string);
       const promptCount = folderData?.prompts.length || 0;
 
       await db.deleteFolder(args.id as string);
-
       return {
         content: [
           {

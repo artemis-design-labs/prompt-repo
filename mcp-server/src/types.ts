@@ -44,6 +44,9 @@ export interface Notebook {
   id: string;
   name: string;
   type: 'prompts' | 'notebook' | 'book';
+  description?: string | null;
+  icon?: string | null;
+  iconColor?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -53,8 +56,9 @@ export interface Note {
   notebookId: string;
   title: string;
   content: string;
-  type: 'text' | 'spreadsheet' | 'prompt';
+  type: 'text' | 'spreadsheet' | 'prompt' | 'book';
   template?: string | null;
+  position?: number | null;
   tags?: string[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -63,4 +67,40 @@ export interface Note {
 export interface SpreadsheetData {
   columns: string[];
   rows: string[][];
+}
+
+// ============ BOOK / CHAPTER STRUCTURE (stored in notes.content as JSON) ============
+
+export interface ChapterVersion {
+  id: string;
+  name: string;
+  content: string;
+  savedAt: string;
+}
+
+export interface Chapter {
+  id: string;
+  title: string;
+  content: string;
+  versions?: ChapterVersion[];
+}
+
+export interface BookSection {
+  id: string;
+  title: string;
+  chapters: Chapter[];
+}
+
+export interface BookContent {
+  sections: BookSection[];
+  activeSectionId?: string;
+  activeChapterId?: string;
+  autoNumberChapters?: boolean;
+}
+
+export interface ChapterVersionSummary {
+  id: string;
+  name: string;
+  savedAt: string;
+  contentLength: number;
 }
