@@ -5414,6 +5414,9 @@ Include everything:
     const [renamingTableIndex, setRenamingTableIndex] = useState(null);
     const resizeStartX = useRef(0);
     const resizeStartWidth = useRef(0);
+    // Ref always holds the latest spreadsheetData so commitRename can read it after local updates
+    const spreadsheetDataRef = useRef(spreadsheetData);
+    spreadsheetDataRef.current = spreadsheetData;
 
     // Get current active table
     const activeTable = spreadsheetData.tables[spreadsheetData.activeTableIndex] || spreadsheetData.tables[0];
@@ -5582,9 +5585,21 @@ Include everything:
     };
 
     const renameTable = (tableIndex, newName) => {
-      const newTables = [...spreadsheetData.tables];
-      newTables[tableIndex] = { ...newTables[tableIndex], name: newName };
-      updateSpreadsheet({ ...spreadsheetData, tables: newTables });
+      // Local-only update — does NOT call onUpdate to avoid triggering parent
+      // re-render (which remounts this component and exits rename mode).
+      // onUpdate is called once when rename is committed via commitRename().
+      setSpreadsheetData(prev => {
+        const newTables = [...prev.tables];
+        newTables[tableIndex] = { ...newTables[tableIndex], name: newName };
+        const updated = { ...prev, tables: newTables };
+        spreadsheetDataRef.current = updated;
+        return updated;
+      });
+    };
+
+    const commitRename = () => {
+      setRenamingTableIndex(null);
+      if (onUpdate) onUpdate(JSON.stringify(spreadsheetDataRef.current));
     };
 
     const switchTable = (tableIndex) => {
@@ -5785,7 +5800,9 @@ Include everything:
                 if (renamingTableIndex !== tableIndex) switchTable(tableIndex);
               }}
               onDoubleClick={() => {
-                switchTable(tableIndex);
+                if (spreadsheetData.activeTableIndex !== tableIndex) {
+                  setSpreadsheetData(prev => ({ ...prev, activeTableIndex: tableIndex }));
+                }
                 setRenamingTableIndex(tableIndex);
               }}
               title={table.name}
@@ -5799,11 +5816,11 @@ Include everything:
                     e.stopPropagation();
                     renameTable(tableIndex, e.target.value);
                   }}
-                  onBlur={() => setRenamingTableIndex(null)}
+                  onBlur={() => commitRename()}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === 'Escape') {
                       e.preventDefault();
-                      setRenamingTableIndex(null);
+                      commitRename();
                     }
                   }}
                   onClick={(e) => e.stopPropagation()}
@@ -5816,7 +5833,9 @@ Include everything:
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    switchTable(tableIndex);
+                    if (spreadsheetData.activeTableIndex !== tableIndex) {
+                      setSpreadsheetData(prev => ({ ...prev, activeTableIndex: tableIndex }));
+                    }
                     setRenamingTableIndex(tableIndex);
                   }}
                   className="p-0.5 text-r-muted hover:text-r-text opacity-0 group-hover:opacity-100 flex-shrink-0"
