@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles, Home, Drama } from 'lucide-react';
+import { Search, Plus, FolderPlus, Copy, Check, ChevronRight, ChevronDown, ChevronUp, Edit2, Trash2, X, Tag, Download, Upload, Folder, FileText, Save, Move, LayoutGrid, List, ChevronsDownUp, ChevronsUpDown, GitMerge, ArrowUpDown, Menu, PanelLeftClose, BookOpen, Notebook, ChevronLeft, Table, Minus, MessageSquare, Calendar, Clock, Type, MoreVertical, GripVertical, Heart, DollarSign, Target, Briefcase, Hash, Database, FolderSymlink, History, RotateCcw, Plane, MapPin, Clapperboard, Bot, Send, Sparkles, Home, Drama, GitBranch, ExternalLink, Star, Code2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { defaultData as initialDefaultData } from '../data/defaultFolders';
 
@@ -288,7 +288,8 @@ export default function PromptRepository() {
     { id: 'repository', name: 'Repository', icon: 'Database', description: 'Structured data storage for prompts and filepaths', subcategories: [
       { id: 'prompt', name: 'Prompt', icon: 'MessageSquare', description: 'AI prompt with instructions' },
       { id: 'filepath', name: 'Filepath', icon: 'FolderSymlink', description: 'Store file and folder paths for quick access' },
-      { id: 'claude-skills', name: 'Claude Skills', icon: 'Bot', description: 'Store and manage custom Claude skill files (.md)' }
+      { id: 'claude-skills', name: 'Claude Skills', icon: 'Bot', description: 'Store and manage custom Claude skill files (.md)' },
+      { id: 'github-repo', name: 'GitHub Repo', icon: 'GitBranch', description: 'Track a code repository with README, notes, and metadata' }
     ]},
     { id: 'book', name: 'Book', icon: 'BookOpen', description: 'Organize content into sections and chapters' },
     { id: 'travel', name: 'Travel Itinerary', icon: 'Plane', description: 'Plan trips with dates, travelers, and activities' },
@@ -719,17 +720,34 @@ export default function PromptRepository() {
       });
     }
     if (noteForm.type === 'claude-skills') {
-      const firstSkillId = generateId();
       initialContent = JSON.stringify({
         skills: [],
         activeSkillId: null
+      });
+    }
+    if (noteForm.type === 'github-repo') {
+      initialContent = JSON.stringify({
+        url: '',
+        owner: '',
+        repoName: noteForm.title.trim(),
+        description: '',
+        language: '',
+        topics: [],
+        cloneHttps: '',
+        cloneSsh: '',
+        localPath: '',
+        status: 'watching',
+        stars: '',
+        readme: '',
+        personalNotes: '',
+        setupNotes: '',
+        activeTab: 'readme'
       });
     }
 
     try {
       // Set template and resolve storage type
       const isFilepath = noteForm.type === 'filepath';
-      const isClaudeSkills = noteForm.type === 'claude-skills';
       const template = noteForm.type === 'prompt' ? 'prompt' : isFilepath ? 'filepath' : null;
       const storageType = isFilepath ? 'spreadsheet' : noteForm.type;
       const tags = noteForm.tags || [];
@@ -6043,6 +6061,241 @@ Include everything:
     );
   };
 
+  const GithubRepoEditor = ({ note, onUpdate }) => {
+    const parseData = (content) => {
+      try {
+        const p = JSON.parse(content);
+        if (p && typeof p === 'object') return { url: '', owner: '', repoName: '', description: '', language: '', topics: [], cloneHttps: '', cloneSsh: '', localPath: '', status: 'watching', stars: '', readme: '', personalNotes: '', setupNotes: '', activeTab: 'readme', ...p };
+      } catch {}
+      return { url: '', owner: '', repoName: note.title || '', description: '', language: '', topics: [], cloneHttps: '', cloneSsh: '', localPath: '', status: 'watching', stars: '', readme: '', personalNotes: '', setupNotes: '', activeTab: 'readme' };
+    };
+
+    const [repo, setRepo] = useState(() => parseData(note.content));
+    const [newTopic, setNewTopic] = useState('');
+    const [copied, setCopied] = useState(null);
+
+    const save = (updated) => { setRepo(updated); onUpdate(JSON.stringify(updated)); };
+    const set = (key, value) => save({ ...repo, [key]: value });
+
+    const parseUrl = (url) => {
+      const match = url.match(/github\.com\/([^/]+)\/([^/\s?#]+)/);
+      if (!match) return {};
+      const owner = match[1];
+      const repoName = match[2].replace(/\.git$/, '');
+      return {
+        url,
+        owner,
+        repoName,
+        cloneHttps: `https://github.com/${owner}/${repoName}.git`,
+        cloneSsh: `git@github.com:${owner}/${repoName}.git`
+      };
+    };
+
+    const handleUrlChange = (url) => {
+      const parsed = parseUrl(url);
+      save({ ...repo, ...parsed, url });
+    };
+
+    const copyText = (text, key) => {
+      navigator.clipboard.writeText(text).catch(() => {
+        const ta = document.createElement('textarea'); ta.value = text;
+        ta.style.position = 'fixed'; ta.style.left = '-999999px';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      });
+      setCopied(key);
+      setTimeout(() => setCopied(null), 2000);
+    };
+
+    const addTopic = () => {
+      const t = newTopic.trim().toLowerCase().replace(/\s+/g, '-');
+      if (t && !repo.topics.includes(t)) save({ ...repo, topics: [...repo.topics, t] });
+      setNewTopic('');
+    };
+
+    const statusOptions = [
+      { id: 'watching', label: 'Watching', color: 'text-blue-400 bg-blue-400/10' },
+      { id: 'contributing', label: 'Contributing', color: 'text-green-400 bg-green-400/10' },
+      { id: 'reference', label: 'Reference', color: 'text-amber-400 bg-amber-400/10' },
+      { id: 'fork', label: 'Forked', color: 'text-purple-400 bg-purple-400/10' },
+      { id: 'archived', label: 'Archived', color: 'text-r-muted bg-r-hover' },
+    ];
+
+    const currentStatus = statusOptions.find(s => s.id === repo.status) || statusOptions[0];
+    const tabs = [
+      { id: 'readme', label: 'README', field: 'readme', placeholder: '# Repository Name\n\nPaste or write the README here...' },
+      { id: 'notes', label: 'My Notes', field: 'personalNotes', placeholder: 'Personal notes about this repo — what you\'re working on, gotchas, etc.' },
+      { id: 'setup', label: 'Setup', field: 'setupNotes', placeholder: '# Setup\n\n```bash\ngit clone ...\nnpm install\n```\n\nAdd install steps, env vars, run commands...' },
+    ];
+    const activeTab = tabs.find(t => t.id === repo.activeTab) || tabs[0];
+
+    return (
+      <div className="flex flex-col h-full bg-r-bg overflow-hidden">
+        {/* Repo header bar */}
+        <div className="flex items-center gap-3 px-5 py-3 border-b border-r-border bg-r-surface flex-shrink-0">
+          <GitBranch size={16} className="text-gray-400 flex-shrink-0" />
+          <div className="flex-1 min-w-0">
+            <span className="text-r-muted text-sm">{repo.owner && `${repo.owner} / `}</span>
+            <span className="text-r-text font-semibold text-sm">{repo.repoName || note.title}</span>
+          </div>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${currentStatus.color}`}>{currentStatus.label}</span>
+          {repo.url && (
+            <a href={repo.url} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-r-hover hover:bg-r-hover2 rounded-lg text-r-muted hover:text-r-text transition-colors">
+              <ExternalLink size={12} /> Open
+            </a>
+          )}
+          {repo.cloneHttps && (
+            <button onClick={() => copyText(repo.cloneHttps, 'https')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${copied === 'https' ? 'bg-green-600 text-white' : 'bg-r-hover hover:bg-r-hover2 text-r-muted hover:text-r-text'}`}
+              title="Copy HTTPS clone URL">
+              {copied === 'https' ? <Check size={12} /> : <Copy size={12} />} HTTPS
+            </button>
+          )}
+          {repo.cloneSsh && (
+            <button onClick={() => copyText(repo.cloneSsh, 'ssh')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg transition-colors ${copied === 'ssh' ? 'bg-green-600 text-white' : 'bg-r-hover hover:bg-r-hover2 text-r-muted hover:text-r-text'}`}
+              title="Copy SSH clone URL">
+              {copied === 'ssh' ? <Check size={12} /> : <Copy size={12} />} SSH
+            </button>
+          )}
+        </div>
+
+        <div className="flex flex-1 min-h-0 overflow-hidden">
+          {/* Left metadata panel */}
+          <div className="w-72 flex-shrink-0 border-r border-r-border flex flex-col overflow-y-auto bg-r-surface/50 p-4 gap-4">
+            {/* GitHub URL */}
+            <div>
+              <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">GitHub URL</label>
+              <input
+                value={repo.url}
+                onChange={e => handleUrlChange(e.target.value)}
+                placeholder="https://github.com/owner/repo"
+                className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-r-primary"
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">Status</label>
+              <div className="flex flex-wrap gap-1.5">
+                {statusOptions.map(s => (
+                  <button key={s.id} onClick={() => set('status', s.id)}
+                    className={`text-xs px-2.5 py-1 rounded-full transition-colors ${repo.status === s.id ? s.color + ' font-medium' : 'bg-r-hover text-r-muted hover:text-r-text'}`}>
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Language + Stars */}
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">Language</label>
+                <input value={repo.language} onChange={e => set('language', e.target.value)}
+                  placeholder="TypeScript" className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-r-primary" />
+              </div>
+              <div className="w-20">
+                <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">
+                  <Star size={10} className="inline mr-0.5" />Stars
+                </label>
+                <input value={repo.stars} onChange={e => set('stars', e.target.value)}
+                  placeholder="1.2k" className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-r-primary" />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">Description</label>
+              <textarea value={repo.description} onChange={e => set('description', e.target.value)}
+                placeholder="What this repo does..."
+                rows={3}
+                className="w-full bg-r-bg border border-r-border rounded-lg px-3 py-2 text-xs resize-none focus:outline-none focus:border-r-primary" />
+            </div>
+
+            {/* Topics */}
+            <div>
+              <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">Topics</label>
+              <div className="flex flex-wrap gap-1 mb-2">
+                {repo.topics.map(t => (
+                  <span key={t} className="flex items-center gap-1 text-[11px] px-2 py-0.5 bg-blue-500/15 text-blue-400 rounded-full">
+                    {t}
+                    <button onClick={() => save({ ...repo, topics: repo.topics.filter(x => x !== t) })} className="hover:text-red-400"><X size={9} /></button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-1">
+                <input value={newTopic} onChange={e => setNewTopic(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTopic(); } }}
+                  placeholder="Add topic…"
+                  className="flex-1 bg-r-bg border border-r-border rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-r-primary" />
+                <button onClick={addTopic} className="px-2 py-1.5 bg-r-hover hover:bg-r-hover2 rounded-lg text-xs"><Plus size={12} /></button>
+              </div>
+            </div>
+
+            {/* Local Path */}
+            <div>
+              <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">Local Path</label>
+              <div className="flex gap-1">
+                <input value={repo.localPath} onChange={e => set('localPath', e.target.value)}
+                  placeholder="/Users/me/projects/repo"
+                  className="flex-1 bg-r-bg border border-r-border rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:border-r-primary" />
+                {repo.localPath && (
+                  <button onClick={() => copyText(repo.localPath, 'path')} title="Copy path"
+                    className={`px-2 py-1.5 rounded-lg text-xs ${copied === 'path' ? 'bg-green-600 text-white' : 'bg-r-hover hover:bg-r-hover2 text-r-muted'}`}>
+                    {copied === 'path' ? <Check size={12} /> : <Copy size={12} />}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Clone URLs (read-only display) */}
+            {(repo.cloneHttps || repo.cloneSsh) && (
+              <div>
+                <label className="block text-[11px] font-semibold text-r-muted uppercase tracking-wider mb-1.5">Clone</label>
+                {repo.cloneHttps && (
+                  <div className="flex items-center gap-1 mb-1">
+                    <code className="flex-1 text-[10px] bg-r-bg border border-r-border rounded px-2 py-1 text-r-muted truncate">{repo.cloneHttps}</code>
+                    <button onClick={() => copyText(repo.cloneHttps, 'https2')} className={`p-1.5 rounded ${copied === 'https2' ? 'bg-green-600 text-white' : 'bg-r-hover hover:bg-r-hover2 text-r-muted'}`}>{copied === 'https2' ? <Check size={10} /> : <Copy size={10} />}</button>
+                  </div>
+                )}
+                {repo.cloneSsh && (
+                  <div className="flex items-center gap-1">
+                    <code className="flex-1 text-[10px] bg-r-bg border border-r-border rounded px-2 py-1 text-r-muted truncate">{repo.cloneSsh}</code>
+                    <button onClick={() => copyText(repo.cloneSsh, 'ssh2')} className={`p-1.5 rounded ${copied === 'ssh2' ? 'bg-green-600 text-white' : 'bg-r-hover hover:bg-r-hover2 text-r-muted'}`}>{copied === 'ssh2' ? <Check size={10} /> : <Copy size={10} />}</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right: tabbed content */}
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {/* Tab bar */}
+            <div className="flex items-center gap-1 px-4 pt-3 border-b border-r-border flex-shrink-0">
+              {tabs.map(tab => (
+                <button key={tab.id} onClick={() => set('activeTab', tab.id)}
+                  className={`px-4 py-2 text-sm rounded-t-lg transition-colors ${repo.activeTab === tab.id ? 'bg-r-bg border border-b-0 border-r-border text-r-text font-medium' : 'text-r-muted hover:text-r-text hover:bg-r-hover'}`}>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {/* Tab content */}
+            <div className="flex-1 overflow-hidden p-4">
+              <textarea
+                key={activeTab.id}
+                value={repo[activeTab.field] || ''}
+                onChange={e => set(activeTab.field, e.target.value)}
+                placeholder={activeTab.placeholder}
+                className="w-full h-full bg-r-surface border border-r-border rounded-xl p-5 text-sm font-mono leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-r-primary text-r-text"
+                spellCheck={false}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const ClaudeSkillsEditor = ({ note, onUpdate }) => {
     const parseSkillsData = (content) => {
       try {
@@ -6441,6 +6694,8 @@ Include everything:
                         <Drama size={14} className="text-violet-500 flex-shrink-0" />
                       ) : note.type === 'claude-skills' ? (
                         <Bot size={14} className="text-blue-400 flex-shrink-0" />
+                      ) : note.type === 'github-repo' ? (
+                        <GitBranch size={14} className="text-gray-400 flex-shrink-0" />
                       ) : note.type === 'prompt' || note.template === 'prompt' ? (
                         <MessageSquare size={14} className="text-purple-500 flex-shrink-0" />
                       ) : (
@@ -6476,6 +6731,8 @@ Include everything:
                         <span className="text-violet-600">Persona Builder</span>
                       ) : note.type === 'claude-skills' ? (
                         <span className="text-blue-500">Claude Skills</span>
+                      ) : note.type === 'github-repo' ? (
+                        <span className="text-gray-400">GitHub Repo</span>
                       ) : isBookNotebook ? (
                         <span className="text-amber-600">Chapter {index + 1}</span>
                       ) : (
@@ -6613,7 +6870,7 @@ Include everything:
               </div>
 
               {/* Note Content */}
-              <div className={`flex-1 overflow-hidden flex flex-col min-h-0 ${currentNote.type === 'book' || currentNote.type === 'travel' || currentNote.type === 'persona' || currentNote.type === 'claude-skills' ? '' : 'p-4'}`}>
+              <div className={`flex-1 overflow-hidden flex flex-col min-h-0 ${currentNote.type === 'book' || currentNote.type === 'travel' || currentNote.type === 'persona' || currentNote.type === 'claude-skills' || currentNote.type === 'github-repo' ? '' : 'p-4'}`}>
                 {currentNote.type === 'spreadsheet' ? (
                   <SpreadsheetEditor
                     note={currentNote}
@@ -6656,6 +6913,14 @@ Include everything:
                   />
                 ) : currentNote.type === 'claude-skills' ? (
                   <ClaudeSkillsEditor
+                    key={currentNote.id}
+                    note={currentNote}
+                    onUpdate={(newContent) => {
+                      updateNote(currentNote.id, { content: newContent }, { silent: true });
+                    }}
+                  />
+                ) : currentNote.type === 'github-repo' ? (
+                  <GithubRepoEditor
                     key={currentNote.id}
                     note={currentNote}
                     onUpdate={(newContent) => {
@@ -7735,7 +8000,7 @@ Include everything:
                 <div className="grid grid-cols-2 gap-3">
                   {noteTemplates.map(template => {
                     const isRepository = template.id === 'repository';
-                    const isRepoSubType = isRepository && (noteForm.type === 'prompt' || noteForm.type === 'filepath' || noteForm.type === 'claude-skills');
+                    const isRepoSubType = isRepository && (noteForm.type === 'prompt' || noteForm.type === 'filepath' || noteForm.type === 'claude-skills' || noteForm.type === 'github-repo');
                     const isActive = isRepository ? isRepoSubType : noteForm.type === template.id;
 
                     const iconMap = {
@@ -7796,6 +8061,8 @@ Include everything:
                                       <MessageSquare size={16} className={subActive ? 'text-purple-400' : 'text-r-muted'} />
                                     ) : sub.icon === 'Bot' ? (
                                       <Bot size={16} className={subActive ? 'text-blue-400' : 'text-r-muted'} />
+                                    ) : sub.icon === 'GitBranch' ? (
+                                      <GitBranch size={16} className={subActive ? 'text-gray-300' : 'text-r-muted'} />
                                     ) : (
                                       <FolderSymlink size={16} className={subActive ? 'text-cyan-500' : 'text-r-muted'} />
                                     )}
@@ -7965,6 +8232,24 @@ Include everything:
                       <span className="text-sm font-medium text-r-text">Filepath columns: Name, Path, Type, Description</span>
                     </div>
                     <p className="text-xs text-r-muted">Each row stores a filepath with a label, the full path, type (file/folder), and an optional description.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* GitHub Repo-specific info */}
+              {noteForm.type === 'github-repo' && (
+                <div className="space-y-3">
+                  <div className="bg-r-bg border border-r-border rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <GitBranch size={16} className="text-gray-400" />
+                      <span className="text-sm font-medium text-r-text">GitHub Repository Note</span>
+                    </div>
+                    <p className="text-xs text-r-muted mb-3">The title becomes the repo name. After creating, paste the GitHub URL to auto-fill clone commands, then add your README, setup notes, and personal notes.</p>
+                    <div className="flex items-center gap-2 text-[11px] text-r-muted flex-wrap">
+                      <span className="px-2 py-0.5 bg-r-hover rounded-full">URL auto-parses owner &amp; clone URLs</span>
+                      <span className="px-2 py-0.5 bg-r-hover rounded-full">Status tracking</span>
+                      <span className="px-2 py-0.5 bg-r-hover rounded-full">README / Notes / Setup tabs</span>
+                    </div>
                   </div>
                 </div>
               )}
