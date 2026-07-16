@@ -287,7 +287,8 @@ export default function PromptRepository() {
     { id: 'spreadsheet', name: 'Spreadsheet', icon: 'Table', description: 'Table with rows and columns' },
     { id: 'repository', name: 'Repository', icon: 'Database', description: 'Structured data storage for prompts and filepaths', subcategories: [
       { id: 'prompt', name: 'Prompt', icon: 'MessageSquare', description: 'AI prompt with instructions' },
-      { id: 'filepath', name: 'Filepath', icon: 'FolderSymlink', description: 'Store file and folder paths for quick access' }
+      { id: 'filepath', name: 'Filepath', icon: 'FolderSymlink', description: 'Store file and folder paths for quick access' },
+      { id: 'claude-skills', name: 'Claude Skills', icon: 'Bot', description: 'Store and manage custom Claude skill files (.md)' }
     ]},
     { id: 'book', name: 'Book', icon: 'BookOpen', description: 'Organize content into sections and chapters' },
     { id: 'travel', name: 'Travel Itinerary', icon: 'Plane', description: 'Plan trips with dates, travelers, and activities' },
@@ -717,10 +718,18 @@ export default function PromptRepository() {
         }
       });
     }
+    if (noteForm.type === 'claude-skills') {
+      const firstSkillId = generateId();
+      initialContent = JSON.stringify({
+        skills: [],
+        activeSkillId: null
+      });
+    }
 
     try {
       // Set template and resolve storage type
       const isFilepath = noteForm.type === 'filepath';
+      const isClaudeSkills = noteForm.type === 'claude-skills';
       const template = noteForm.type === 'prompt' ? 'prompt' : isFilepath ? 'filepath' : null;
       const storageType = isFilepath ? 'spreadsheet' : noteForm.type;
       const tags = noteForm.tags || [];
@@ -2411,7 +2420,7 @@ export default function PromptRepository() {
 
   // Evernote-style selectable list row. Clicking selects the prompt; full
   // content + actions render in the right-hand detail pane (PromptDetailPane).
-  const PromptAccordion = ({ prompt }) => {
+  const PromptAccordion = ({ prompt, showFolderPath = false }) => {
     const isChecked = selectedPrompts.has(prompt.id);
     const isActive = selectedPromptId === prompt.id;
     const preview = getPromptDisplayContent(prompt.content).replace(/\s+/g, ' ').trim();
@@ -2431,7 +2440,12 @@ export default function PromptRepository() {
             className="w-4 h-4 rounded border-r-border text-r-primary focus:ring-r-primary focus:ring-offset-0 cursor-pointer opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity"
           />
           <FileText size={14} className="text-r-primary flex-shrink-0" />
-          <span className="flex-1 text-sm font-medium truncate text-r-text">{prompt.title}</span>
+          <div className="flex-1 min-w-0">
+            {showFolderPath && prompt.folderId && (
+              <div className="text-[11px] text-r-muted truncate mb-0.5">{getFolderPath(prompt.folderId)}</div>
+            )}
+            <span className="text-sm font-medium truncate text-r-text block">{prompt.title}</span>
+          </div>
           <button
             onClick={(e) => { e.stopPropagation(); copyPrompt(prompt.content, prompt.id); }}
             className={`p-1.5 rounded transition-all ${copiedId === prompt.id ? 'bg-green-600 text-white' : 'opacity-0 group-hover:opacity-100 hover:bg-r-hover2 text-r-muted hover:text-r-text'}`}
@@ -2608,6 +2622,84 @@ export default function PromptRepository() {
         </div>
       );
     });
+  };
+
+  const SearchResults = () => {
+    const query = searchQuery.toLowerCase();
+
+    const matchingFolders = data.folders.filter(f =>
+      f.name.toLowerCase().includes(query)
+    );
+
+    const matchingPrompts = data.prompts.filter(p =>
+      (selectedTags.length === 0 || selectedTags.every(t => p.tags.includes(t))) &&
+      (p.title.toLowerCase().includes(query) || p.content.toLowerCase().includes(query))
+    );
+
+    const totalResults = matchingFolders.length + matchingPrompts.length;
+
+    const navigateToFolder = (folderId) => {
+      setExpandedFolders(prev => {
+        const next = new Set(prev);
+        let id = folderId;
+        while (id) {
+          next.add(id);
+          const f = data.folders.find(x => x.id === id);
+          id = f?.parentId;
+        }
+        return next;
+      });
+      setSearchQuery('');
+    };
+
+    return (
+      <div className="space-y-0.5">
+        <div className="px-3 py-1.5 text-xs text-r-muted border-b border-r-border mb-1">
+          {totalResults} result{totalResults !== 1 ? 's' : ''} for &ldquo;{searchQuery}&rdquo;
+        </div>
+
+        {matchingFolders.length > 0 && (
+          <div className="mb-1">
+            <div className="px-3 py-1 text-xs font-semibold text-r-muted uppercase tracking-wider">
+              Folders &amp; Subfolders ({matchingFolders.length})
+            </div>
+            {matchingFolders.map(folder => (
+              <div
+                key={folder.id}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-r-hover transition-colors cursor-pointer"
+                onClick={() => navigateToFolder(folder.id)}
+              >
+                <Folder size={14} className="text-yellow-500 flex-shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-r-text truncate">{folder.name}</div>
+                  {folder.parentId && (
+                    <div className="text-[11px] text-r-muted truncate">{getFolderPath(folder.parentId)}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {matchingPrompts.length > 0 && (
+          <div>
+            <div className="px-3 py-1 text-xs font-semibold text-r-muted uppercase tracking-wider">
+              Prompts ({matchingPrompts.length})
+            </div>
+            {matchingPrompts.map(prompt => (
+              <PromptAccordion key={prompt.id} prompt={prompt} showFolderPath />
+            ))}
+          </div>
+        )}
+
+        {totalResults === 0 && (
+          <div className="text-center text-r-muted py-12">
+            <Search size={32} className="mx-auto mb-3 opacity-40" />
+            <p className="text-sm">No results for &ldquo;{searchQuery}&rdquo;</p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   // Grid view component for folders
@@ -5951,6 +6043,279 @@ Include everything:
     );
   };
 
+  const ClaudeSkillsEditor = ({ note, onUpdate }) => {
+    const parseSkillsData = (content) => {
+      try {
+        const parsed = JSON.parse(content);
+        if (parsed && Array.isArray(parsed.skills)) return parsed;
+      } catch {}
+      return { skills: [], activeSkillId: null };
+    };
+
+    const parseFrontmatter = (content) => {
+      const match = content.match(/^---\n([\s\S]*?)\n---/);
+      if (!match) return {};
+      const fm = {};
+      match[1].split('\n').forEach(line => {
+        const colonIdx = line.indexOf(':');
+        if (colonIdx > 0) {
+          const key = line.slice(0, colonIdx).trim();
+          const val = line.slice(colonIdx + 1).trim();
+          if (key && val) fm[key] = val;
+        }
+      });
+      return fm;
+    };
+
+    const [skillsData, setSkillsData] = useState(() => parseSkillsData(note.content));
+    const [renamingSkill, setRenamingSkill] = useState(null);
+    const [copied, setCopied] = useState(false);
+    const [draggingSkill, setDraggingSkill] = useState(null);
+    const [dragOverIndex, setDragOverIndex] = useState(null);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const fileInputRef = useRef(null);
+
+    const saveData = (newData) => {
+      setSkillsData(newData);
+      onUpdate(JSON.stringify(newData));
+    };
+
+    const activeSkill = skillsData.skills.find(s => s.id === skillsData.activeSkillId);
+
+    const selectSkill = (skillId) => {
+      saveData({ ...skillsData, activeSkillId: skillId });
+    };
+
+    const addBlankSkill = () => {
+      const newId = generateId();
+      const defaultContent = `---\nname: new-skill\ndescription: Describe what this skill does\nwhenToUse: When should Claude use this skill\n---\n\n# Instructions\n\nWrite your skill instructions here.\n`;
+      const newSkill = { id: newId, name: 'New Skill', description: '', filename: 'SKILL.md', content: defaultContent };
+      saveData({ ...skillsData, skills: [...skillsData.skills, newSkill], activeSkillId: newId });
+    };
+
+    const handleFileUpload = (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      let lastId = skillsData.activeSkillId;
+      const newSkills = [...skillsData.skills];
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const content = ev.target.result;
+          const fm = parseFrontmatter(content);
+          const newId = generateId();
+          lastId = newId;
+          newSkills.push({
+            id: newId,
+            name: fm.name || file.name.replace(/\.md$/, ''),
+            description: fm.description || '',
+            filename: file.name,
+            content
+          });
+          saveData({ ...skillsData, skills: [...newSkills], activeSkillId: lastId });
+        };
+        reader.readAsText(file);
+      });
+      e.target.value = '';
+    };
+
+    const deleteSkill = (skillId) => {
+      const remaining = skillsData.skills.filter(s => s.id !== skillId);
+      const newActiveId = skillsData.activeSkillId === skillId
+        ? (remaining[0]?.id || null)
+        : skillsData.activeSkillId;
+      saveData({ ...skillsData, skills: remaining, activeSkillId: newActiveId });
+    };
+
+    const updateContent = (value) => {
+      const fm = parseFrontmatter(value);
+      saveData({
+        ...skillsData,
+        skills: skillsData.skills.map(s =>
+          s.id === skillsData.activeSkillId
+            ? { ...s, content: value, name: fm.name || s.name, description: fm.description || s.description }
+            : s
+        )
+      });
+    };
+
+    const copyToClipboard = () => {
+      if (!activeSkill?.content) return;
+      navigator.clipboard.writeText(activeSkill.content).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = activeSkill.content;
+        ta.style.position = 'fixed'; ta.style.left = '-999999px';
+        document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+      });
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
+    const commitRename = () => {
+      if (!renamingSkill) return;
+      if (renamingSkill.name.trim()) {
+        saveData({ ...skillsData, skills: skillsData.skills.map(s => s.id === renamingSkill.id ? { ...s, name: renamingSkill.name.trim() } : s) });
+      }
+      setRenamingSkill(null);
+    };
+
+    const handleDragStart = (e, skillId) => { setDraggingSkill(skillId); e.dataTransfer.effectAllowed = 'move'; e.target.style.opacity = '0.4'; };
+    const handleDragEnd = (e) => { e.target.style.opacity = '1'; setDraggingSkill(null); setDragOverIndex(null); };
+    const handleDragOver = (e, index) => { e.preventDefault(); if (draggingSkill) setDragOverIndex(index); };
+    const handleDrop = (e, targetIndex) => {
+      e.preventDefault(); setDragOverIndex(null);
+      if (!draggingSkill) return;
+      const fromIndex = skillsData.skills.findIndex(s => s.id === draggingSkill);
+      if (fromIndex === -1 || fromIndex === targetIndex) { setDraggingSkill(null); return; }
+      const skills = [...skillsData.skills];
+      const [moved] = skills.splice(fromIndex, 1);
+      skills.splice(targetIndex, 0, moved);
+      saveData({ ...skillsData, skills });
+      setDraggingSkill(null);
+    };
+
+    const fm = activeSkill ? parseFrontmatter(activeSkill.content) : {};
+
+    return (
+      <div className="flex h-full bg-r-bg overflow-hidden">
+        {/* Left panel: skill list */}
+        <div className={`${sidebarCollapsed ? 'w-10' : 'w-64'} bg-r-bg border-r border-r-border flex flex-col min-h-0 transition-all duration-200 flex-shrink-0`}>
+          <div className={`p-3 border-b border-r-border flex items-center ${sidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+            {!sidebarCollapsed && (
+              <span className="text-sm font-medium text-r-text flex items-center gap-2">
+                <Bot size={14} className="text-blue-400" />
+                Skills
+              </span>
+            )}
+            <div className={`flex items-center ${sidebarCollapsed ? '' : 'gap-1'}`}>
+              {!sidebarCollapsed && (
+                <>
+                  <button onClick={addBlankSkill} className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text" title="New blank skill"><Plus size={14} /></button>
+                  <button onClick={() => fileInputRef.current?.click()} className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text" title="Upload .md file(s)"><Upload size={14} /></button>
+                  <input ref={fileInputRef} type="file" accept=".md,text/plain" multiple className="hidden" onChange={handleFileUpload} />
+                </>
+              )}
+              <button onClick={() => setSidebarCollapsed(!sidebarCollapsed)} className="p-1 hover:bg-r-hover rounded text-r-muted hover:text-r-text" title={sidebarCollapsed ? 'Expand' : 'Collapse'}>
+                {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+              </button>
+            </div>
+          </div>
+          {!sidebarCollapsed && (
+            <div className="flex-1 overflow-y-auto py-2">
+              {skillsData.skills.length === 0 ? (
+                <div className="px-4 py-8 text-center text-r-muted">
+                  <Bot size={24} className="mx-auto mb-2 opacity-40" />
+                  <p className="text-xs mb-3">No skills yet</p>
+                  <button onClick={() => fileInputRef.current?.click()} className="text-xs px-3 py-1.5 bg-r-hover hover:bg-r-hover2 rounded-lg">Upload .md</button>
+                </div>
+              ) : (
+                skillsData.skills.map((skill, index) => (
+                  <div
+                    key={skill.id}
+                    draggable={!renamingSkill || renamingSkill.id !== skill.id}
+                    onDragStart={(e) => handleDragStart(e, skill.id)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleDrop(e, index)}
+                    onClick={() => selectSkill(skill.id)}
+                    className={`group flex items-start gap-2 px-3 py-2.5 cursor-pointer ${
+                      draggingSkill === skill.id ? 'opacity-40 bg-r-hover'
+                      : dragOverIndex === index && draggingSkill !== skill.id ? 'bg-blue-500/20 ring-1 ring-blue-500'
+                      : skillsData.activeSkillId === skill.id ? 'bg-r-primary/10 text-r-primary'
+                      : 'text-r-muted hover:bg-r-hover hover:text-r-text'
+                    }`}
+                  >
+                    <GripVertical size={12} className="text-r-muted flex-shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      {renamingSkill?.id === skill.id ? (
+                        <input autoFocus value={renamingSkill.name}
+                          onChange={e => setRenamingSkill(prev => ({ ...prev, name: e.target.value }))}
+                          onKeyDown={e => { e.stopPropagation(); if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenamingSkill(null); }}
+                          onBlur={commitRename} onClick={e => e.stopPropagation()}
+                          className="w-full bg-r-hover rounded px-1 text-xs text-r-text focus:outline-none" />
+                      ) : (
+                        <>
+                          <div className="text-xs font-medium truncate">{skill.name}</div>
+                          {skill.description && <div className="text-[11px] text-r-muted truncate mt-0.5">{skill.description}</div>}
+                          {skill.filename && <div className="text-[10px] text-r-muted/60 truncate mt-0.5">{skill.filename}</div>}
+                        </>
+                      )}
+                    </div>
+                    {(!renamingSkill || renamingSkill.id !== skill.id) && (
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 flex-shrink-0 mt-0.5">
+                        <button onClick={e => { e.stopPropagation(); setRenamingSkill({ id: skill.id, name: skill.name }); }} className="p-0.5 hover:text-r-text" title="Rename"><Edit2 size={10} /></button>
+                        <button onClick={e => { e.stopPropagation(); deleteSkill(skill.id); }} className="p-0.5 hover:text-red-400" title="Delete"><Trash2 size={10} /></button>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Right panel: skill editor */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          {!activeSkill ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-r-muted gap-3">
+              <Bot size={36} className="opacity-30" />
+              <p className="text-sm">Select a skill or upload a .md file</p>
+              <div className="flex items-center gap-2">
+                <button onClick={addBlankSkill} className="flex items-center gap-2 px-4 py-2 bg-r-surface hover:bg-r-hover rounded-lg text-sm"><Plus size={14} /> New Skill</button>
+                <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"><Upload size={14} /> Upload .md</button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Skill header */}
+              <div className="flex items-center justify-between px-5 py-3 border-b border-r-border flex-shrink-0 bg-r-surface">
+                <div className="flex items-center gap-3 min-w-0">
+                  <Bot size={16} className="text-blue-400 flex-shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-r-text truncate">{activeSkill.name}</div>
+                    {activeSkill.filename && <div className="text-[11px] text-r-muted">{activeSkill.filename}</div>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {fm.whenToUse && (
+                    <span className="hidden sm:block text-[11px] text-r-muted bg-r-hover px-2 py-0.5 rounded-full truncate max-w-xs" title={fm.whenToUse}>Trigger: {fm.whenToUse.slice(0, 50)}{fm.whenToUse.length > 50 ? '…' : ''}</span>
+                  )}
+                  <button onClick={() => fileInputRef.current?.click()} className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-r-hover hover:bg-r-hover2 rounded-lg" title="Upload another .md file">
+                    <Upload size={12} /> Upload
+                  </button>
+                  <button onClick={copyToClipboard} className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg font-medium transition-colors ${copied ? 'bg-green-600 text-white' : 'bg-r-primary text-r-on-primary hover:bg-blue-700'}`}>
+                    {copied ? <><Check size={12} /> Copied!</> : <><Copy size={12} /> Copy</>}
+                  </button>
+                  <button onClick={() => deleteSkill(activeSkill.id)} className="p-1.5 hover:bg-r-hover rounded-lg text-r-muted hover:text-red-400" title="Delete skill"><Trash2 size={14} /></button>
+                </div>
+              </div>
+
+              {/* Parsed frontmatter badges */}
+              {(fm.name || fm.description) && (
+                <div className="flex items-center gap-3 px-5 py-2 border-b border-r-border bg-r-bg/60 flex-shrink-0 flex-wrap">
+                  {fm.name && <span className="text-[11px] px-2 py-0.5 bg-blue-500/15 text-blue-400 rounded-full font-mono">name: {fm.name}</span>}
+                  {fm.description && <span className="text-[11px] px-2 py-0.5 bg-r-hover text-r-muted rounded-full">{fm.description}</span>}
+                </div>
+              )}
+
+              {/* Markdown editor */}
+              <div className="flex-1 overflow-hidden p-4">
+                <textarea
+                  value={activeSkill.content}
+                  onChange={(e) => updateContent(e.target.value)}
+                  className="w-full h-full bg-r-surface border border-r-border rounded-xl p-5 text-sm font-mono leading-relaxed resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 text-r-text"
+                  placeholder="Paste your SKILL.md content here..."
+                  spellCheck={false}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // Notes View Component for generic notebooks
   const NotesView = () => {
     const notebookNotes = getNotesForNotebook(activeNotebook);
@@ -6074,6 +6439,8 @@ Include everything:
                         <Plane size={14} className="text-cyan-500 flex-shrink-0" />
                       ) : note.type === 'persona' ? (
                         <Drama size={14} className="text-violet-500 flex-shrink-0" />
+                      ) : note.type === 'claude-skills' ? (
+                        <Bot size={14} className="text-blue-400 flex-shrink-0" />
                       ) : note.type === 'prompt' || note.template === 'prompt' ? (
                         <MessageSquare size={14} className="text-purple-500 flex-shrink-0" />
                       ) : (
@@ -6107,6 +6474,8 @@ Include everything:
                         <span className="text-cyan-600">Travel Itinerary</span>
                       ) : note.type === 'persona' ? (
                         <span className="text-violet-600">Persona Builder</span>
+                      ) : note.type === 'claude-skills' ? (
+                        <span className="text-blue-500">Claude Skills</span>
                       ) : isBookNotebook ? (
                         <span className="text-amber-600">Chapter {index + 1}</span>
                       ) : (
@@ -6244,7 +6613,7 @@ Include everything:
               </div>
 
               {/* Note Content */}
-              <div className={`flex-1 overflow-hidden flex flex-col min-h-0 ${currentNote.type === 'book' || currentNote.type === 'travel' || currentNote.type === 'persona' ? '' : 'p-4'}`}>
+              <div className={`flex-1 overflow-hidden flex flex-col min-h-0 ${currentNote.type === 'book' || currentNote.type === 'travel' || currentNote.type === 'persona' || currentNote.type === 'claude-skills' ? '' : 'p-4'}`}>
                 {currentNote.type === 'spreadsheet' ? (
                   <SpreadsheetEditor
                     note={currentNote}
@@ -6279,6 +6648,14 @@ Include everything:
                   />
                 ) : currentNote.type === 'persona' ? (
                   <PersonaBuilderEditor
+                    key={currentNote.id}
+                    note={currentNote}
+                    onUpdate={(newContent) => {
+                      updateNote(currentNote.id, { content: newContent }, { silent: true });
+                    }}
+                  />
+                ) : currentNote.type === 'claude-skills' ? (
+                  <ClaudeSkillsEditor
                     key={currentNote.id}
                     note={currentNote}
                     onUpdate={(newContent) => {
@@ -6855,13 +7232,19 @@ Include everything:
                 </div>
               ) : (
                 <>
-                  <FolderAccordion />
-                  {data.folders.length === 0 && (
-                    <div className="text-center text-r-muted py-12">
-                      <Folder size={48} className="mx-auto mb-4 opacity-50" />
-                      <p>No folders yet</p>
-                      <button onClick={() => setShowNewFolder(true)} className="mt-4 px-4 py-2 bg-r-primary text-r-on-primary hover:bg-blue-700 rounded-lg text-sm">Create your first folder</button>
-                    </div>
+                  {searchQuery ? (
+                    <SearchResults />
+                  ) : (
+                    <>
+                      <FolderAccordion />
+                      {data.folders.length === 0 && (
+                        <div className="text-center text-r-muted py-12">
+                          <Folder size={48} className="mx-auto mb-4 opacity-50" />
+                          <p>No folders yet</p>
+                          <button onClick={() => setShowNewFolder(true)} className="mt-4 px-4 py-2 bg-r-primary text-r-on-primary hover:bg-blue-700 rounded-lg text-sm">Create your first folder</button>
+                        </div>
+                      )}
+                    </>
                   )}
                 </>
               )}
@@ -7352,7 +7735,7 @@ Include everything:
                 <div className="grid grid-cols-2 gap-3">
                   {noteTemplates.map(template => {
                     const isRepository = template.id === 'repository';
-                    const isRepoSubType = isRepository && (noteForm.type === 'prompt' || noteForm.type === 'filepath');
+                    const isRepoSubType = isRepository && (noteForm.type === 'prompt' || noteForm.type === 'filepath' || noteForm.type === 'claude-skills');
                     const isActive = isRepository ? isRepoSubType : noteForm.type === template.id;
 
                     const iconMap = {
@@ -7411,6 +7794,8 @@ Include everything:
                                   <div className="flex items-center gap-2 mb-1">
                                     {sub.icon === 'MessageSquare' ? (
                                       <MessageSquare size={16} className={subActive ? 'text-purple-400' : 'text-r-muted'} />
+                                    ) : sub.icon === 'Bot' ? (
+                                      <Bot size={16} className={subActive ? 'text-blue-400' : 'text-r-muted'} />
                                     ) : (
                                       <FolderSymlink size={16} className={subActive ? 'text-cyan-500' : 'text-r-muted'} />
                                     )}
@@ -7580,6 +7965,25 @@ Include everything:
                       <span className="text-sm font-medium text-r-text">Filepath columns: Name, Path, Type, Description</span>
                     </div>
                     <p className="text-xs text-r-muted">Each row stores a filepath with a label, the full path, type (file/folder), and an optional description.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Claude Skills-specific info */}
+              {noteForm.type === 'claude-skills' && (
+                <div className="space-y-3">
+                  <div className="bg-r-bg border border-r-border rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Bot size={16} className="text-blue-400" />
+                      <span className="text-sm font-medium text-r-text">Claude Skills Library</span>
+                    </div>
+                    <p className="text-xs text-r-muted mb-3">After creating, upload your custom SKILL.md files or paste skill content directly. Each skill stores the full markdown with frontmatter.</p>
+                    <div className="flex items-center gap-2 text-[11px] text-r-muted">
+                      <span className="px-2 py-0.5 bg-blue-500/15 text-blue-400 rounded-full font-mono">name:</span>
+                      <span className="px-2 py-0.5 bg-blue-500/15 text-blue-400 rounded-full font-mono">description:</span>
+                      <span className="px-2 py-0.5 bg-blue-500/15 text-blue-400 rounded-full font-mono">whenToUse:</span>
+                      <span className="text-r-muted">parsed automatically</span>
+                    </div>
                   </div>
                 </div>
               )}
